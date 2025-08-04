@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/CustomColors.dart';
+import '../services/CategoryService.dart';
+import '../models/CategoryModel.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -9,35 +11,40 @@ class Category extends StatefulWidget {
 }
 
 class _Category extends State<Category> {
-  final List<Map<String, String>> categories = [
-    {
-      'name': 'Electronics',
-      'description': 'Gadgets, phones, and more',
-      'imageUrl':
-          'https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto',
-    },
-    {
-      'name': 'Clothing',
-      'description': 'Men\'s and women\'s fashion',
-      'imageUrl':
-          'https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto',
-    },
-    {
-      'name': 'Books',
-      'description': 'Fiction, non-fiction, and more',
-      'imageUrl':
-          'https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto',
-    },
-    {
-      'name': 'Home & Kitchen',
-      'description': 'Essentials for daily living',
-      'imageUrl':
-          'https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto',
-    },
-  ];
+  List<CategoryModel> categories = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
+
+  Future<void> loadCategories() async {
+    try {
+      final loadedCategories = await CategoryService.loadCategories();
+      setState(() {
+        categories = loadedCategories;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading categories: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: CustomColors.primery,
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: categories.length,
@@ -57,7 +64,7 @@ class _Category extends State<Category> {
                   left: Radius.circular(16),
                 ),
                 child: Image.network(
-                  category['imageUrl']!,
+                  category.imageUrl,
                   width: 200,
                   height: 200,
                   fit: BoxFit.cover,
@@ -70,7 +77,7 @@ class _Category extends State<Category> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        category['name']!,
+                        category.name,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -79,7 +86,7 @@ class _Category extends State<Category> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        category['description']!,
+                        category.description,
                         style: TextStyle(
                           fontSize: 14,
                           color: CustomColors.primaryDark,

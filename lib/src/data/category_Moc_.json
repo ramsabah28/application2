@@ -2,26 +2,26 @@
   {
     "name": "Electronics",
     "description": "Gadgets, phones, and more",
-    "imageUrl": "https://example.com/images/electronics.jpg"
+    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
   },
   {
     "name": "Clothing",
     "description": "Men's and women's apparel",
-    "imageUrl": "https://example.com/images/clothing.jpg"
+    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
   },
   {
     "name": "Home & Kitchen",
     "description": "Appliances and utensils for your home",
-    "imageUrl": "https://example.com/images/home_kitchen.jpg"
+    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
   },
   {
     "name": "Books",
     "description": "Fiction, non-fiction, and educational materials",
-    "imageUrl": "https://example.com/images/books.jpg"
+    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
   },
   {
     "name": "Toys",
     "description": "Fun toys for all ages",
-    "imageUrl": "https://example.com/images/toys.jpg"
+    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
   }
 ]

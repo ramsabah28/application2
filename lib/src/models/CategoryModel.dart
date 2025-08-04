@@ -21,11 +21,3 @@ class CategoryModel {
   }
 }
 
-Future<List<CategoryModel>> loadMocsCategory() async {
-
-  final String jsonString = await rootBundle.loadString('assets/mock/mock_categories.json');
-  final List<dynamic> jsonData = json.decode(jsonString);
-
-  return jsonData.map((item) => CategoryModel.fromJson(item)).toList();
-
-}
