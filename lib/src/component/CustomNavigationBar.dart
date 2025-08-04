@@ -1,21 +1,27 @@
 import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
-import '../data/CustomColors.dart';
-import 'Home.dart';
+
 
 class CustomNavigationBar extends StatefulWidget {
-  const CustomNavigationBar({super.key});
+  final int selectedIndex;
+  final Function(int) onItemTapped;
+  
+  const CustomNavigationBar({
+    super.key, 
+    required this.selectedIndex, 
+    required this.onItemTapped
+  });
 
   @override
   State<CustomNavigationBar> createState() => _CustomNavigationBar();
 }
 
 class _CustomNavigationBar extends State<CustomNavigationBar> {
-  int __selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
+      selectedIndex: widget.selectedIndex,
+      onDestinationSelected: widget.onItemTapped,
       backgroundColor: CustomColors.secondary,
       destinations: <Widget>[
         NavigationDestination(

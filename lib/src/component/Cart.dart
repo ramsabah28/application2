@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class Cart extends StatefulWidget {
+  const Cart({super.key});
 
   @override
-  State<Home> createState() => _Home();
+  State<Cart> createState() => _Cart();
 }
 
-class _Home extends State<Home> {
+class _Cart extends State<Cart> {
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Center(
         child: Text(
-          'Home Screen',
+          'Cart Screen',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
-}
+} 
