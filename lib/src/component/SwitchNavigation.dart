@@ -45,7 +45,7 @@ class _SwitchNavigation extends State<SwitchNavigation> {
           onItemTapped: _onItemTapped,
         ),
         backgroundColor: CustomColors.secondary,
-        appBar: AppBar(backgroundColor: CustomColors.secondary),
+        appBar: CustomAppBar(),
       ),
     );
   }
