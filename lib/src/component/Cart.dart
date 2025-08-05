@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/CartModel.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
