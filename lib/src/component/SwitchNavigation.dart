@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'Home.dart';
 import 'Category.dart';
 import 'Cart.dart';
-import 'CustomAppBar.dart';
+import 'MainBar.dart';
 import '../data/CustomColors.dart';
 import 'CustomNavigationBar.dart';
+import 'Profile.dart';
 
 class SwitchNavigation extends StatefulWidget {
   const SwitchNavigation({super.key});
@@ -16,11 +17,7 @@ class SwitchNavigation extends StatefulWidget {
 class _SwitchNavigation extends State<SwitchNavigation> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    Home(),
-    Category(),
-    Cart(),
-  ];
+  final List<Widget> _screens = [Home(), Category(), Cart(), Profile()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -45,7 +42,7 @@ class _SwitchNavigation extends State<SwitchNavigation> {
           onItemTapped: _onItemTapped,
         ),
         backgroundColor: CustomColors.secondary,
-        appBar: AppBar(backgroundColor: CustomColors.secondary),
+        appBar: MainBar(),
       ),
     );
   }

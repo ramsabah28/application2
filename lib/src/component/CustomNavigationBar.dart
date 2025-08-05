@@ -39,6 +39,11 @@ class _CustomNavigationBar extends State<CustomNavigationBar> {
           label: 'Cart',
           selectedIcon: Icon(Icons.shopping_bag, color: CustomColors.primery),
         ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline, color: CustomColors.primery),
+          label: 'Profile',
+          selectedIcon: Icon(Icons.person, color: CustomColors.primery),
+        ),
       ],
     );
   }
