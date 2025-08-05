@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/CustomColors.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -25,13 +26,13 @@ class Profile extends StatelessWidget {
               // Name
               Text(
                 'John Doe',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: accent),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: CustomColors.primery),
               ),
               const SizedBox(height: 8),
               // Email
               Text(
                 'johndoe@email.com',
-                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                style: TextStyle(fontSize: 16, color:CustomColors.primaryDark),
               ),
               const SizedBox(height: 24),
               Divider(thickness: 1.2, color: Colors.grey[300]),
@@ -41,7 +42,7 @@ class Profile extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Address',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: accent),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: CustomColors.primery),
                 ),
               ),
               const SizedBox(height: 8),
@@ -49,7 +50,7 @@ class Profile extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '123 Placeholder St, City, Country',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  style: TextStyle(fontSize: 16, color: CustomColors.primaryDark),
                 ),
               ),
               const SizedBox(height: 32),
