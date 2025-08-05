@@ -39,9 +39,7 @@ class _Category extends State<Category> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: CustomColors.primery,
-        ),
+        child: CircularProgressIndicator(color: CustomColors.primery),
       );
     }
 
@@ -51,7 +49,7 @@ class _Category extends State<Category> {
       itemBuilder: (context, index) {
         final category = categories[index];
         return Card(
-          color: CustomColors.secondary,
+          color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -65,8 +63,8 @@ class _Category extends State<Category> {
                 ),
                 child: Image.asset(
                   category.imageUrl,
-                  width: 200,
-                  height: 200,
+                  width: 150,
+                  height: 150,
                   fit: BoxFit.cover,
                   alignment: Alignment(0, -1),
                 ),
@@ -80,7 +78,7 @@ class _Category extends State<Category> {
                       Text(
                         category.name,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: CustomColors.primery,
                         ),
@@ -90,6 +88,7 @@ class _Category extends State<Category> {
                         category.description,
                         style: TextStyle(
                           fontSize: 14,
+                          fontWeight: FontWeight.bold,
                           color: CustomColors.primaryDark,
                         ),
                       ),

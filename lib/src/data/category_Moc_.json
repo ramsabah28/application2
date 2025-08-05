@@ -1,17 +1,17 @@
 [
   {
     "name": "Multimedia",
-    "description": "Gadgets, phones, and more",
+    "description": "#Gadgets, #phones, #Tablet, #Headphones und mehr",
     "imageUrl": "lib/assets/category_assets/tech.jpg"
   },
   {
-    "name": "Clothing",
-    "description": "Men's and women's apparel",
+    "name": "Mode & Beauty",
+    "description": "#Damen-Mode, #Herren-Mode,#Schuhe, #Sport und Mehr",
     "imageUrl": "lib/assets/category_assets/mode.jpg"
   },
   {
     "name": "Home & Kitchen",
-    "description": "Appliances and utensils for your home",
+    "description": "#Möbel, #Einbaugeräte, #Kühlschränke, #Trockner, #Kaffeemachine und mehr",
     "imageUrl": "lib/assets/category_assets/kitchen.jpg"
   },
   {

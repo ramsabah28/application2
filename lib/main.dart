@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'src/component/SwitchNavigation.dart';
+import 'src/data/CustomColors.dart';
 
 void main() {
   runApp(const MyApp());
