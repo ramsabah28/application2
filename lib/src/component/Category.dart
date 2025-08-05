@@ -63,11 +63,12 @@ class _Category extends State<Category> {
                 borderRadius: const BorderRadius.horizontal(
                   left: Radius.circular(16),
                 ),
-                child: Image.network(
+                child: Image.asset(
                   category.imageUrl,
                   width: 200,
                   height: 200,
                   fit: BoxFit.cover,
+                  alignment: Alignment(0, -1),
                 ),
               ),
               Expanded(

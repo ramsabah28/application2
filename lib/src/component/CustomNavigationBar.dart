@@ -20,6 +20,7 @@ class _CustomNavigationBar extends State<CustomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
+      indicatorColor: Colors.white,
       selectedIndex: widget.selectedIndex,
       onDestinationSelected: widget.onItemTapped,
       backgroundColor: CustomColors.secondary,
