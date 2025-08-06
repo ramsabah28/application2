@@ -1,14 +1,26 @@
 import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
+import '../data/CustomColors.dart';
 
 class MainBar extends StatelessWidget implements PreferredSizeWidget {
-  const MainBar({super.key});
+  final bool showBackArrow;
+  final VoidCallback? onBack;
+
+  const MainBar({super.key, this.showBackArrow = false, this.onBack});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: CustomColors.secondary,
       elevation: 0,
+      leading: showBackArrow
+          ? IconButton(
+              icon:  Icon(Icons.arrow_back, color: CustomColors.primery),
+              onPressed: onBack ?? () {
+                Navigator.of(context).maybePop();
+              },
+            )
+          : null,
       title: Container(
         height: 30,
         decoration: BoxDecoration(
