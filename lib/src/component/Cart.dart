@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/CartModel.dart';
+import '../services/CartService.dart';
+import 'features/CartItemCard.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -9,15 +13,28 @@ class Cart extends StatefulWidget {
 }
 
 class _Cart extends State<Cart> {
+  List<CartModel> cartItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    CartService.loadCartData().then((items) {
+      setState(() {
+        cartItems = items;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text(
-          'Cart Screen',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
+    return cartItems.isEmpty
+        ? Center(child: CircularProgressIndicator())
+        : ListView.builder(
+            itemCount: cartItems.length,
+            itemBuilder: (context, index) {
+              final item = cartItems[index];
+              return CartItemCard(item: item);
+            },
+          );
   }
-} 
+}
