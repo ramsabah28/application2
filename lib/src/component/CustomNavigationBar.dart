@@ -1,15 +1,13 @@
-import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
-
 
 class CustomNavigationBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
-  
+
   const CustomNavigationBar({
-    super.key, 
-    required this.selectedIndex, 
-    required this.onItemTapped
+    super.key,
+    required this.selectedIndex,
+    required this.onItemTapped,
   });
 
   @override
@@ -19,31 +17,50 @@ class CustomNavigationBar extends StatefulWidget {
 class _CustomNavigationBar extends State<CustomNavigationBar> {
   @override
   Widget build(BuildContext context) {
+    var Color = Theme.of(context).primaryColor;
     return NavigationBar(
       indicatorColor: Colors.white,
       selectedIndex: widget.selectedIndex,
       onDestinationSelected: widget.onItemTapped,
-      backgroundColor: CustomColors.secondary,
+      backgroundColor: Theme.of(context).primaryColorLight,
       destinations: <Widget>[
         NavigationDestination(
-          icon: Icon(Icons.home_outlined, color: CustomColors.primery),
+          icon: Icon(
+            Icons.home_outlined,
+            color: Theme.of(context).primaryColor,
+          ),
           label: "Home",
-          selectedIcon: Icon(Icons.home, color: CustomColors.primery),
+          selectedIcon: Icon(Icons.home, color: Theme.of(context).primaryColor),
         ),
         NavigationDestination(
-          icon: Icon(Icons.list_outlined, color: CustomColors.primery),
+          icon: Icon(
+            Icons.list_outlined,
+            color: Theme.of(context).primaryColor,
+          ),
           label: 'Category',
-          selectedIcon: Icon(Icons.list, color: CustomColors.primery),
+          selectedIcon: Icon(Icons.list, color: Theme.of(context).primaryColor),
         ),
         NavigationDestination(
-          icon: Icon(Icons.shopping_bag_outlined, color: CustomColors.primery),
+          icon: Icon(
+            Icons.shopping_bag_outlined,
+            color: Theme.of(context).primaryColor,
+          ),
           label: 'Cart',
-          selectedIcon: Icon(Icons.shopping_bag, color: CustomColors.primery),
+          selectedIcon: Icon(
+            Icons.shopping_bag,
+            color: Theme.of(context).primaryColor,
+          ),
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline, color: CustomColors.primery),
+          icon: Icon(
+            Icons.person_outline,
+            color: Theme.of(context).primaryColor,
+          ),
           label: 'Profile',
-          selectedIcon: Icon(Icons.person, color: CustomColors.primery),
+          selectedIcon: Icon(
+            Icons.person,
+            color: Theme.of(context).primaryColor,
+          ),
         ),
       ],
     );

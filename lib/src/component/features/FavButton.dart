@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/CustomColors.dart';
+
 
 class FavButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -14,7 +14,7 @@ class FavButton extends StatelessWidget {
         width: 65,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: CustomColors.secondary,
+            backgroundColor: Theme.of(context).primaryColorLight,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             textStyle: TextStyle(
               fontSize: 14,

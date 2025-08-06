@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../data/CustomColors.dart';
 import '../services/CategoryService.dart';
 import '../models/CategoryModel.dart';
 import 'SwitchNavigation.dart';
@@ -40,7 +39,7 @@ class _Category extends State<Category> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Center(
-        child: CircularProgressIndicator(color: CustomColors.primery),
+        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
       );
     }
 
@@ -58,8 +57,8 @@ class _Category extends State<Category> {
           margin: const EdgeInsets.symmetric(vertical: 10),
           child: InkWell(
             onTap: () {
-              // Find the ancestor SwitchNavigation and call _showDynamicProductList
-              final state = context.findAncestorStateOfType<SwitchNavigationState>();
+              final state = context
+                  .findAncestorStateOfType<SwitchNavigationState>();
               state?.showDynamicProductList();
             },
             child: Row(
@@ -87,7 +86,7 @@ class _Category extends State<Category> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: CustomColors.primery,
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -96,7 +95,7 @@ class _Category extends State<Category> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: CustomColors.primaryDark,
+                            color: Theme.of(context).primaryColorDark,
                           ),
                         ),
                       ],

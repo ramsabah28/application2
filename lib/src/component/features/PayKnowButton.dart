@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/CustomColors.dart';
+
 
 class PayKnowButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -15,7 +15,7 @@ class PayKnowButton extends StatelessWidget {
         width: 220,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: CustomColors.primery,
+            backgroundColor: Theme.of(context).primaryColor,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             textStyle: TextStyle(
               fontSize: 20,

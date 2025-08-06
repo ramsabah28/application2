@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../data/CustomColors.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -29,14 +28,17 @@ class Profile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: CustomColors.primery,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               const SizedBox(height: 8),
               // Email
               Text(
                 'johndoe@email.com',
-                style: TextStyle(fontSize: 16, color: CustomColors.primaryDark),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).primaryColorDark,
+                ),
               ),
               const SizedBox(height: 24),
               Divider(thickness: 1.2, color: Colors.grey[300]),
@@ -49,7 +51,7 @@ class Profile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: CustomColors.primery,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ),
@@ -60,7 +62,7 @@ class Profile extends StatelessWidget {
                   '123 Placeholder St, City, Country',
                   style: TextStyle(
                     fontSize: 16,
-                    color: CustomColors.primaryDark,
+                    color: Theme.of(context).primaryColorDark,
                   ),
                 ),
               ),
@@ -69,19 +71,19 @@ class Profile extends StatelessWidget {
               _ProfileActionButton(
                 icon: Icons.shopping_bag_outlined,
                 label: 'Bestellungen',
-                accent: CustomColors.primery,
+                accent: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 16),
               _ProfileActionButton(
                 icon: Icons.receipt_long_outlined,
                 label: 'Rechnungen',
-                accent: CustomColors.primery,
+                accent: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 16),
               _ProfileActionButton(
                 icon: Icons.favorite_border,
                 label: 'Mein Favorit list',
-                accent: CustomColors.primery,
+                accent: Theme.of(context).primaryColor,
               ),
             ],
           ),
@@ -105,7 +107,7 @@ class _ProfileActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: CustomColors.secondary,
+      color: Theme.of(context).primaryColorLight,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),

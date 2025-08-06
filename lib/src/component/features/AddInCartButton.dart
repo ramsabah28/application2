@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../data/CustomColors.dart';
 
 class AddInCartButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -15,7 +14,7 @@ class AddInCartButton extends StatelessWidget {
         width: 180,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: CustomColors.primery,
+            backgroundColor: Theme.of(context).primaryColor,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             textStyle: TextStyle(
               fontSize: 14,

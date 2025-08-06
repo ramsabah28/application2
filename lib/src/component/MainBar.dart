@@ -1,6 +1,5 @@
 import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
-import '../data/CustomColors.dart';
 
 class MainBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackArrow;
@@ -15,10 +14,12 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       leading: showBackArrow
           ? IconButton(
-              icon:  Icon(Icons.arrow_back, color: CustomColors.primery),
-              onPressed: onBack ?? () {
-                Navigator.of(context).maybePop();
-              },
+              icon: Icon(Icons.arrow_back, color: CustomColors.primery),
+              onPressed:
+                  onBack ??
+                  () {
+                    Navigator.of(context).maybePop();
+                  },
             )
           : null,
       title: Container(
@@ -34,9 +35,7 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                ),
+                decoration: const InputDecoration(border: InputBorder.none),
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -46,9 +45,7 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(Icons.notifications_none, color: CustomColors.primery),
-          onPressed: () {
-
-          },
+          onPressed: () {},
         ),
         const SizedBox(width: 20),
       ],

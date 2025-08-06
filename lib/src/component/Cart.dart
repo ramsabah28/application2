@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/CartModel.dart';
@@ -43,7 +41,10 @@ class _Cart extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
-    double totalPrice = cartItems.fold(0, (sum, item) => sum + (item.price * item.count));
+    double totalPrice = cartItems.fold(
+      0,
+      (sum, item) => sum + (item.price * item.count),
+    );
     double tax = totalPrice * 0.19;
     double shipmentCost = totalPrice > 0 ? 4.99 : 0.0;
     double priceWithoutTax = totalPrice - tax;
@@ -61,7 +62,8 @@ class _Cart extends State<Cart> {
                     return CartItemCard(
                       item: item,
                       count: item.count,
-                      onCountChanged: (newCount) => updateItemCount(index, newCount),
+                      onCountChanged: (newCount) =>
+                          updateItemCount(index, newCount),
                     );
                   },
                 ),
@@ -72,11 +74,30 @@ class _Cart extends State<Cart> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Divider(),
-                    Text('Zwichensumme: ${priceWithoutTax.toStringAsFixed(2)}€', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text('MwSt: ${tax.toStringAsFixed(2)}€', style: TextStyle(fontSize: 16)),
-                    Text('Versandkosten: ${shipmentCost.toStringAsFixed(2)}€', style: TextStyle(fontSize: 16)),
+                    Text(
+                      'Zwichensumme: ${priceWithoutTax.toStringAsFixed(2)}€',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'MwSt: ${tax.toStringAsFixed(2)}€',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      'Versandkosten: ${shipmentCost.toStringAsFixed(2)}€',
+                      style: TextStyle(fontSize: 16),
+                    ),
                     SizedBox(height: 8),
-                    Text('Gesamtsumme: ${grandTotal.toStringAsFixed(2)}€', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: CustomColors.primaryDark)),
+                    Text(
+                      'Gesamtsumme: ${grandTotal.toStringAsFixed(2)}€',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
                     SizedBox(height: 16),
                     PayKnowButton(
                       onPressed: () {

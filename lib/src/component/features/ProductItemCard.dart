@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/ProductModel.dart';
-import '../../data/CustomColors.dart';
+
 import 'AddInCartButton.dart';
 import 'FavButton.dart';
 

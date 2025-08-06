@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../models/CartModel.dart';
-import '../../data/CustomColors.dart';
 import 'CountButton.dart';
 
 class CartItemCard extends StatefulWidget {
@@ -88,7 +87,7 @@ class _CartItemCardState extends State<CartItemCard> {
                   widget.item.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: CustomColors.primery,
+                    color: Theme.of(context).primaryColor,
                     fontSize: 28,
                   ),
                 ),
@@ -98,7 +97,7 @@ class _CartItemCardState extends State<CartItemCard> {
                 ),
                 Text(widget.item.description),
                 Text(
-                  widget.item.price.toString() + "€",
+                  "${widget.item.price}€",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(

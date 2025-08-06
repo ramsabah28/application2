@@ -36,31 +36,23 @@ class SwitchNavigationState extends State<SwitchNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primaryColor: CustomColors.primery,
-        secondaryHeaderColor: CustomColors.secondary,
-        brightness: Brightness.light,
+    return Scaffold(
+      body: _overrideScreen ?? _screens[_selectedIndex],
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: _overrideScreen ?? _screens[_selectedIndex],
-        bottomNavigationBar: CustomNavigationBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: _onItemTapped,
-        ),
-        backgroundColor: CustomColors.secondary,
-        appBar: _overrideScreen != null
-            ? MainBar(
-                showBackArrow: true,
-                onBack: () {
-                  setState(() {
-                    _overrideScreen = null;
-                  });
-                },
-              )
-            : MainBar(),
-      ),
+      backgroundColor: CustomColors.secondary,
+      appBar: _overrideScreen != null
+          ? MainBar(
+              showBackArrow: true,
+              onBack: () {
+                setState(() {
+                  _overrideScreen = null;
+                });
+              },
+            )
+          : MainBar(),
     );
   }
 }
