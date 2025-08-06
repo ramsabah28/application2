@@ -5,8 +5,10 @@ import 'CountButton.dart';
 
 class CartItemCard extends StatefulWidget {
   final CartModel item;
+  final int count;
+  final ValueChanged<int> onCountChanged;
 
-  const CartItemCard({Key? key, required this.item}) : super(key: key);
+  const CartItemCard({Key? key, required this.item, required this.count, required this.onCountChanged}) : super(key: key);
 
   @override
   State<CartItemCard> createState() => _CartItemCardState();
@@ -18,19 +20,31 @@ class _CartItemCardState extends State<CartItemCard> {
   @override
   void initState() {
     super.initState();
-    count = widget.item.count;
+    count = widget.count;
   }
 
   void _increment() {
     setState(() {
       count++;
     });
+    widget.onCountChanged(count);
   }
 
   void _decrement() {
     setState(() {
       if (count > 0) count--;
     });
+    widget.onCountChanged(count);
+  }
+
+  @override
+  void didUpdateWidget(covariant CartItemCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.count != count) {
+      setState(() {
+        count = widget.count;
+      });
+    }
   }
 
   @override
@@ -43,15 +57,18 @@ class _CartItemCardState extends State<CartItemCard> {
         children: [
           Column(
             children: [
-              Container(
-                width: 100,
-                height: 100,
-                color: Colors.white,
-                child: InteractiveViewer(
-                  panEnabled: true,
-                  minScale: 1,
-                  maxScale: 3,
-                  child: Image.network(widget.item.imageUrl, fit: BoxFit.contain),
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  color: Colors.white,
+                  child: InteractiveViewer(
+                    panEnabled: true,
+                    minScale: 1,
+                    maxScale: 3,
+                    child: Image.network(widget.item.imageUrl, fit: BoxFit.contain),
+                  ),
                 ),
               ),
               SizedBox(height: 8),
@@ -85,7 +102,7 @@ class _CartItemCardState extends State<CartItemCard> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.item.count >= 1 ? "Available" : "Not available",
+                  widget.item.count >= 1 ? "Verfügbar" : "Nicht verfügbar",
                   style: TextStyle(
                     color: widget.item.count >= 1 ? Colors.green : Colors.red,
                     fontWeight: FontWeight.bold,
