@@ -34,7 +34,7 @@ class _DynamicProductListState extends State<DynamicProductList> {
       return Center(child: CircularProgressIndicator());
     }
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(2),
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];

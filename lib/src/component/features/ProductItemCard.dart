@@ -8,13 +8,14 @@ class ProductItemCard extends StatelessWidget {
   final ProductModel item;
   final VoidCallback? onTap;
 
-  const ProductItemCard({Key? key, required this.item, this.onTap}) : super(key: key);
+  const ProductItemCard({Key? key, required this.item, this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.all(5),
       child: Stack(
         children: [
           Padding(
@@ -25,50 +26,59 @@ class ProductItemCard extends StatelessWidget {
                 Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
+                      padding: const EdgeInsets.only(top: 12.0, left: 8),
                       child: Container(
-                        width: 100,
+                        width: 120,
                         height: 250,
                         color: Colors.white,
                         child: InteractiveViewer(
                           panEnabled: true,
                           minScale: 1,
-                          maxScale: 3,
-                          child: Image.network(item.imageUrl, fit: BoxFit.contain),
+                          maxScale: 10,
+                          child: Image.network(
+                            item.imageUrl,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(width: 30),
+                SizedBox(width: 10),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                      Text(
-                        item.brand,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(item.description),
-                      Text(
-                        item.price.toString() + "€",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        item.count >= 1 ? "Verfügbar" : "Nicht verfügbar",
-                        style: TextStyle(
-                          color: item.count >= 1 ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          item.brand,
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
+                        Text(item.description),
+                        Text(
+                          item.price.toString() + "€",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        Text(
+                          item.count >= 1 ? "Verfügbar" : "Nicht verfügbar",
+                          style: TextStyle(
+                            color: item.count >= 1 ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
