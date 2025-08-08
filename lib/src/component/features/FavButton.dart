@@ -23,7 +23,7 @@ class FavButton extends StatelessWidget {
             ),
           ),
           onPressed: onPressed,
-          child: Icon(Icons.favorite, color: Colors.white),
+          child: Icon(Icons.favorite, color: Theme.of(context).primaryColorDark),
         ),
       ),
     );
