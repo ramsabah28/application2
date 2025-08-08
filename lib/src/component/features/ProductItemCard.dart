@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../models/ProductModel.dart';
-
 import 'AddInCartButton.dart';
 import 'FavButton.dart';
+import 'Rating.dart';
 
 class ProductItemCard extends StatelessWidget {
   final ProductModel item;
@@ -51,12 +51,19 @@ class ProductItemCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          item.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                item.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         Text(
                           item.brand,
@@ -70,6 +77,7 @@ class ProductItemCard extends StatelessWidget {
                             fontWeight: FontWeight.normal,
                           ),
                         ),
+
                         Text(
                           item.count >= 1 ? "Verfügbar" : "Nicht verfügbar",
                           style: TextStyle(
@@ -77,6 +85,7 @@ class ProductItemCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        Rating(ratingCount: 120, ratingValue: 3.5),
                       ],
                     ),
                   ),
