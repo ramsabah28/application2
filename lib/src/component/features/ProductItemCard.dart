@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/ProductModel.dart';
+import '../../repository/CartRepository.dart';
 import 'AddInCartButton.dart';
 import 'FavButton.dart';
 import 'Rating.dart';
@@ -106,8 +107,21 @@ class ProductItemCard extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 AddInCartButton(
-                  onPressed: () {
-                    // TODO: Add to cart logic
+                  onPressed: () async {
+                    try {
+                      final cartRepo = CartRepository();
+                      final uuid = (item as dynamic).uuid ?? '';
+                      print(uuid);
+                      await cartRepo.addToCart(uuid, 1);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Produkt zum Warenkorb hinzugefügt!')),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Fehler beim Hinzufügen zum Warenkorb: '
+                            '${e.toString()}')),
+                      );
+                    }
                   },
                 ),
               ],

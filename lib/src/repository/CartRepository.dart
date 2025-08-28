@@ -1,8 +1,9 @@
+import 'package:application2/src/models/CartModel.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
-import '../exception/CartEmptyException.dart'; 
+import '../exception/CartEmptyException.dart';
 
 class CartRepository {
   Future<SharedPreferences> get _prefs async =>
@@ -18,11 +19,15 @@ class CartRepository {
       try {
         cart = Map<String, dynamic>.from(jsonDecode(cartString));
       } catch (_) {
-        throw CartParseException('Failed to parse cart data from local storage.');
+        throw CartParseException(
+          'Failed to parse cart data from local storage.',
+        );
       }
     }
 
     cart[uuid] = count;
     await prefs.setString('cart', jsonEncode(cart));
   }
+
+  Future<List<CartModel>> getCart() async {}
 }
