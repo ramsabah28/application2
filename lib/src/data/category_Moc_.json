@@ -1,27 +1,27 @@
 [
   {
-    "name": "Electronics",
-    "description": "Gadgets, phones, and more",
-    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
+    "name": "Multimedia",
+    "description": "#Gadgets, #phones, #Tablet, #Headphones und mehr",
+    "imageUrl": "lib/assets/category_assets/tech.jpg"
   },
   {
-    "name": "Clothing",
-    "description": "Men's and women's apparel",
-    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
+    "name": "Mode & Beauty",
+    "description": "#Damen-Mode, #Herren-Mode,#Schuhe, #Sport und Mehr",
+    "imageUrl": "lib/assets/category_assets/mode.jpg"
   },
   {
     "name": "Home & Kitchen",
-    "description": "Appliances and utensils for your home",
-    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
+    "description": "#Möbel, #Einbaugeräte, #Kühlschränke, #Trockner, #Kaffeemachine und mehr",
+    "imageUrl": "lib/assets/category_assets/kitchen.jpg"
   },
   {
     "name": "Books",
     "description": "Fiction, non-fiction, and educational materials",
-    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
+    "imageUrl": "lib/assets/category_assets/books.jpg"
   },
   {
-    "name": "Toys",
+    "name": "Sport",
     "description": "Fun toys for all ages",
-    "imageUrl": "https://i.otto.de/i/otto/bd194e95-57f5-5180-8844-8c7730789eb1?h=1040&w=1102&qlt=40&unsharp=0,1,0.6,7&sm=clamp&upscale=true&fmt=auto"
+    "imageUrl": "lib/assets/category_assets/sport.jpg"
   }
 ]

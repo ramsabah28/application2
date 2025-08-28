@@ -6,44 +6,53 @@ import 'MainBar.dart';
 import '../data/CustomColors.dart';
 import 'CustomNavigationBar.dart';
 import 'Profile.dart';
+import 'DynamicProductList.dart';
 
 class SwitchNavigation extends StatefulWidget {
   const SwitchNavigation({super.key});
 
   @override
-  State<SwitchNavigation> createState() => _SwitchNavigation();
+  State<SwitchNavigation> createState() => SwitchNavigationState();
 }
 
-class _SwitchNavigation extends State<SwitchNavigation> {
+class SwitchNavigationState extends State<SwitchNavigation> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [Home(), Category(), Cart(), Profile()];
+  Widget? _overrideScreen;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _overrideScreen = null;
+    });
+  }
+
+  void showDynamicProductList() {
+    setState(() {
+      _overrideScreen = DynamicProductList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primaryColor: CustomColors.primery,
-        secondaryHeaderColor: CustomColors.secondary,
-        brightness: Brightness.light,
+    return Scaffold(
+      body: _overrideScreen ?? _screens[_selectedIndex],
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
-      debugShowCheckedModeBanner: false,
-
-      home: Scaffold(
-        body: _screens[_selectedIndex],
-        bottomNavigationBar: CustomNavigationBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: _onItemTapped,
-        ),
-        backgroundColor: CustomColors.secondary,
-        appBar: MainBar(),
-      ),
+      backgroundColor: CustomColors.secondary,
+      appBar: _overrideScreen != null
+          ? MainBar(
+              showBackArrow: true,
+              onBack: () {
+                setState(() {
+                  _overrideScreen = null;
+                });
+              },
+            )
+          : MainBar(),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../data/CustomColors.dart';
 import '../services/CategoryService.dart';
 import '../models/CategoryModel.dart';
+import 'SwitchNavigation.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -39,9 +39,7 @@ class _Category extends State<Category> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: CustomColors.primery,
-        ),
+        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
       );
     }
 
@@ -51,52 +49,61 @@ class _Category extends State<Category> {
       itemBuilder: (context, index) {
         final category = categories[index];
         return Card(
-          color: CustomColors.secondary,
+          color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 2,
           margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(16),
-                ),
-                child: Image.network(
-                  category.imageUrl,
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        category.name,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: CustomColors.primery,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        category.description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: CustomColors.primaryDark,
-                        ),
-                      ),
-                    ],
+          child: InkWell(
+            onTap: () {
+              final state = context
+                  .findAncestorStateOfType<SwitchNavigationState>();
+              state?.showDynamicProductList();
+            },
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.horizontal(
+                    left: Radius.circular(16),
+                  ),
+                  child: Image.asset(
+                    category.imageUrl,
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    alignment: Alignment(0, -1),
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          category.name,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          category.description,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

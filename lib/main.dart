@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'src/component/SwitchNavigation.dart';
+import 'src/data/CustomColors.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
+        primaryColor: CustomColors.primery,
+        primaryColorDark: CustomColors.primaryDark,
+        primaryColorLight: CustomColors.secondary,
+        secondaryHeaderColor: CustomColors.secondary,
+        brightness: Brightness.light,
       ),
       home: SwitchNavigation(),
     );

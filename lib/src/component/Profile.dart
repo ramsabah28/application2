@@ -5,7 +5,6 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color accent = Colors.deepPurpleAccent;
     final Color bgColor = const Color(0xFFF5F6FA);
 
     return Container(
@@ -21,17 +20,25 @@ class Profile extends StatelessWidget {
                 radius: 72, // Increased from 48 to 72
                 backgroundImage: AssetImage('lib/assets/avatar.jpg'),
               ),
-              const SizedBox(height: 32), // Slightly more space below the bigger avatar
+              const SizedBox(height: 32),
+              // Slightly more space below the bigger avatar
               // Name
               Text(
                 'John Doe',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: accent),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
               const SizedBox(height: 8),
               // Email
               Text(
                 'johndoe@email.com',
-                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).primaryColorDark,
+                ),
               ),
               const SizedBox(height: 24),
               Divider(thickness: 1.2, color: Colors.grey[300]),
@@ -41,7 +48,11 @@ class Profile extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Address',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: accent),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -49,7 +60,10 @@ class Profile extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '123 Placeholder St, City, Country',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).primaryColorDark,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -57,19 +71,19 @@ class Profile extends StatelessWidget {
               _ProfileActionButton(
                 icon: Icons.shopping_bag_outlined,
                 label: 'Bestellungen',
-                accent: accent,
+                accent: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 16),
               _ProfileActionButton(
                 icon: Icons.receipt_long_outlined,
                 label: 'Rechnungen',
-                accent: accent,
+                accent: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 16),
               _ProfileActionButton(
                 icon: Icons.favorite_border,
                 label: 'Mein Favorit list',
-                accent: accent,
+                accent: Theme.of(context).primaryColor,
               ),
             ],
           ),
@@ -93,16 +107,14 @@ class _ProfileActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: accent.withOpacity(0.08),
+      color: Theme.of(context).primaryColorLight,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {},
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
