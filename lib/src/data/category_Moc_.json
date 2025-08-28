@@ -1,25 +1,30 @@
 [
   {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000007",
     "name": "Multimedia",
     "description": "#Gadgets, #phones, #Tablet, #Headphones und mehr",
     "imageUrl": "lib/assets/category_assets/tech.jpg"
   },
   {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000008",
     "name": "Mode & Beauty",
     "description": "#Damen-Mode, #Herren-Mode,#Schuhe, #Sport und Mehr",
     "imageUrl": "lib/assets/category_assets/mode.jpg"
   },
   {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000009",
     "name": "Home & Kitchen",
     "description": "#Möbel, #Einbaugeräte, #Kühlschränke, #Trockner, #Kaffeemachine und mehr",
     "imageUrl": "lib/assets/category_assets/kitchen.jpg"
   },
   {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000010",
     "name": "Books",
     "description": "Fiction, non-fiction, and educational materials",
     "imageUrl": "lib/assets/category_assets/books.jpg"
   },
   {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000011",
     "name": "Sport",
     "description": "Fun toys for all ages",
     "imageUrl": "lib/assets/category_assets/sport.jpg"
