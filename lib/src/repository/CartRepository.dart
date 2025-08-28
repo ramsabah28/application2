@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
-import '../exception/CartEmptyException.dart'; // Will update class name below
+import '../exception/CartEmptyException.dart'; 
 
 class CartRepository {
   Future<SharedPreferences> get _prefs async =>
