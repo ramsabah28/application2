@@ -1,7 +1,7 @@
 import 'package:application2/src/models/CartModel.dart';
-// import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:uuid/uuid.dart';
+
 import 'dart:convert';
 import '../exception/CartEmptyException.dart';
 import '../services/ProductService.dart';
@@ -43,6 +43,7 @@ class CartRepository {
 
 
     final products = await ProductService.loadProductData();
+    //TODO: load all products data very heavy. Minimizie the runtime by load Category -> Products -> Single Access DB
 
     List<CartModel> cartModels = [];
     for (final uuid in cart.keys) {
@@ -65,4 +66,6 @@ class CartRepository {
     }
     return cartModels;
   }
+
+
 }

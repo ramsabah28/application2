@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/CategoryService.dart';
 import '../models/CategoryModel.dart';
 import 'SwitchNavigation.dart';
+import 'features/_shimmer_image.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -67,14 +68,11 @@ class _Category extends State<Category> {
                   borderRadius: const BorderRadius.horizontal(
                     left: Radius.circular(16),
                   ),
-                  child: Image.asset(
-                    category.imageUrl,
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                    alignment: Alignment(0, -1),
+                  child: ShimmerImage(
+                    imageUrl: category.imageUrl,
                   ),
                 ),
+
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
