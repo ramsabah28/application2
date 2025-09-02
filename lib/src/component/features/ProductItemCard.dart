@@ -4,7 +4,7 @@ import '../../repository/CartRepository.dart';
 import 'AddInCartButton.dart';
 import 'FavButton.dart';
 import 'Rating.dart';
-import '../../component/features/ShimmerImageFromAsset.dart';
+import '../../component/features/ShimmerImageFromNetwork.dart';
 
 class ProductItemCard extends StatelessWidget {
   final ProductModel item;
@@ -37,10 +37,7 @@ class ProductItemCard extends StatelessWidget {
                           panEnabled: true,
                           minScale: 1,
                           maxScale: 10,
-                          child: Image.network(
-                            item.imageUrl,
-                            fit: BoxFit.contain,
-                          ),
+                          child:ShimmerImageFromNetwork(imageUrl: item.imageUrl, height: 300, width: 100)
                         ),
                       ),
                     ),
