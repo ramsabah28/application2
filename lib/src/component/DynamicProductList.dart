@@ -11,34 +11,38 @@ class DynamicProductList extends StatefulWidget {
 }
 
 class _DynamicProductListState extends State<DynamicProductList> {
-  List<ProductModel> products = [];
-  bool isLoading = true;
+  late Future<List<ProductModel>> _productsFuture;
 
   @override
   void initState() {
     super.initState();
-    loadProducts();
-  }
-
-  Future<void> loadProducts() async {
-    final loadedProducts = await ProductService.loadProductData();
-    setState(() {
-      products = loadedProducts;
-      isLoading = false;
-    });
+    _productsFuture = ProductService.loadProductData();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.all(2),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        final product = products[index];
-        return ProductItemCard(item: product);
+    return FutureBuilder<List<ProductModel>>(
+      future: _productsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return const Center(child: Text('Fehler beim Laden der Produkte.'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('Keine Produkte gefunden.'));
+        }
+
+        final products = snapshot.data!;
+        return ListView.builder(
+          padding: const EdgeInsets.all(2),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final product = products[index];
+            return ProductItemCard(item: product);
+          },
+        );
       },
     );
   }

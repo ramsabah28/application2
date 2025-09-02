@@ -3,7 +3,9 @@ import 'package:shimmer/shimmer.dart';
 
 class ShimmerImage extends StatefulWidget {
   final String imageUrl;
-  const ShimmerImage({required this.imageUrl, super.key});
+  final double height;
+  final double width;
+  const ShimmerImage({required this.imageUrl, super.key, required this.height, required this.width});
 
   @override
   State<ShimmerImage> createState() => _ShimmerImageState();
@@ -36,8 +38,8 @@ class _ShimmerImageState extends State<ShimmerImage> {
           ),
         Image.asset(
           widget.imageUrl,
-          width: 150,
-          height: 150,
+          width: widget.height,
+          height: widget.width,
           fit: BoxFit.cover,
           alignment: const Alignment(0, -1),
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {

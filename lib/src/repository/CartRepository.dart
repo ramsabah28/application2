@@ -1,7 +1,5 @@
 import 'package:application2/src/models/CartModel.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'dart:convert';
 import '../exception/CartEmptyException.dart';
 import '../services/ProductService.dart';
@@ -41,7 +39,6 @@ class CartRepository {
       throw CartParseException('Failed to parse cart data from local storage.');
     }
 
-
     final products = await ProductService.loadProductData();
     //TODO: load all products data very heavy. Minimizie the runtime by load Category -> Products -> Single Access DB
 
@@ -60,12 +57,8 @@ class CartRepository {
           'imageUrl': product.imageUrl,
         };
         cartModels.add(CartModel.fromJson(productMap));
-      } catch (_) {
-
-      }
+      } catch (_) {}
     }
     return cartModels;
   }
-
-
 }

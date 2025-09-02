@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/CategoryService.dart';
 import '../models/CategoryModel.dart';
 import 'SwitchNavigation.dart';
-import 'features/_shimmer_image.dart';
+import 'features/ShimmerImageFromAsset.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -70,6 +70,8 @@ class _Category extends State<Category> {
                   ),
                   child: ShimmerImage(
                     imageUrl: category.imageUrl,
+                    height: 150,
+                    width: 150,
                   ),
                 ),
 

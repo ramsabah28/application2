@@ -21,16 +21,20 @@ class _CartState extends State<Cart> {
 
   void updateItemCount(int index, int newCount) {
     setState(() {
-      cartItems[index] = CartModel(
-        uuid: cartItems[index].uuid,
-        name: cartItems[index].name,
-        description: cartItems[index].description,
-        category: cartItems[index].category,
-        brand: cartItems[index].brand,
-        count: newCount,
-        price: cartItems[index].price,
-        imageUrl: cartItems[index].imageUrl,
-      );
+      if (newCount == 0) {
+        cartItems.removeAt(index);
+      } else {
+        cartItems[index] = CartModel(
+          uuid: cartItems[index].uuid,
+          name: cartItems[index].name,
+          description: cartItems[index].description,
+          category: cartItems[index].category,
+          brand: cartItems[index].brand,
+          count: newCount,
+          price: cartItems[index].price,
+          imageUrl: cartItems[index].imageUrl,
+        );
+      }
     });
   }
 

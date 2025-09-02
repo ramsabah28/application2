@@ -4,6 +4,7 @@ import '../../repository/CartRepository.dart';
 import 'AddInCartButton.dart';
 import 'FavButton.dart';
 import 'Rating.dart';
+import '../../component/features/ShimmerImageFromAsset.dart';
 
 class ProductItemCard extends StatelessWidget {
   final ProductModel item;
