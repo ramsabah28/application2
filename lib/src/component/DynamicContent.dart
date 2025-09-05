@@ -4,7 +4,6 @@ import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
 
-
 class DynamicContent extends StatelessWidget {
   final String uuid;
 
@@ -75,12 +74,15 @@ class DynamicContent extends StatelessWidget {
                 // Price
                 Text(
                   '${product.price.toStringAsFixed(2)}€',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
                 ),
                 SizedBox(height: 24),
-                Row(
+                Column(
                   children: [
-                    Expanded(child: AddInCartButton(
+                    AddInCartButton(
                       onPressed: () async {
                         try {
                           final cartRepo = CartRepository();
@@ -88,8 +90,10 @@ class DynamicContent extends StatelessWidget {
                           await cartRepo.addToCart(uuid, 1);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                                content: Text(
-                                    'Produkt zum Warenkorb hinzugefügt!')),
+                              content: Text(
+                                'Produkt zum Warenkorb hinzugefügt!',
+                              ),
+                            ),
                           );
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -101,32 +105,20 @@ class DynamicContent extends StatelessWidget {
                           );
                         }
                       },
-
-
-                    )),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () {},
-                    child: FavButton(),
-                  ),
+                    ),
+                    SizedBox(height: 4),
+                    FavButton(),
+                  ],
                 ),
+                SizedBox(height: 24),
+                Divider(),
+                SizedBox(height: 8),
+                // ...existing code...
               ],
             ),
-            SizedBox(height: 24),
-            Divider(),
-            SizedBox(height: 8),
-            // ...existing code...
-          ],
-        ),
-      ),
-    );
-        } // End of FutureBuilder builder
-      ); // End of FutureBuilder
+          ),
+        );
+      }, // End of FutureBuilder builder
+    ); // End of FutureBuilder
   }
 }
