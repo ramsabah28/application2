@@ -11,7 +11,7 @@ class FavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.4,
+        width: MediaQuery.of(context).size.width * 0.3,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColorLight,
