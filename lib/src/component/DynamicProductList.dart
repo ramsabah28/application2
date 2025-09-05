@@ -40,7 +40,7 @@ class _DynamicProductListState extends State<DynamicProductList> {
           itemCount: products.length,
           itemBuilder: (context, index) {
             final product = products[index];
-            return ProductItemCard(item: product);
+            return ProductItemCard(item: product, uuid: product.uuid);
           },
         );
       },

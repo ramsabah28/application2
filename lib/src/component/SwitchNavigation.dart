@@ -7,6 +7,7 @@ import '../data/CustomColors.dart';
 import 'CustomNavigationBar.dart';
 import 'Profile.dart';
 import 'DynamicProductList.dart';
+import 'DynamicContent.dart';
 
 class SwitchNavigation extends StatefulWidget {
   const SwitchNavigation({super.key});
@@ -30,7 +31,13 @@ class SwitchNavigationState extends State<SwitchNavigation> {
 
   void showDynamicProductList() {
     setState(() {
-      _overrideScreen = DynamicProductList();
+     _overrideScreen = DynamicProductList();
+    });
+  }
+
+  void showDynamicProductContent(String uuid) {
+    setState(() {
+      _overrideScreen = DynamicContent(uuid: uuid);
     });
   }
 
