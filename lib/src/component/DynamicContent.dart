@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../repository/CartRepository.dart';
 import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
+
 
 class DynamicContent extends StatelessWidget {
   final String uuid;
@@ -21,6 +23,7 @@ class DynamicContent extends StatelessWidget {
           return Center(child: Text('Produkt nicht gefunden'));
         }
         final product = snapshot.data!;
+        final screenWidth = MediaQuery.of(context).size.width;
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -41,20 +44,26 @@ class DynamicContent extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
                 SizedBox(height: 16),
                 // Product Image
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      color: Colors.white,
-                      child: Image.network(
-                        product.imageUrl,
-                        height: 200,
-                        fit: BoxFit.contain,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Image.network(
+                            product.imageUrl,
+                            height: 200,
+                            width: screenWidth * 0.96,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -71,7 +80,30 @@ class DynamicContent extends StatelessWidget {
                 SizedBox(height: 24),
                 Row(
                   children: [
-                    Expanded(child: AddInCartButton()),
+                    Expanded(child: AddInCartButton(
+                      onPressed: () async {
+                        try {
+                          final cartRepo = CartRepository();
+                          print(uuid);
+                          await cartRepo.addToCart(uuid, 1);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Produkt zum Warenkorb hinzugefügt!')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Fehler beim Hinzufügen zum Warenkorb: ${e.toString()}',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+
+
+                    )),
                     SizedBox(width: 12),
                     Expanded(
                       child: OutlinedButton(
