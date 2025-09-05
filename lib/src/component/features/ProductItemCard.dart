@@ -42,7 +42,7 @@ class ProductItemCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 12.0, left: 8),
                         child: Container(
-                          width: 120,
+                          width: 200,
                           height: 250,
                           color: Colors.white,
                           child: InteractiveViewer(
@@ -51,8 +51,8 @@ class ProductItemCard extends StatelessWidget {
                             maxScale: 10,
                             child: ShimmerImageFromNetwork(
                               imageUrl: item.imageUrl,
-                              height: 300,
-                              width: 100,
+                              height: 200,
+                              width: 200,
                             ),
                           ),
                         ),

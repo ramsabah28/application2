@@ -38,16 +38,16 @@ class _ShimmerImageNetworkState extends State<ShimmerImageFromNetwork> {
             gradient: _shimmerGradient,
             period: const Duration(milliseconds: 500),
             child: Container(
-              width: 150,
-              height: 150,
+              width: widget.width,
+              height: widget.height,
               color: Colors.white,
             ),
           ),
         Image.network(
           widget.imageUrl,
-          width: widget.height,
-          height: widget.width,
-          fit: BoxFit.cover,
+          width: widget.width,
+          height: widget.height,
+          fit: BoxFit.contain,
           alignment: const Alignment(0, -1),
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (frame != null && !_isLoaded) {

@@ -50,7 +50,7 @@ class DynamicContent extends StatelessWidget {
                 // Product Image
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
