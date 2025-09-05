@@ -28,6 +28,20 @@ class CartRepository {
     await prefs.setString('cart', jsonEncode(cart));
   }
 
+  Future<void> removeFromCart(String uuid) async {
+    final prefs = await _prefs;
+    final cartString = prefs.getString('cart');
+    if (cartString == null || cartString.isEmpty) return;
+    Map<String, dynamic> cart = {};
+    try {
+      cart = Map<String, dynamic>.from(jsonDecode(cartString));
+    } catch (_) {
+      throw CartParseException('Failed to parse cart data from local storage.');
+    }
+    cart.remove(uuid);
+    await prefs.setString('cart', jsonEncode(cart));
+  }
+
   Future<List<CartModel>> getCart() async {
     final prefs = await _prefs;
     final cartString = prefs.getString('cart');

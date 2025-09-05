@@ -19,11 +19,15 @@ class _CartState extends State<Cart> {
     _cartFuture = CartRepository().getCart();
   }
 
-  void updateItemCount(int index, int newCount) {
-    setState(() {
-      if (newCount == 0) {
+  void updateItemCount(int index, int newCount) async {
+    final uuid = cartItems[index].uuid;
+    if (newCount == 0) {
+      setState(() {
         cartItems.removeAt(index);
-      } else {
+      });
+      await CartRepository().removeFromCart(uuid);
+    } else {
+      setState(() {
         cartItems[index] = CartModel(
           uuid: cartItems[index].uuid,
           name: cartItems[index].name,
@@ -34,8 +38,9 @@ class _CartState extends State<Cart> {
           price: cartItems[index].price,
           imageUrl: cartItems[index].imageUrl,
         );
-      }
-    });
+      });
+      await CartRepository().addToCart(uuid, newCount);
+    }
   }
 
   @override
