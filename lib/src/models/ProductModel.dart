@@ -1,4 +1,5 @@
 class ProductModel {
+  final String uuid;
   final String name;
   final String description;
   final String category;
@@ -8,6 +9,7 @@ class ProductModel {
   final String imageUrl;
 
   const ProductModel({
+    required this.uuid,
     required this.name,
     required this.description,
     required this.category,
@@ -19,6 +21,7 @@ class ProductModel {
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
+      uuid: json['uuid'],
       name: json['name'],
       description: json['description'],
       category: json['category'],

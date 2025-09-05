@@ -1,4 +1,5 @@
 class CartModel {
+  final String uuid;
   final String name;
   final String description;
   final String category;
@@ -8,6 +9,7 @@ class CartModel {
   final String imageUrl;
 
   const CartModel({
+    required this.uuid,
     required this.name,
     required this.description,
     required this.category,
@@ -19,7 +21,9 @@ class CartModel {
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
-    return CartModel(name: json['name'],
+    return CartModel(
+        uuid: json['uuid'],
+        name: json['name'],
         description: json['description'],
         category: json['category'],
         brand: json['brand'],
