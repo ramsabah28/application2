@@ -17,7 +17,6 @@ class CustomNavigationBar extends StatefulWidget {
 class _CustomNavigationBar extends State<CustomNavigationBar> {
   @override
   Widget build(BuildContext context) {
-    var Color = Theme.of(context).primaryColor;
     return NavigationBar(
       indicatorColor: Colors.white,
       selectedIndex: widget.selectedIndex,
@@ -30,15 +29,18 @@ class _CustomNavigationBar extends State<CustomNavigationBar> {
             color: Theme.of(context).primaryColor,
           ),
           label: "Home",
-          selectedIcon: Icon(Icons.home, color: Theme.of(context).primaryColor),
+          selectedIcon: Icon(
+            Icons.home,
+            color: Theme.of(context).primaryColor,
+          ),
         ),
         NavigationDestination(
           icon: Icon(
-            Icons.list_outlined,
+            Icons.search_outlined,
             color: Theme.of(context).primaryColor,
           ),
           label: 'Category',
-          selectedIcon: Icon(Icons.list, color: Theme.of(context).primaryColor),
+          selectedIcon: Icon(Icons.search, color: Theme.of(context).primaryColor),
         ),
         NavigationDestination(
           icon: Icon(
