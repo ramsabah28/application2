@@ -1,94 +1,166 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../security/user/Login.dart';
+import '../security/user/Register.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Color bgColor = const Color(0xFFF5F6FA);
+      return _ProfileAuthSwitcher();
+    }
+}
 
-    return Container(
-      color: bgColor,
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+class _ProfileAuthSwitcher extends StatefulWidget {
+  @override
+  State<_ProfileAuthSwitcher> createState() => _ProfileAuthSwitcherState();
+}
+
+class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
+  bool showRegister = false;
+
+  void _showRegister() {
+    setState(() {
+      showRegister = true;
+    });
+  }
+
+  void _showLogin() {
+    setState(() {
+      showRegister = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData) {
+          if (showRegister) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RegisterScreen(key: ValueKey('register')),
+                TextButton(
+                  onPressed: _showLogin,
+                  child: Text('Back to Login'),
+                ),
+              ],
+            );
+          }
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Bigger circular profile image
-              CircleAvatar(
-                radius: 72, // Increased from 48 to 72
-                backgroundImage: AssetImage('lib/assets/avatar.jpg'),
-              ),
-              const SizedBox(height: 32),
-              // Slightly more space below the bigger avatar
-              // Name
-              Text(
-                'John Doe',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Email
-              Text(
-                'johndoe@email.com',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).primaryColorDark,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Divider(thickness: 1.2, color: Colors.grey[300]),
-              const SizedBox(height: 24),
-              // Address
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Address',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '123 Placeholder St, City, Country',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).primaryColorDark,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Modern Buttons
-              _ProfileActionButton(
-                icon: Icons.shopping_bag_outlined,
-                label: 'Bestellungen',
-                accent: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(height: 16),
-              _ProfileActionButton(
-                icon: Icons.receipt_long_outlined,
-                label: 'Rechnungen',
-                accent: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(height: 16),
-              _ProfileActionButton(
-                icon: Icons.favorite_border,
-                label: 'Mein Favorit list',
-                accent: Theme.of(context).primaryColor,
+              LoginScreen(),
+              TextButton(
+                onPressed: _showRegister,
+                child: Text('Register'),
               ),
             ],
+          );
+        }
+        // User is logged in, show profile content
+        final Color bgColor = const Color(0xFFF5F6FA);
+        return Container(
+          color: bgColor,
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Bigger circular profile image
+                  CircleAvatar(
+                    radius: 72,
+                    backgroundImage: AssetImage('lib/assets/avatar.jpg'),
+                  ),
+                  const SizedBox(height: 32),
+                  // Name
+                  Text(
+                    'John Doe',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Email
+                  Text(
+                    'johndoe@email.com',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Divider(thickness: 1.2, color: Colors.grey[300]),
+                  const SizedBox(height: 24),
+                  // Address
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Address',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '123 Placeholder St, City, Country',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Modern Buttons
+                  _ProfileActionButton(
+                    icon: Icons.shopping_bag_outlined,
+                    label: 'Bestellungen',
+                    accent: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(height: 16),
+                  _ProfileActionButton(
+                    icon: Icons.receipt_long_outlined,
+                    label: 'Rechnungen',
+                    accent: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(height: 16),
+                  _ProfileActionButton(
+                    icon: Icons.favorite_border,
+                    label: 'Mein Favorit list',
+                    accent: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.logout),
+                    label: Text('Logout'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 48),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
