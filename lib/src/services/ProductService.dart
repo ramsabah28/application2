@@ -1,34 +1,38 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/ProductModel.dart';
 
 class ProductService {
   static Future<List<ProductModel>> loadProductData() async {
-    final String response =
-    await rootBundle.loadString('lib/src/data/product_moc.json');
-    final List<dynamic> data = json.decode(response);
-    return data.map((item) => ProductModel.fromJson(item)).toList();
-  }
-
-  static Future<ProductModel> loadProduct(String uuid) async {
-    final String response =
-    await rootBundle.loadString('lib/src/data/product_moc.json');
-    final List<dynamic> data = json.decode(response);
-
     try {
-      final productJson =
-      data.firstWhere((item) => item['uuid'] == uuid, orElse: () => null);
+      CollectionReference products = FirebaseFirestore.instance.collection(
+        'product',
+      );
+      QuerySnapshot querySnapshot = await products.get();
 
-      if (productJson == null) {
-        throw Exception("Product with uuid $uuid not found");
+      List<ProductModel> productList = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        print("###_  $data ");
+        return ProductModel.fromJson(data);
+      }).toList();
+
+      for (var p in productList) {
+        print("Fetched product: ${p.name}, price: ${p.price}");
       }
 
-      return ProductModel.fromJson(productJson);
+      return productList;
     } catch (e) {
-      throw Exception("Error loading product: $e");
+      print("Error fetching products from Firestore: $e");
+      return [];
     }
   }
 
+  static Future<ProductModel> loadProduct(String uuid) async {
+    final products = await loadProductData();
 
+    try {
+      return products.firstWhere((p) => p.uuid == uuid);
+    } catch (e) {
+      throw Exception("Product with uuid $uuid not found");
+    }
+  }
 }
