@@ -28,7 +28,6 @@ Future<void> main() async {
 
   var uuidGenerator = Uuid();
 
-  // Add products to Firestore with auto-generated document IDs
   for (var product in products) {
     try {
       product['uuid'] = uuidGenerator.v4();
