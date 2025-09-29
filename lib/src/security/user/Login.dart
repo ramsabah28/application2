@@ -1,3 +1,4 @@
+import 'package:application2/src/component/features/LoginAndRegisterButton.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -62,12 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (_errorMessage != null)
               Text(_errorMessage!, style: TextStyle(color: Colors.red)),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _login,
-              child: _isLoading
-                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text('Login'),
-            ),
+            LoginAndRegisterButton(label: "Login", onPressed: _isLoading ? null : _login),
           ],
         ),
       ),
