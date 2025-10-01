@@ -5,7 +5,7 @@ import 'Cart.dart';
 import 'MainBar.dart';
 import '../data/CustomColors.dart';
 import 'CustomNavigationBar.dart';
-import 'Profile.dart';
+import 'profile/Profile.dart';
 import 'DynamicProductList.dart';
 import 'DynamicContent.dart';
 
