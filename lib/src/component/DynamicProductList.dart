@@ -3,6 +3,7 @@ import '../models/ProductModel.dart';
 import '../services/ProductService.dart';
 import 'features/ProductItemCard.dart';
 import 'SwitchNavigation.dart';
+import 'package:flutter/widgets.dart';
 
 class DynamicProductList extends StatefulWidget {
   final int initialIndex;
@@ -15,6 +16,7 @@ class DynamicProductList extends StatefulWidget {
 class _DynamicProductListState extends State<DynamicProductList> {
   late Future<List<ProductModel>> _productsFuture;
 
+  final PageStorageKey<String> _pageStorageKey = PageStorageKey<String>('dynamicProductList');
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -45,6 +47,7 @@ class _DynamicProductListState extends State<DynamicProductList> {
 
         final products = snapshot.data!;
         return ListView.builder(
+          key: _pageStorageKey,
           controller: _scrollController,
           padding: const EdgeInsets.all(2),
           itemCount: products.length,
