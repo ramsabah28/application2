@@ -9,8 +9,8 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      return _ProfileAuthSwitcher();
-    }
+    return _ProfileAuthSwitcher();
+  }
 }
 
 class _ProfileAuthSwitcher extends StatefulWidget {
@@ -20,11 +20,13 @@ class _ProfileAuthSwitcher extends StatefulWidget {
 
 class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   bool showFavorit = false;
+
   void _showFavorit() {
     setState(() {
       showFavorit = true;
     });
   }
+
   bool showRegister = false;
 
   void _showRegister() {
@@ -55,6 +57,9 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                 RegisterScreen(key: ValueKey('register')),
                 TextButton(
                   onPressed: _showLogin,
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).primaryColorDark,
+                  ),
                   child: Text('Back to Login'),
                 ),
               ],
@@ -66,7 +71,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
               LoginScreen(),
               TextButton(
                 onPressed: _showRegister,
-                child: Text('Register'),
+                child: Text('create new account'),
               ),
             ],
           );

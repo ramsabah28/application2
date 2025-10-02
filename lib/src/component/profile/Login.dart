@@ -51,22 +51,53 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                ),
+              ),
             ),
             SizedBox(height: 16),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color:Theme.of(context).primaryColor),
+                ),
+              ),
             ),
             SizedBox(height: 24),
             if (_errorMessage != null)
-              Text(_errorMessage!, style: TextStyle(color: Colors.red)),
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: Colors.red),
+              ),
             SizedBox(height: 16),
-            LoginAndRegisterButton(label: "Login", onPressed: _isLoading ? null : _login),
+            LoginAndRegisterButton(
+              label: "Login",
+              onPressed: _isLoading ? null : _login,
+            ),
           ],
         ),
       ),
     );
   }
+
 }
