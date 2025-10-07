@@ -1,5 +1,6 @@
 import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
+import 'SearchOverlayEntry.dart';
 
 class MainBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackArrow;
@@ -9,6 +10,21 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    OverlayEntry? _searchOverlayEntry;
+
+    void hideSearchOverlay() {
+      _searchOverlayEntry?.remove();
+      _searchOverlayEntry = null;
+    }
+
+    void showSearchOverlay() {
+      if (_searchOverlayEntry != null) return;
+      _searchOverlayEntry = OverlayEntry(
+        builder: (context) => SearchOverlayEntry(onClose: hideSearchOverlay),
+      );
+      Overlay.of(context).insert(_searchOverlayEntry!);
+    }
+
     return AppBar(
       backgroundColor: CustomColors.secondary,
       elevation: 0,
@@ -34,9 +50,18 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
             const Icon(Icons.search, color: Colors.grey),
             const SizedBox(width: 8),
             Expanded(
-              child: TextField(
-                decoration: const InputDecoration(border: InputBorder.none),
-                style: const TextStyle(fontSize: 16),
+              child: Focus(
+                onFocusChange: (hasFocus) {
+                  if (hasFocus) {
+                    showSearchOverlay();
+                  } else {
+                    hideSearchOverlay();
+                  }
+                },
+                child: TextField(
+                  decoration: const InputDecoration(border: InputBorder.none),
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
             ),
           ],

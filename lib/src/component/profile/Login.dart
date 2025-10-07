@@ -1,3 +1,4 @@
+import 'package:application2/src/component/features/LoginAndRegisterButton.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -48,29 +49,60 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'lib/assets/Logo.png',
+              height: 200,
+            ),
+            SizedBox(height: 100),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                ),
+              ),
             ),
             SizedBox(height: 16),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color:Theme.of(context).primaryColor),
+                ),
+              ),
             ),
             SizedBox(height: 24),
             if (_errorMessage != null)
-              Text(_errorMessage!, style: TextStyle(color: Colors.red)),
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: Colors.red),
+              ),
             SizedBox(height: 16),
-            ElevatedButton(
+            LoginAndRegisterButton(
+              label: "Login",
               onPressed: _isLoading ? null : _login,
-              child: _isLoading
-                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text('Login'),
             ),
           ],
         ),
       ),
     );
   }
+
 }

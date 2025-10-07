@@ -27,12 +27,15 @@ class ProductService {
   }
 
   static Future<ProductModel> loadProduct(String uuid) async {
-    final products = await loadProductData();
-
     try {
-      return products.firstWhere((p) => p.uuid == uuid);
+      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('product').doc(uuid).get();
+      if (!doc.exists) {
+        throw Exception("Product with uuid $uuid not found");
+      }
+      final data = doc.data() as Map<String, dynamic>;
+      return ProductModel.fromJson(data);
     } catch (e) {
-      throw Exception("Product with uuid $uuid not found");
+      throw Exception("Error fetching product with uuid $uuid: $e");
     }
   }
 }

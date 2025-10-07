@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/ProductModel.dart';
 import '../services/ProductService.dart';
 import 'features/ProductItemCard.dart';
+import 'SwitchNavigation.dart';
+import 'package:flutter/widgets.dart';
 
 class DynamicProductList extends StatefulWidget {
-  const DynamicProductList({Key? key}) : super(key: key);
+  final int initialIndex;
+  const DynamicProductList({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<DynamicProductList> createState() => _DynamicProductListState();
@@ -13,10 +16,18 @@ class DynamicProductList extends StatefulWidget {
 class _DynamicProductListState extends State<DynamicProductList> {
   late Future<List<ProductModel>> _productsFuture;
 
+  final PageStorageKey<String> _pageStorageKey = PageStorageKey<String>('dynamicProductList');
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     _productsFuture = ProductService.loadProductData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(widget.initialIndex * 100.0);
+      }
+    });
   }
 
   @override
@@ -36,11 +47,20 @@ class _DynamicProductListState extends State<DynamicProductList> {
 
         final products = snapshot.data!;
         return ListView.builder(
+          key: _pageStorageKey,
+          controller: _scrollController,
           padding: const EdgeInsets.all(2),
           itemCount: products.length,
           itemBuilder: (context, index) {
             final product = products[index];
-            return ProductItemCard(item: product, uuid: product.uuid);
+            return ProductItemCard(
+              item: product,
+              uuid: product.uuid,
+              onTap: () {
+                final navState = context.findAncestorStateOfType<SwitchNavigationState>();
+                navState?.showDynamicProductContent(product.uuid, productIndex: index);
+              },
+            );
           },
         );
       },

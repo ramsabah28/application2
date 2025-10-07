@@ -50,7 +50,7 @@ dev_dependencies:
   flutter_launcher_icons: 0.14.4
 
 flutter_icons:
-  image_path: lib/assets/Vector.png
+  image_path: lib/assets/Logo.png
   android: true
   ios: true
 

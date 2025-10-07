@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../security/user/Login.dart';
-import '../security/user/Register.dart';
+import 'Login.dart';
+import 'Register.dart';
+import 'Favorit.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
-      return _ProfileAuthSwitcher();
-    }
+    return _ProfileAuthSwitcher();
+  }
 }
 
 class _ProfileAuthSwitcher extends StatefulWidget {
@@ -18,6 +19,14 @@ class _ProfileAuthSwitcher extends StatefulWidget {
 }
 
 class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
+  bool showFavorit = false;
+
+  void _showFavorit() {
+    setState(() {
+      showFavorit = true;
+    });
+  }
+
   bool showRegister = false;
 
   void _showRegister() {
@@ -48,6 +57,9 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                 RegisterScreen(key: ValueKey('register')),
                 TextButton(
                   onPressed: _showLogin,
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).primaryColorDark,
+                  ),
                   child: Text('Back to Login'),
                 ),
               ],
@@ -59,12 +71,15 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
               LoginScreen(),
               TextButton(
                 onPressed: _showRegister,
-                child: Text('Register'),
+                child: Text('create new account'),
               ),
             ],
           );
         }
-        // User is logged in, show profile content
+        // User is logged in
+        if (showFavorit) {
+          return Favorit();
+        }
         final Color bgColor = const Color(0xFFF5F6FA);
         return Container(
           color: bgColor,
@@ -142,6 +157,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                     icon: Icons.favorite_border,
                     label: 'Mein Favorit list',
                     accent: Theme.of(context).primaryColor,
+                    onTap: _showFavorit,
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
@@ -169,11 +185,13 @@ class _ProfileActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color accent;
+  final VoidCallback? onTap;
 
   const _ProfileActionButton({
     required this.icon,
     required this.label,
     required this.accent,
+    this.onTap,
   });
 
   @override
@@ -183,7 +201,7 @@ class _ProfileActionButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),

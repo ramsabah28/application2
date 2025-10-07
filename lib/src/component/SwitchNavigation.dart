@@ -5,7 +5,7 @@ import 'Cart.dart';
 import 'MainBar.dart';
 import '../data/CustomColors.dart';
 import 'CustomNavigationBar.dart';
-import 'Profile.dart';
+import 'profile/Profile.dart';
 import 'DynamicProductList.dart';
 import 'DynamicContent.dart';
 
@@ -21,6 +21,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
 
   final List<Widget> _screens = [Home(), Category(), Cart(), Profile()];
   Widget? _overrideScreen;
+  int? _lastProductIndex;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,9 +36,10 @@ class SwitchNavigationState extends State<SwitchNavigation> {
     });
   }
 
-  void showDynamicProductContent(String uuid) {
+  void showDynamicProductContent(String uuid, {int? productIndex}) {
     setState(() {
       _overrideScreen = DynamicContent(uuid: uuid);
+      _lastProductIndex = productIndex;
     });
   }
 
@@ -55,7 +57,13 @@ class SwitchNavigationState extends State<SwitchNavigation> {
               showBackArrow: true,
               onBack: () {
                 setState(() {
-                  _overrideScreen = null;
+                  if (_overrideScreen is DynamicContent) {
+                    _overrideScreen = DynamicProductList(
+                      initialIndex: _lastProductIndex ?? 0,
+                    );
+                  } else {
+                    _overrideScreen = null;
+                  }
                 });
               },
             )
