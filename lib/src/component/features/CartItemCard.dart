@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/CartModel.dart';
-import 'CountButton.dart';
+// import 'CountButton.dart';
 
 class CartItemCard extends StatefulWidget {
   final CartModel item;
@@ -71,10 +71,27 @@ class _CartItemCardState extends State<CartItemCard> {
                 ),
               ),
               SizedBox(height: 8),
-              CountButton(
-                count: count,
-                onIncrement: _increment,
-                onDecrement: _decrement,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  count == 1
+                      ? IconButton(
+                          icon: Icon(Icons.delete_outline),
+                          onPressed: () => _decrement(),
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.remove_outlined),
+                          onPressed: () => _decrement(),
+                        ),
+                  Text(
+                    '$count',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: _increment,
+                  ),
+                ],
               ),
             ],
           ),
