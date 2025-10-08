@@ -1,3 +1,5 @@
+import 'package:application2/src/models/ProductModel.dart';
+import '../features/FavoritItemCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/ProductService.dart';
@@ -10,7 +12,7 @@ class Favorit extends StatefulWidget {
 }
 
 class _FavoritState extends State<Favorit> {
-  // List<String> _favoriteUuids = [];
+
   bool _loading = true;
   List<dynamic> _favoriteProducts = [];
 
@@ -23,7 +25,7 @@ class _FavoritState extends State<Favorit> {
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final uuids = prefs.getStringList('favorites') ?? [];
-    List<dynamic> products = [];
+    List<ProductModel> products = [];
     for (final uuid in uuids) {
       try {
         final product = await ProductService.loadProduct(uuid);
@@ -55,11 +57,16 @@ class _FavoritState extends State<Favorit> {
       itemCount: _favoriteProducts.length,
       itemBuilder: (context, index) {
         final product = _favoriteProducts[index];
-        return Center(
-          child: Text(product),
+        return FavoritItemCard(
+          product: product,
+          onRemove: () {
+            setState(() {
+              _favoriteProducts.removeAt(index);
+            });
+            // Optionally, remove from SharedPreferences here
+          },
         );
       },
     );
   }
 }
-// Duplicate build method removed

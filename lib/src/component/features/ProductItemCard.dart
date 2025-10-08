@@ -6,7 +6,7 @@ import 'AddInCartButton.dart';
 import 'FavButton.dart';
 import 'Rating.dart';
 import '../../component/features/ShimmerImageFromNetwork.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/FavoritService.dart';
 
 class ProductItemCard extends StatelessWidget {
   final ProductModel item;
@@ -116,19 +116,14 @@ class ProductItemCard extends StatelessWidget {
                 children: [
                   FavButton(
                     onPressed: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      List<String> favs = prefs.getStringList('favorites') ?? [];
-                      if (!favs.contains(uuid)) {
-                        favs.add(uuid);
-                        await prefs.setStringList('favorites', favs);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Zu Favoriten hinzugefügt!')),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Bereits in Favoriten!')),
-                        );
-                      }
+                      final added = await FavoritService.addToFavorites(uuid);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            added ? 'Zu Favoriten hinzugefügt!' : 'Bereits in Favoriten!'
+                          ),
+                        ),
+                      );
                     },
                   ),
                   SizedBox(width: 8),
