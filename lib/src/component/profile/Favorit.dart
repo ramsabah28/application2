@@ -3,6 +3,7 @@ import '../features/FavoritItemCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/ProductService.dart';
+import '../../services/FavoritService.dart';
 
 class Favorit extends StatefulWidget {
   const Favorit({Key? key}) : super(key: key);
@@ -59,11 +60,11 @@ class _FavoritState extends State<Favorit> {
         final product = _favoriteProducts[index];
         return FavoritItemCard(
           product: product,
-          onRemove: () {
+          onRemove: () async {
+            await FavoritService.removeFromFavorites(product.uuid);
             setState(() {
               _favoriteProducts.removeAt(index);
             });
-            // Optionally, remove from SharedPreferences here
           },
         );
       },
