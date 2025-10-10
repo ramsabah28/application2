@@ -3,37 +3,58 @@ import 'package:flutter/material.dart';
 import '../services/ProductService.dart';
 import 'SearchOverlayEntry.dart';
 
-class MainBar extends StatelessWidget implements PreferredSizeWidget {
+class MainBar extends StatefulWidget implements PreferredSizeWidget {
   final bool showBackArrow;
   final VoidCallback? onBack;
 
   const MainBar({super.key, this.showBackArrow = false, this.onBack});
 
   @override
+  State<MainBar> createState() => _MainBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _MainBarState extends State<MainBar> {
+  OverlayEntry? _searchOverlayEntry;
+  List searchResults = [];
+
+  void hideSearchOverlay() {
+    _searchOverlayEntry?.remove();
+    _searchOverlayEntry = null;
+  }
+
+  void showSearchOverlay() {
+    if (_searchOverlayEntry != null) return;
+    _searchOverlayEntry = OverlayEntry(
+      builder: (context) => SearchOverlayEntry(
+        onClose: hideSearchOverlay,
+        results: searchResults,
+      ),
+    );
+    Overlay.of(context).insert(_searchOverlayEntry!);
+  }
+
+  void updateSearchOverlay(List results) {
+    setState(() {
+      searchResults = results;
+    });
+    if (_searchOverlayEntry != null) {
+      _searchOverlayEntry!.markNeedsBuild();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    OverlayEntry? _searchOverlayEntry;
-
-    void hideSearchOverlay() {
-      _searchOverlayEntry?.remove();
-      _searchOverlayEntry = null;
-    }
-
-    void showSearchOverlay() {
-      if (_searchOverlayEntry != null) return;
-      _searchOverlayEntry = OverlayEntry(
-        builder: (context) => SearchOverlayEntry(onClose: hideSearchOverlay),
-      );
-      Overlay.of(context).insert(_searchOverlayEntry!);
-    }
-
     return AppBar(
       backgroundColor: CustomColors.secondary,
       elevation: 0,
-      leading: showBackArrow
+  leading: widget.showBackArrow
           ? IconButton(
               icon: Icon(Icons.arrow_back, color: CustomColors.primery),
               onPressed:
-                  onBack ??
+                  widget.onBack ??
                   () {
                     Navigator.of(context).maybePop();
                   },
@@ -69,11 +90,14 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
                     showSearchOverlay();
                   },
                   onChanged: (value) async {
-                    // Firestore search by product name
                     if (value.isNotEmpty) {
                       final results = await ProductService.searchProducts(value);
-                      // TODO: show the result as
-                      print('Search results: \\n' + results.map((e) => e.name).join(', '));
+                      updateSearchOverlay(results);
+                      if (_searchOverlayEntry == null) {
+                        showSearchOverlay();
+                      }
+                    } else {
+                      updateSearchOverlay([]);
                     }
                   },
                   onEditingComplete: () {
