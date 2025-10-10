@@ -21,14 +21,16 @@ class BillService {
       final hour = now.hour.toString().padLeft(2, '0');
       final minute = now.minute.toString().padLeft(2, '0');
       final second = now.second.toString().padLeft(2, '0');
-      final randomTwoDigits = (Random().nextInt(90) + 10).toString(); // safer randomness
+      final randomTwoDigits = (Random().nextInt(90) + 10).toString();
 
       final bid = '$year$month$day$hour$minute$second$randomTwoDigits';
 
-      await FirebaseFirestore.instance.collection('bills').doc(uuid).set({
+      final billRef = FirebaseFirestore.instance.collection('bills').doc(uuid);
+
+      await billRef.set({
         'uuid': uuid,
         'userId': model.UID,
-        'pid': model.PID,
+        'pid': model.items.map((i) => i.pid).toList(),
         'bid': bid,
         'price': model.price,
         'count': model.count,
@@ -38,7 +40,20 @@ class BillService {
           'day': now.day,
         },
         'createdAt': FieldValue.serverTimestamp(),
+        'paid':false
       });
+
+      // Write subcollection per PID with count and price
+      final batch = FirebaseFirestore.instance.batch();
+      for (final item in model.items) {
+        final itemRef = billRef.collection('items').doc(item.pid);
+        batch.set(itemRef, {
+          'pid': item.pid,
+          'count': item.count,
+          'price': item.price,
+        });
+      }
+      await batch.commit();
     } catch (e) {
       throw Exception('Fehler beim Speichern der Rechnung: $e');
     }

@@ -1,9 +1,21 @@
+class BillItem {
+  final String pid;
+  final int count;
+  final double price;
+
+  const BillItem({
+    required this.pid,
+    required this.count,
+    required this.price,
+  });
+}
+
 class BillModel {
   final String uuid;
   final String UID;
-  final String PID;
-  final int count;
-  final double price;
+  final List<BillItem> items;
+  final int count; // total items count
+  final double price; // total price for the bill
   final int BID;
   final String date;
 
@@ -12,7 +24,7 @@ class BillModel {
     required this.count,
     required this.price,
     required this.BID,
-    required this.PID,
+    required this.items,
     required this.UID,
     required this.date
   });
