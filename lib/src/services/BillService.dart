@@ -34,16 +34,11 @@ class BillService {
         'bid': bid,
         'price': model.price,
         'count': model.count,
-        'date': {
-          'year': now.year,
-          'month': now.month,
-          'day': now.day,
-        },
+        'date': {'year': now.year, 'month': now.month, 'day': now.day},
         'createdAt': FieldValue.serverTimestamp(),
-        'paid':false
+        'paid': false,
       });
 
-      // Write subcollection per PID with count and price
       final batch = FirebaseFirestore.instance.batch();
       for (final item in model.items) {
         final itemRef = billRef.collection('items').doc(item.pid);
