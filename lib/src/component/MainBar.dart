@@ -1,5 +1,6 @@
 import 'package:application2/src/data/CustomColors.dart';
 import 'package:flutter/material.dart';
+import '../services/ProductService.dart';
 import 'SearchOverlayEntry.dart';
 
 class MainBar extends StatelessWidget implements PreferredSizeWidget {
@@ -59,8 +60,25 @@ class MainBar extends StatelessWidget implements PreferredSizeWidget {
                   }
                 },
                 child: TextField(
-                  decoration: const InputDecoration(border: InputBorder.none),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Search...',
+                  ),
                   style: const TextStyle(fontSize: 16),
+                  onTap: () {
+                    showSearchOverlay();
+                  },
+                  onChanged: (value) async {
+                    // Firestore search by product name
+                    if (value.isNotEmpty) {
+                      final results = await ProductService.searchProducts(value);
+                      // TODO: show the result as
+                      print('Search results: \\n' + results.map((e) => e.name).join(', '));
+                    }
+                  },
+                  onEditingComplete: () {
+                    hideSearchOverlay();
+                  },
                 ),
               ),
             ),
