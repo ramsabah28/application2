@@ -4,8 +4,6 @@ import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
 import 'dart:ui';
-import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
-
 
 class DynamicContent extends StatelessWidget {
   final String uuid;

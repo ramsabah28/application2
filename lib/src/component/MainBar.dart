@@ -19,6 +19,7 @@ class MainBar extends StatefulWidget implements PreferredSizeWidget {
 class _MainBarState extends State<MainBar> {
   OverlayEntry? _searchOverlayEntry;
   List searchResults = [];
+  final GlobalKey _searchBarKey = GlobalKey();
 
   void hideSearchOverlay() {
     _searchOverlayEntry?.remove();
@@ -27,10 +28,31 @@ class _MainBarState extends State<MainBar> {
 
   void showSearchOverlay() {
     if (_searchOverlayEntry != null) return;
+    final RenderBox renderBox =
+        _searchBarKey.currentContext?.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double navBarHeight = kBottomNavigationBarHeight;
+
+    const double topMargin = 8.0;
+    final double appBarBottom = offset.dy + size.height + topMargin;
+
+    const double bottomMargin = 8.0;
     _searchOverlayEntry = OverlayEntry(
-      builder: (context) => SearchOverlayEntry(
-        onClose: hideSearchOverlay,
-        results: searchResults,
+      builder: (context) => Positioned(
+        left: 0,
+        top: appBarBottom,
+        width: screenWidth,
+        bottom: navBarHeight + bottomMargin,
+        child: Material(
+          color: Colors.transparent,
+          child: SearchOverlayEntry(
+            onClose: hideSearchOverlay,
+            results: searchResults,
+            parentContext: this.context,
+          ),
+        ),
       ),
     );
     Overlay.of(context).insert(_searchOverlayEntry!);
@@ -50,7 +72,7 @@ class _MainBarState extends State<MainBar> {
     return AppBar(
       backgroundColor: CustomColors.secondary,
       elevation: 0,
-  leading: widget.showBackArrow
+      leading: widget.showBackArrow
           ? IconButton(
               icon: Icon(Icons.arrow_back, color: CustomColors.primery),
               onPressed:
@@ -61,6 +83,7 @@ class _MainBarState extends State<MainBar> {
             )
           : null,
       title: Container(
+        key: _searchBarKey,
         height: 30,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -91,7 +114,9 @@ class _MainBarState extends State<MainBar> {
                   },
                   onChanged: (value) async {
                     if (value.isNotEmpty) {
-                      final results = await ProductService.searchProducts(value);
+                      final results = await ProductService.searchProducts(
+                        value,
+                      );
                       updateSearchOverlay(results);
                       if (_searchOverlayEntry == null) {
                         showSearchOverlay();
