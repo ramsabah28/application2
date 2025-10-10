@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -20,10 +21,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _errorMessage = null;
     });
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      // Extract UID and username (identifier)
+      String uid = userCredential.user?.uid ?? '';
+      String email = _emailController.text.trim();
+      String username = email.contains('@') ? email.split('@')[0] : email;
+
+      // Create user document in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'uid': uid,
+        'username': username,
+        'email': email,
+        // Add more fields as needed
+      });
       // TODO: Navigate to home or show success
     } on FirebaseAuthException catch (e) {
       setState(() {
