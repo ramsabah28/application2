@@ -4,6 +4,7 @@ import 'Login.dart';
 import 'Register.dart';
 import 'Favorit.dart';
 import 'Adress.dart';
+import '../features/StandardButton.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -20,7 +21,6 @@ class _ProfileAuthSwitcher extends StatefulWidget {
 }
 
 class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
-
   bool showFavorit = false;
   bool showAdress = false;
 
@@ -156,13 +156,9 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                     onTap: _showFavorit,
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton.icon(
+                  StandardButton(
                     icon: Icon(Icons.logout),
-                    label: Text('Logout'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 48),
-                      textStyle: TextStyle(fontSize: 18),
-                    ),
+                    backgroundColor: Theme.of(context).primaryColorDark,
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
                     },

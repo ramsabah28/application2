@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/AdressModel.dart';
 import '../../services/AdressService.dart';
+import '../features/StandardButton.dart';
 
 class AdressScreen extends StatefulWidget {
   const AdressScreen({Key? key}) : super(key: key);
@@ -33,7 +34,10 @@ class _AdressScreenState extends State<AdressScreen> {
     if (user == null) return;
 
     try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       if (!doc.exists) return;
 
       final data = doc.data() ?? {};
@@ -54,8 +58,9 @@ class _AdressScreenState extends State<AdressScreen> {
         _streetController.text = _adressModel!.street;
         _zipController.text = _adressModel!.zip;
         _cityController.text = _adressModel!.city;
-        _phoneController.text =
-        _adressModel!.phoneNumber == 0 ? '' : _adressModel!.phoneNumber.toString();
+        _phoneController.text = _adressModel!.phoneNumber == 0
+            ? ''
+            : _adressModel!.phoneNumber.toString();
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,9 +72,9 @@ class _AdressScreenState extends State<AdressScreen> {
   Future<void> _saveAdressData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nicht eingeloggt!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Nicht eingeloggt!')));
       return;
     }
 
@@ -92,13 +97,13 @@ class _AdressScreenState extends State<AdressScreen> {
         _editMode = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Adresse gespeichert!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Adresse gespeichert!')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -107,51 +112,62 @@ class _AdressScreenState extends State<AdressScreen> {
     return _adressModel == null
         ? const Center(child: CircularProgressIndicator())
         : Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Adressdaten',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _editMode = !_editMode;
-                  });
-                },
-                icon: Icon(_editMode ? Icons.close : Icons.edit),
-                tooltip: _editMode
-                    ? 'Bearbeiten deaktivieren'
-                    : 'Bearbeiten aktivieren',
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildTextField('Name', _nameController),
-          _buildTextField('Nachname', _nachnameController),
-          _buildTextField('Straße', _streetController),
-          _buildTextField('PLZ', _zipController,
-              keyboardType: TextInputType.number),
-          _buildTextField('Stadt', _cityController),
-          _buildTextField('Telefonnummer', _phoneController,
-              keyboardType: TextInputType.phone),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _editMode ? _saveAdressData : null,
-            child: const Text('Speichern'),
-          ),
-        ],
-      ),
-    );
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Adressdaten',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _editMode = !_editMode;
+                        });
+                      },
+                      icon: Icon(_editMode ? Icons.close : Icons.edit),
+                      tooltip: _editMode
+                          ? 'Bearbeiten deaktivieren'
+                          : 'Bearbeiten aktivieren',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildTextField('Name', _nameController),
+                _buildTextField('Nachname', _nachnameController),
+                _buildTextField('Straße', _streetController),
+                _buildTextField(
+                  'PLZ',
+                  _zipController,
+                  keyboardType: TextInputType.number,
+                ),
+                _buildTextField('Stadt', _cityController),
+                _buildTextField(
+                  'Telefonnummer',
+                  _phoneController,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 24),
+                StandardButton(
+                  icon: Icon(Icons.save_sharp, color: Theme.of(context).primaryColorDark),
+                  onPressed: _editMode ? _saveAdressData : null,
+                  backgroundColor: Theme.of(context).primaryColorLight,
+
+                ),
+              ],
+            ),
+          );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller,
-      {TextInputType? keyboardType}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    TextInputType? keyboardType,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: TextField(
