@@ -66,4 +66,36 @@ class InvoiceService {
       throw Exception('Fehler beim Speichern der Rechnung mit Positionen: $e');
     }
   }
+
+  static Stream<List<InvoiceModel>> watchInvoicesByUser(String uid) {
+    return FirebaseFirestore.instance
+        .collection('invoices')
+        .where('userId', isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) {
+          final invoices = snapshot.docs.map((doc) {
+            final data = doc.data();
+            final dateMap = data['date'] as Map<String, dynamic>?;
+            final dateString = dateMap == null
+                ? ''
+                : '${dateMap['year']}-${dateMap['month']}-${dateMap['day']}';
+            final createdAt = data['createdAt'] as Timestamp?;
+            return MapEntry(
+              createdAt ?? Timestamp.now(),
+              InvoiceModel(
+                UUID: data['uuid'] as String? ?? doc.id,
+                UID: data['userId'] as String? ?? '',
+                PID: data['pid'] as String? ?? '',
+                count: (data['count'] as num?)?.toInt() ?? 0,
+                price: (data['price'] as num?)?.toDouble() ?? 0.0,
+                date: dateString,
+                paid: (data['paid'] as bool?) ?? false,
+              ),
+            );
+          }).toList();
+
+          invoices.sort((a, b) => b.key.compareTo(a.key));
+          return invoices.map((entry) => entry.value).toList();
+        });
+  }
 }

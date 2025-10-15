@@ -1,3 +1,4 @@
+import 'package:application2/src/component/profile/Invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Login.dart';
@@ -23,6 +24,7 @@ class _ProfileAuthSwitcher extends StatefulWidget {
 class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   bool showFavorit = false;
   bool showAdress = false;
+  bool showInvoice = false;
 
   void _showFavorit() {
     setState(() {
@@ -47,6 +49,12 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   void _showLogin() {
     setState(() {
       showRegister = false;
+    });
+  }
+
+  void _showInvoice() {
+    setState(() {
+      showInvoice = true;
     });
   }
 
@@ -92,6 +100,11 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
         if (showAdress) {
           return AdressScreen();
         }
+
+        if (showInvoice) {
+          return Invoice();
+        }
+
         final Color bgColor = const Color(0xFFF5F6FA);
         return Container(
           color: bgColor,
@@ -147,6 +160,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                     icon: Icons.receipt_long_outlined,
                     label: 'Rechnungen',
                     accent: Theme.of(context).primaryColor,
+                    onTap: _showInvoice,
                   ),
                   const SizedBox(height: 16),
                   _ProfileActionButton(
@@ -157,7 +171,10 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   ),
                   const SizedBox(height: 32),
                   StandardButton(
-                    icon: Icon(Icons.logout, color: Theme.of(context).primaryColor),
+                    icon: Icon(
+                      Icons.logout,
+                      color: Theme.of(context).primaryColor,
+                    ),
                     backgroundColor: Theme.of(context).primaryColorDark,
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
