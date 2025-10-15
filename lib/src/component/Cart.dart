@@ -6,6 +6,8 @@ import 'features/PayKnowButton.dart';
 import '../services/BillService.dart';
 import '../models/BillModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/InvoiceService.dart';
+import '../models/InvoiceModel.dart';
 
 class Cart extends StatefulWidget {
   const Cart({Key? key}) : super(key: key);
@@ -121,7 +123,7 @@ class _CartState extends State<Cart> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  PayKnowButton(
+                  PayNowButton(
                     onPressed: () async {
                       final user = FirebaseAuth.instance.currentUser;
                       if (user == null) {
@@ -148,6 +150,23 @@ class _CartState extends State<Cart> {
 
                       try {
                         await BillService.addBill(bill);
+                        final invoice = InvoiceModel(
+                          UUID: '',
+                          UID: user.uid,
+                          PID: 'multiple',
+                          count: totalItemsCount,
+                          price: grandTotal,
+                          date: '',
+                          paid: false,
+                        );
+                        final invoiceItems = cartItems
+                            .map((ci) => {
+                                  'product': ci.uuid,
+                                  'price': ci.price,
+                                  'count': ci.count,
+                                })
+                            .toList();
+                        await InvoiceService.addInvoiceWithItems(invoice, invoiceItems);
                         await CartRepository().clearCart();
                         setState(() {
                           _cartFuture = CartRepository().getCart();

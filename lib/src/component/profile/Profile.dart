@@ -157,7 +157,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   ),
                   const SizedBox(height: 32),
                   StandardButton(
-                    icon: Icon(Icons.logout),
+                    icon: Icon(Icons.logout, color: Theme.of(context).primaryColor),
                     backgroundColor: Theme.of(context).primaryColorDark,
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();

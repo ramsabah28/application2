@@ -153,7 +153,7 @@ class _AdressScreenState extends State<AdressScreen> {
                 ),
                 const SizedBox(height: 24),
                 StandardButton(
-                  icon: Icon(Icons.save_sharp, color: Theme.of(context).primaryColorDark),
+                  icon: Icon(Icons.save_sharp, color: _editMode ? Theme.of(context).primaryColor : Theme.of(context).primaryColorLight),
                   onPressed: _editMode ? _saveAdressData : null,
                   backgroundColor: Theme.of(context).primaryColorLight,
 

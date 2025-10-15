@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 
-class PayKnowButton extends StatelessWidget {
+class PayNowButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String label;
 
-  const PayKnowButton({Key? key, this.onPressed, this.label = 'Jetzt Kaufen'})
+  const PayNowButton({Key? key, this.onPressed, this.label = 'Jetzt Kaufen'})
     : super(key: key);
 
   @override
