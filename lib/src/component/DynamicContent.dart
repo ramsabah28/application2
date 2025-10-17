@@ -6,6 +6,7 @@ import '../services/ProductService.dart';
 import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
 import 'package:shimmer/shimmer.dart';
+import 'features/FullscreenImageViewer.dart';
 
 class DynamicContent extends StatelessWidget {
   final String uuid;
@@ -216,17 +217,34 @@ class DynamicContent extends StatelessWidget {
                                       .map<String>((e) => (e as Map)['url'].toString())
                                 ];
                                 final uniqueUrls = urls.toSet().toList();
-                                return PageView(
-                                  children: uniqueUrls
-                                      .map((u) => Center(
-                                            child: ShimmerImageFromNetwork(
-                                              imageUrl: u,
-                                              height: 200,
-                                              width: screenWidth * 0.96,
-                                              shimmerBottomInset: 12,
+                                return PageView.builder(
+                                  itemCount: uniqueUrls.length,
+                                  itemBuilder: (context, idx) {
+                                    final u = uniqueUrls[idx];
+                                    return Center(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => FullscreenImageViewer(
+                                                imageUrls: uniqueUrls,
+                                                initialIndex: idx,
+                                              ),
                                             ),
-                                          ))
-                                      .toList(),
+                                          );
+                                        },
+                                        child: Hero(
+                                          tag: 'image_viewer_${idx}_$u',
+                                          child: ShimmerImageFromNetwork(
+                                            imageUrl: u,
+                                            height: 200,
+                                            width: screenWidth * 0.96,
+                                            shimmerBottomInset: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             ),
