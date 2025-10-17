@@ -16,6 +16,12 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
   final TransformationController _transformationController = TransformationController();
   TapDownDetails? _doubleTapDetails;
   Size? _childSize;
+  bool _isZoomed = false;
+
+  double _currentScale() {
+    final Matrix4 v = _transformationController.value;
+    return v.getMaxScaleOnAxis();
+  }
 
   @override
   void initState() {
@@ -46,9 +52,11 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
       ),
       body: PageView.builder(
         controller: _pageController,
+        physics: _isZoomed ? const NeverScrollableScrollPhysics() : const PageScrollPhysics(),
         onPageChanged: (i) {
           setState(() => _currentIndex = i);
           _transformationController.value = Matrix4.identity();
+          _isZoomed = false;
         },
         itemCount: widget.imageUrls.length,
         itemBuilder: (context, index) {
@@ -60,6 +68,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
               final bool isZoomed = current != Matrix4.identity();
               if (isZoomed) {
                 _transformationController.value = Matrix4.identity();
+                setState(() => _isZoomed = false);
               } else {
                 final Size size = _childSize ?? MediaQuery.of(context).size;
                 final Offset center = Offset(size.width / 2, size.height / 2);
@@ -68,6 +77,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
                   ..scale(2.0)
                   ..translate(-center.dx, -center.dy);
                 _transformationController.value = m;
+                setState(() => _isZoomed = true);
               }
             },
             child: InteractiveViewer(
@@ -75,6 +85,26 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
               minScale: 1.0,
               maxScale: 4.0,
               boundaryMargin: const EdgeInsets.all(80),
+              panEnabled: true,
+              scaleEnabled: true,
+              onInteractionStart: (_) {
+                final bool nowZoomed = _currentScale() > 1.01;
+                if (nowZoomed != _isZoomed) {
+                  setState(() => _isZoomed = nowZoomed);
+                }
+              },
+              onInteractionUpdate: (_) {
+                final bool nowZoomed = _currentScale() > 1.01;
+                if (nowZoomed != _isZoomed) {
+                  setState(() => _isZoomed = nowZoomed);
+                }
+              },
+              onInteractionEnd: (_) {
+                final bool nowZoomed = _currentScale() > 1.01;
+                if (nowZoomed != _isZoomed) {
+                  setState(() => _isZoomed = nowZoomed);
+                }
+              },
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   _childSize = constraints.biggest;
