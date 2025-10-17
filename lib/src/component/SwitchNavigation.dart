@@ -30,9 +30,9 @@ class SwitchNavigationState extends State<SwitchNavigation> {
     });
   }
 
-  void showDynamicProductList() {
+  void showDynamicProductList({String? category}) {
     setState(() {
-     _overrideScreen = DynamicProductList();
+     _overrideScreen = DynamicProductList(category: category);
     });
   }
 

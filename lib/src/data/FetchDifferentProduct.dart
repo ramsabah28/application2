@@ -15,18 +15,17 @@ Future<void> main() async {
   var uuidGenerator = Uuid();
   var random = Random();
 
-  // Some example categories and brands
   final categories = [
-    "tech",
-    "fashion",
-    "home",
-    "sports",
-    "toys",
-    "beauty",
-    "garden",
-    "books",
-    "automotive",
-    "office"
+    "Multimedia",
+    "Fashion",
+    "Home",
+    "Sport",
+    "Toys",
+    "Beauty",
+    "Garden",
+    "Books",
+    "Automotive",
+    "Office"
   ];
 
   final brands = [
@@ -42,7 +41,6 @@ Future<void> main() async {
     "Philips"
   ];
 
-  // Generate and upload 1000 products
   for (var i = 0; i < 1000; i++) {
     try {
       final uuid = uuidGenerator.v4();

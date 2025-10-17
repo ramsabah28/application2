@@ -45,6 +45,25 @@ class ProductService {
     }
   }
 
+  static Future<List<ProductModel>> loadProductsByCategory(String category) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('product')
+          .where('category', isEqualTo: category)
+          .get();
+
+      List<ProductModel> productList = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return ProductModel.fromJson(data);
+      }).toList();
+
+      return productList;
+    } catch (e) {
+      print("Error fetching products by category '$category' from Firestore: $e");
+      return [];
+    }
+  }
+
   static Future<ProductModel> loadProduct(String uuid) async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance.collection('product').doc(uuid).get();

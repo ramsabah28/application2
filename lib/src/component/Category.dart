@@ -15,6 +15,33 @@ class _Category extends State<Category> {
   List<CategoryModel> categories = [];
   bool isLoading = true;
 
+  String _mapCategoryKey(String displayName) {
+    switch (displayName.trim()) {
+      case 'Multimedia':
+        return 'Multimedia';
+      case 'Fashion':
+        return 'Fashion';
+      case 'Home':
+        return 'Home';
+      case 'Sport':
+        return 'Sport';
+      case 'Books':
+        return 'Books';
+      case 'Toys':
+        return 'Toys';
+      case 'Beauty':
+        return 'Beauty';
+      case 'Garden':
+        return 'Garden';
+      case 'Automotive':
+        return 'Automotive';
+      case 'Office':
+        return 'Office';
+      default:
+        return displayName.trim().toLowerCase();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +87,8 @@ class _Category extends State<Category> {
             onTap: () {
               final state = context
                   .findAncestorStateOfType<SwitchNavigationState>();
-              state?.showDynamicProductList();
+              final key = _mapCategoryKey(category.name);
+              state?.showDynamicProductList(category: key);
             },
             child: Row(
               children: [

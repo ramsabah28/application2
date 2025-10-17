@@ -7,7 +7,8 @@ import 'package:flutter/widgets.dart';
 
 class DynamicProductList extends StatefulWidget {
   final int initialIndex;
-  const DynamicProductList({Key? key, this.initialIndex = 0}) : super(key: key);
+  final String? category;
+  const DynamicProductList({Key? key, this.initialIndex = 0, this.category}) : super(key: key);
 
   @override
   State<DynamicProductList> createState() => _DynamicProductListState();
@@ -22,7 +23,9 @@ class _DynamicProductListState extends State<DynamicProductList> {
   @override
   void initState() {
     super.initState();
-    _productsFuture = ProductService.loadProductData();
+    _productsFuture = widget.category == null || widget.category!.isEmpty
+        ? ProductService.loadProductData()
+        : ProductService.loadProductsByCategory(widget.category!);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(widget.initialIndex * 100.0);

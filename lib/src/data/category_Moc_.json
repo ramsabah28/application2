@@ -7,13 +7,13 @@
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000008",
-    "name": "Mode & Beauty",
+    "name": "Fashion",
     "description": "#Damen-Mode, #Herren-Mode,#Schuhe, #Sport und Mehr",
     "imageUrl": "lib/assets/category_assets/mode.jpg"
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000009",
-    "name": "Küche",
+    "name": "Home",
     "description": "#Möbel, #Einbaugeräte, #Kühlschränke, #Trockner und mehr",
     "imageUrl": "lib/assets/category_assets/kitchen.jpg"
   },
