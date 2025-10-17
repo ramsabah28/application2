@@ -114,7 +114,20 @@ class DynamicContent extends StatelessWidget {
                 SizedBox(height: 24),
                 Divider(),
                 SizedBox(height: 8),
-                // ...existing code...
+                // Additional descriptions
+                if (product.midDescription.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Text(
+                      product.midDescription,
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                if (product.longDiscription.isNotEmpty)
+                  Text(
+                    product.longDiscription,
+                    style: const TextStyle(fontSize: 14, height: 1.4),
+                  ),
               ],
             ),
           ),

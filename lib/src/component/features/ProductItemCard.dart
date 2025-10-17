@@ -85,7 +85,9 @@ class ProductItemCard extends StatelessWidget {
                             item.brand,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(item.description),
+                          Text(item.description.length > 20
+                              ? item.description.substring(0, 50) + '…'
+                              : item.description),
                           Text(
                             "${item.price}€",
                             style: TextStyle(
