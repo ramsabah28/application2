@@ -13,6 +13,9 @@ class FullscreenImageViewer extends StatefulWidget {
 class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
   late final PageController _pageController;
   late int _currentIndex;
+  final TransformationController _transformationController = TransformationController();
+  TapDownDetails? _doubleTapDetails;
+  Size? _childSize;
 
   @override
   void initState() {
@@ -23,6 +26,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
 
   @override
   void dispose() {
+    _transformationController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -42,20 +46,49 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
       ),
       body: PageView.builder(
         controller: _pageController,
-        onPageChanged: (i) => setState(() => _currentIndex = i),
+        onPageChanged: (i) {
+          setState(() => _currentIndex = i);
+          _transformationController.value = Matrix4.identity();
+        },
         itemCount: widget.imageUrls.length,
         itemBuilder: (context, index) {
           final url = widget.imageUrls[index];
-          return InteractiveViewer(
-            minScale: 0.8,
-            maxScale: 4.0,
-            child: Center(
-              child: Hero(
-                tag: 'image_viewer_${index}_$url',
-                child: Image.network(
-                  url,
-                  fit: BoxFit.contain,
-                ),
+          return GestureDetector(
+            onDoubleTapDown: (d) => _doubleTapDetails = d,
+            onDoubleTap: () {
+              final Matrix4 current = _transformationController.value;
+              final bool isZoomed = current != Matrix4.identity();
+              if (isZoomed) {
+                _transformationController.value = Matrix4.identity();
+              } else {
+                final Size size = _childSize ?? MediaQuery.of(context).size;
+                final Offset center = Offset(size.width / 2, size.height / 2);
+                final Matrix4 m = Matrix4.identity()
+                  ..translate(center.dx, center.dy)
+                  ..scale(2.0)
+                  ..translate(-center.dx, -center.dy);
+                _transformationController.value = m;
+              }
+            },
+            child: InteractiveViewer(
+              transformationController: _transformationController,
+              minScale: 1.0,
+              maxScale: 4.0,
+              boundaryMargin: const EdgeInsets.all(80),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _childSize = constraints.biggest;
+                  return Center(
+                    child: Hero(
+                      tag: 'image_viewer_${index}_$url',
+                      child: Image.network(
+                        url,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           );
