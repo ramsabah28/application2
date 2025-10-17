@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'homeScreenFeatures/ProductsCarousel.dart';
 import 'homeScreenFeatures/SaleCard.dart';
 
 class Home extends StatefulWidget {
@@ -15,13 +16,9 @@ class _Home extends State<Home> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SaleCards(),
+        SizedBox(height: 12),
+        const ProductsCarousel(),
         SizedBox(height: 10),
-        Center(
-          child: Text(
-            'Home Screen',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
       ],
     );
   }

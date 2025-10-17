@@ -6,12 +6,14 @@ class ShimmerImageFromNetwork extends StatefulWidget {
   final double height;
   final double width;
   final double shimmerBottomInset;
+  final BoxFit fit;
 
   const ShimmerImageFromNetwork({
     required this.imageUrl,
     required this.height,
     required this.width,
     this.shimmerBottomInset = 16.0,
+    this.fit = BoxFit.contain,
     super.key,
   });
 
@@ -52,7 +54,7 @@ class _ShimmerImageNetworkState extends State<ShimmerImageFromNetwork> {
           widget.imageUrl,
           width: widget.width,
           height: widget.height,
-          fit: BoxFit.contain,
+          fit: widget.fit,
           alignment: const Alignment(0, -1),
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (frame != null && !_isLoaded) {
