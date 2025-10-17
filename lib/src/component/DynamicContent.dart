@@ -5,11 +5,157 @@ import 'features/FavButton.dart';
 import '../services/ProductService.dart';
 import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
+import 'package:shimmer/shimmer.dart';
 
 class DynamicContent extends StatelessWidget {
   final String uuid;
 
   const DynamicContent({super.key, required this.uuid});
+
+  static const LinearGradient _shimmerGradient = LinearGradient(
+    colors: [Color(0xFFEBEBF4), Color(0xFFFFFFFF), Color(0xFFEBEBF4)],
+    stops: [0.1, 0.2, 0.3],
+    begin: Alignment(-1.0, -0.6),
+    end: Alignment(1.0, 0.8),
+    tileMode: TileMode.clamp,
+  );
+
+  Widget _buildLoadingSkeleton(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Brand line
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 14,
+                width: screenWidth * 0.25,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Title line
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 26,
+                width: screenWidth * 0.6,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Image block
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(12.0),
+                  child: Shimmer(
+                    gradient: _shimmerGradient,
+                    period: const Duration(milliseconds: 900),
+                    child: Container(
+                      height: 200,
+                      width: screenWidth * 0.96,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Description lines
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 14,
+                width: screenWidth * 0.9,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 14,
+                width: screenWidth * 0.7,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Price line
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 22,
+                width: screenWidth * 0.3,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: Shimmer(
+                    gradient: _shimmerGradient,
+                    period: const Duration(milliseconds: 900),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Shimmer(
+                  gradient: _shimmerGradient,
+                  period: const Duration(milliseconds: 900),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +163,7 @@ class DynamicContent extends StatelessWidget {
       future: ProductService.loadProduct(uuid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return _buildLoadingSkeleton(context);
         } else if (snapshot.hasError) {
           return Center(child: Text('Fehler: \\${snapshot.error}'));
         } else if (!snapshot.hasData) {

@@ -48,7 +48,7 @@ class FavoritItemCard extends StatelessWidget {
 									style: TextStyle(
 										fontWeight: FontWeight.bold,
 										color: Theme.of(context).primaryColor,
-										fontSize: 28,
+										fontSize: 20,
 									),
 								),
 								Text(

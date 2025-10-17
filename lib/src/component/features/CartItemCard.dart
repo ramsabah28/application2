@@ -7,7 +7,12 @@ class CartItemCard extends StatefulWidget {
   final int count;
   final ValueChanged<int> onCountChanged;
 
-  const CartItemCard({Key? key, required this.item, required this.count, required this.onCountChanged}) : super(key: key);
+  const CartItemCard({
+    Key? key,
+    required this.item,
+    required this.count,
+    required this.onCountChanged,
+  }) : super(key: key);
 
   @override
   State<CartItemCard> createState() => _CartItemCardState();
@@ -66,7 +71,10 @@ class _CartItemCardState extends State<CartItemCard> {
                     panEnabled: true,
                     minScale: 1,
                     maxScale: 3,
-                    child: Image.network(widget.item.imageUrl, fit: BoxFit.contain),
+                    child: Image.network(
+                      widget.item.imageUrl,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -85,12 +93,12 @@ class _CartItemCardState extends State<CartItemCard> {
                         ),
                   Text(
                     '$count',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: _increment,
-                  ),
+                  IconButton(icon: Icon(Icons.add), onPressed: _increment),
                 ],
               ),
             ],
@@ -105,14 +113,18 @@ class _CartItemCardState extends State<CartItemCard> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor,
-                    fontSize: 28,
+                    fontSize: 20,
                   ),
                 ),
                 Text(
                   widget.item.brand,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text(widget.item.description),
+                Text(
+                  widget.item.description.length > 20
+                      ? widget.item.description.substring(0, 50) + '...'
+                      : widget.item.description,
+                ),
                 Text(
                   "${widget.item.price}€",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
