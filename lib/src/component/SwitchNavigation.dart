@@ -45,29 +45,53 @@ class SwitchNavigationState extends State<SwitchNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _overrideScreen ?? _screens[_selectedIndex],
-      bottomNavigationBar: CustomNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+    return PopScope(
+      canPop: _overrideScreen == null && _selectedIndex == 0,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        if (_overrideScreen != null) {
+          setState(() {
+            if (_overrideScreen is DynamicContent) {
+              _overrideScreen = DynamicProductList(
+                initialIndex: _lastProductIndex ?? 0,
+              );
+            } else {
+              _overrideScreen = null;
+            }
+          });
+          return;
+        }
+        if (_selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+          return;
+        }
+      },
+      child: Scaffold(
+        body: _overrideScreen ?? _screens[_selectedIndex],
+        bottomNavigationBar: CustomNavigationBar(
+          selectedIndex: _selectedIndex,
+          onItemTapped: _onItemTapped,
+        ),
+        backgroundColor: CustomColors.secondary,
+        appBar: _overrideScreen != null
+            ? MainBar(
+                showBackArrow: true,
+                onBack: () {
+                  setState(() {
+                    if (_overrideScreen is DynamicContent) {
+                      _overrideScreen = DynamicProductList(
+                        initialIndex: _lastProductIndex ?? 0,
+                      );
+                    } else {
+                      _overrideScreen = null;
+                    }
+                  });
+                },
+              )
+            : MainBar(),
       ),
-      backgroundColor: CustomColors.secondary,
-      appBar: _overrideScreen != null
-          ? MainBar(
-              showBackArrow: true,
-              onBack: () {
-                setState(() {
-                  if (_overrideScreen is DynamicContent) {
-                    _overrideScreen = DynamicProductList(
-                      initialIndex: _lastProductIndex ?? 0,
-                    );
-                  } else {
-                    _overrideScreen = null;
-                  }
-                });
-              },
-            )
-          : MainBar(),
     );
   }
 }
