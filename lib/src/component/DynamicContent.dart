@@ -3,6 +3,7 @@ import '../repository/CartRepository.dart';
 import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
+import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
 
 class DynamicContent extends StatelessWidget {
@@ -47,7 +48,7 @@ class DynamicContent extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16),
-                // Product Image
+                // Product Images Slider
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -57,11 +58,32 @@ class DynamicContent extends StatelessWidget {
                         color: Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
-                          child: Image.network(
-                            product.imageUrl,
+                          child: SizedBox(
                             height: 200,
                             width: screenWidth * 0.96,
-                            fit: BoxFit.contain,
+                            child: Builder(
+                              builder: (_) {
+                                final List<String> urls = [
+                                  product.imageUrl,
+                                  ...product.images
+                                      .where((e) => e is Map && e['url'] != null)
+                                      .map<String>((e) => (e as Map)['url'].toString())
+                                ];
+                                final uniqueUrls = urls.toSet().toList();
+                                return PageView(
+                                  children: uniqueUrls
+                                      .map((u) => Center(
+                                            child: ShimmerImageFromNetwork(
+                                              imageUrl: u,
+                                              height: 200,
+                                              width: screenWidth * 0.96,
+                                              shimmerBottomInset: 12,
+                                            ),
+                                          ))
+                                      .toList(),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
