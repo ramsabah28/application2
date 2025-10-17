@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:application2/src/services/InvoiceService.dart';
+import 'package:application2/src/services/BillService.dart';
 import 'package:application2/src/models/InvoiceModel.dart';
+import 'InvoiceDetails.dart';
 
 class Invoice extends StatelessWidget {
   const Invoice({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class Invoice extends StatelessWidget {
     }
 
     return StreamBuilder<List<InvoiceModel>>(
-      stream: InvoiceService.watchInvoicesByUser(user.uid),
+      stream: BillService.watchBillsByUser(user.uid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -46,7 +47,11 @@ class Invoice extends StatelessWidget {
                 ],
               ),
               onTap: () {
-               //TODO: open invoice in list for each
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => InvoiceDetails(invoiceId: inv.UUID),
+                  ),
+                );
               },
             );
           },
