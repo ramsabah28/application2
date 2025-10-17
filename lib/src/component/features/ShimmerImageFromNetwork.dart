@@ -5,11 +5,13 @@ class ShimmerImageFromNetwork extends StatefulWidget {
   final String imageUrl;
   final double height;
   final double width;
+  final double shimmerBottomInset;
 
   const ShimmerImageFromNetwork({
     required this.imageUrl,
     required this.height,
     required this.width,
+    this.shimmerBottomInset = 16.0,
     super.key,
   });
 
@@ -34,13 +36,16 @@ class _ShimmerImageNetworkState extends State<ShimmerImageFromNetwork> {
     return Stack(
       children: [
         if (!_isLoaded)
-          Shimmer(
-            gradient: _shimmerGradient,
-            period: const Duration(milliseconds: 500),
-            child: Container(
-              width: widget.width,
-              height: widget.height,
-              color: Colors.white,
+          Align(
+            alignment: Alignment.topCenter,
+            child: Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 500),
+              child: SizedBox(
+                width: widget.width,
+                height: (widget.height - widget.shimmerBottomInset).clamp(0.0, double.infinity),
+                child: Container(color: Colors.white),
+              ),
             ),
           ),
         Image.network(

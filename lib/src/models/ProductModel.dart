@@ -9,6 +9,7 @@ class ProductModel {
   final double price;
   final int count;
   final String imageUrl;
+  final List<dynamic> images; // raw list from Firestore: [{color, url}, ...]
 
   const ProductModel({
     required this.uuid,
@@ -21,6 +22,7 @@ class ProductModel {
     required this.count,
     required this.price,
     required this.imageUrl,
+    this.images = const [],
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class ProductModel {
       count: (json['count'] as num?)?.toInt() ?? 0,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: (json['imageUrl'] ?? derivedImageUrl).toString(),
+      images: images is List ? images : const [],
     );
   }
 }
