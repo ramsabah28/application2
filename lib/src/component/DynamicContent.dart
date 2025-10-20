@@ -3,14 +3,160 @@ import '../repository/CartRepository.dart';
 import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
+import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
-import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
-
+import 'package:shimmer/shimmer.dart';
+import 'features/FullscreenImageViewer.dart';
 
 class DynamicContent extends StatelessWidget {
   final String uuid;
 
   const DynamicContent({super.key, required this.uuid});
+
+  static const LinearGradient _shimmerGradient = LinearGradient(
+    colors: [Color(0xFFEBEBF4), Color(0xFFFFFFFF), Color(0xFFEBEBF4)],
+    stops: [0.1, 0.2, 0.3],
+    begin: Alignment(-1.0, -0.6),
+    end: Alignment(1.0, 0.8),
+    tileMode: TileMode.clamp,
+  );
+
+  Widget _buildLoadingSkeleton(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Brand line
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 14,
+                width: screenWidth * 0.25,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Title line
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 26,
+                width: screenWidth * 0.6,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Image block
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(12.0),
+                  child: Shimmer(
+                    gradient: _shimmerGradient,
+                    period: const Duration(milliseconds: 900),
+                    child: Container(
+                      height: 200,
+                      width: screenWidth * 0.96,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Description lines
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 14,
+                width: screenWidth * 0.9,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 14,
+                width: screenWidth * 0.7,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Price line
+            Shimmer(
+              gradient: _shimmerGradient,
+              period: const Duration(milliseconds: 900),
+              child: Container(
+                height: 22,
+                width: screenWidth * 0.3,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: Shimmer(
+                    gradient: _shimmerGradient,
+                    period: const Duration(milliseconds: 900),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Shimmer(
+                  gradient: _shimmerGradient,
+                  period: const Duration(milliseconds: 900),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +164,7 @@ class DynamicContent extends StatelessWidget {
       future: ProductService.loadProduct(uuid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return _buildLoadingSkeleton(context);
         } else if (snapshot.hasError) {
           return Center(child: Text('Fehler: \\${snapshot.error}'));
         } else if (!snapshot.hasData) {
@@ -49,7 +195,7 @@ class DynamicContent extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16),
-                // Product Image
+                // Product Images Slider
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -59,11 +205,49 @@ class DynamicContent extends StatelessWidget {
                         color: Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
-                          child: Image.network(
-                            product.imageUrl,
+                          child: SizedBox(
                             height: 200,
                             width: screenWidth * 0.96,
-                            fit: BoxFit.contain,
+                            child: Builder(
+                              builder: (_) {
+                                final List<String> urls = [
+                                  product.imageUrl,
+                                  ...product.images
+                                      .where((e) => e is Map && e['url'] != null)
+                                      .map<String>((e) => (e as Map)['url'].toString())
+                                ];
+                                final uniqueUrls = urls.toSet().toList();
+                                return PageView.builder(
+                                  itemCount: uniqueUrls.length,
+                                  itemBuilder: (context, idx) {
+                                    final u = uniqueUrls[idx];
+                                    return Center(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => FullscreenImageViewer(
+                                                imageUrls: uniqueUrls,
+                                                initialIndex: idx,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Hero(
+                                          tag: 'image_viewer_${idx}_$u',
+                                          child: ShimmerImageFromNetwork(
+                                            imageUrl: u,
+                                            height: 200,
+                                            width: screenWidth * 0.96,
+                                            shimmerBottomInset: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -116,7 +300,20 @@ class DynamicContent extends StatelessWidget {
                 SizedBox(height: 24),
                 Divider(),
                 SizedBox(height: 8),
-                // ...existing code...
+                // Additional descriptions
+                if (product.midDescription.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Text(
+                      product.midDescription,
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                if (product.longDiscription.isNotEmpty)
+                  Text(
+                    product.longDiscription,
+                    style: const TextStyle(fontSize: 14, height: 1.4),
+                  ),
               ],
             ),
           ),

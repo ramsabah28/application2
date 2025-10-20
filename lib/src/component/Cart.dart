@@ -3,6 +3,11 @@ import '../models/CartModel.dart';
 import '../repository/CartRepository.dart';
 import 'features/CartItemCard.dart';
 import 'features/PayKnowButton.dart';
+import '../services/BillService.dart';
+import '../models/BillModel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/InvoiceService.dart';
+import '../models/InvoiceModel.dart';
 
 class Cart extends StatefulWidget {
   const Cart({Key? key}) : super(key: key);
@@ -118,12 +123,62 @@ class _CartState extends State<Cart> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  PayKnowButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Payment process started!')),
+                  PayNowButton(
+                    onPressed: () async {
+                      final user = FirebaseAuth.instance.currentUser;
+                      if (user == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Bitte anmelden, um zu bezahlen.')),
+                        );
+                        return;
+                      }
+
+                      final items = cartItems
+                          .map((ci) => BillItem(pid: ci.uuid, count: ci.count, price: ci.price))
+                          .toList();
+                      final totalItemsCount = cartItems.fold(0, (sum, item) => sum + item.count);
+
+                      final bill = BillModel(
+                        uuid: '',
+                        UID: user.uid,
+                        items: items,
+                        count: totalItemsCount,
+                        price: grandTotal,
+                        BID: 0,
+                        date: '',
                       );
+
+                      try {
+                        await BillService.addBill(bill);
+                        final invoice = InvoiceModel(
+                          UUID: '',
+                          UID: user.uid,
+                          PID: 'multiple',
+                          count: totalItemsCount,
+                          price: grandTotal,
+                          date: '',
+                          paid: false,
+                        );
+                        final invoiceItems = cartItems
+                            .map((ci) => {
+                                  'product': ci.uuid,
+                                  'price': ci.price,
+                                  'count': ci.count,
+                                })
+                            .toList();
+                        await InvoiceService.addInvoiceWithItems(invoice, invoiceItems);
+                        await CartRepository().clearCart();
+                        setState(() {
+                          _cartFuture = CartRepository().getCart();
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Rechnung erstellt und Warenkorb geleert.')),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Fehler beim Erstellen der Rechnung: $e')),
+                        );
+                      }
                     },
                   ),
                 ],

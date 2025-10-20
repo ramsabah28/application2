@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
 
-
-class PayNowButton extends StatelessWidget {
+class StandardButton extends StatelessWidget {
   final VoidCallback? onPressed;
-  final String label;
+  final Icon icon;
+  final Color backgroundColor;
 
-  const PayNowButton({Key? key, this.onPressed, this.label = 'Jetzt Kaufen'})
-    : super(key: key);
+  const StandardButton({Key? key, this.onPressed, required this.icon, required this.backgroundColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: 220,
+        width: MediaQuery.of(context).size.width * 0.3,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).primaryColorLight,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             textStyle: TextStyle(
-              fontSize: 20,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
           onPressed: onPressed,
-          child: Text(label, style: TextStyle(color: Colors.white)),
+          child: icon
         ),
       ),
     );

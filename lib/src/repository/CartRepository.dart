@@ -42,6 +42,11 @@ class CartRepository {
     await prefs.setString('cart', jsonEncode(cart));
   }
 
+  Future<void> clearCart() async {
+    final prefs = await _prefs;
+    await prefs.remove('cart');
+  }
+
   Future<List<CartModel>> getCart() async {
     final prefs = await _prefs;
     final cartString = prefs.getString('cart');

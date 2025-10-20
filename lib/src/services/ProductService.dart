@@ -2,6 +2,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/ProductModel.dart';
 
 class ProductService {
+
+  static Future<List<ProductModel>> searchProducts(String query) async {
+    try {
+      CollectionReference products = FirebaseFirestore.instance.collection('product');
+      QuerySnapshot querySnapshot = await products.get();
+      String lowerQuery = query.toLowerCase();
+      List<ProductModel> productList = querySnapshot.docs
+          .map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return ProductModel.fromJson(data);
+          })
+          .where((product) => product.name.toLowerCase().contains(lowerQuery))
+          .toList();
+      return productList;
+    } catch (e) {
+      print("Error searching products from Firestore: $e");
+      return [];
+    }
+  }
   static Future<List<ProductModel>> loadProductData() async {
     try {
       CollectionReference products = FirebaseFirestore.instance.collection(
@@ -22,6 +41,25 @@ class ProductService {
       return productList;
     } catch (e) {
       print("Error fetching products from Firestore: $e");
+      return [];
+    }
+  }
+
+  static Future<List<ProductModel>> loadProductsByCategory(String category) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('product')
+          .where('category', isEqualTo: category)
+          .get();
+
+      List<ProductModel> productList = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return ProductModel.fromJson(data);
+      }).toList();
+
+      return productList;
+    } catch (e) {
+      print("Error fetching products by category '$category' from Firestore: $e");
       return [];
     }
   }

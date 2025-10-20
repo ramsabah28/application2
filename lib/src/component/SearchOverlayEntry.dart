@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart';
+import 'DynamicContent.dart';
+import '../models/ProductModel.dart';
+import 'SwitchNavigation.dart';
 
 class SearchOverlayEntry extends StatelessWidget {
   final VoidCallback onClose;
-  const SearchOverlayEntry({Key? key, required this.onClose}) : super(key: key);
+  final List results;
+  final BuildContext parentContext;
+
+  const SearchOverlayEntry({
+    Key? key,
+    required this.onClose,
+    required this.results,
+    required this.parentContext,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onClose,
-      child: Material(
+      child: Container(
         color: Colors.black.withOpacity(0.3),
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: Container(
-            width: 300,
-            height: 200,
+            width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(1),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26,
@@ -26,15 +37,55 @@ class SearchOverlayEntry extends StatelessWidget {
               ],
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Search Overlay', style: TextStyle(fontSize: 20)),
-                SizedBox(height: 20),
-                Text('Type to search for products...'),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: onClose,
-                  child: Text('Close'),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Search Results',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(icon: Icon(Icons.close), onPressed: onClose),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: results.isEmpty
+                      ? Center(child: Text('No results'))
+                      : ListView.builder(
+                          itemCount: results.length,
+                          itemBuilder: (context, index) {
+                            final product = results[index];
+                            return ListTile(
+                              leading: product.imageUrl != null
+                                  ? Image.network(
+                                      product.imageUrl,
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                              title: Text(product.name),
+                              subtitle: Text(product.brand ?? ''),
+                              trailing: Text('€${product.price.toString()}'),
+                              onTap: () {
+                                final navState = parentContext
+                                    .findAncestorStateOfType<
+                                      SwitchNavigationState
+                                    >();
+                                navState?.showDynamicProductContent(
+                                  product.uuid,
+                                );
+                                onClose();
+                              },
+                            );
+                          },
+                        ),
                 ),
               ],
             ),

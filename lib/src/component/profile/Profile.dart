@@ -1,8 +1,11 @@
+import 'package:application2/src/component/profile/Invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Login.dart';
 import 'Register.dart';
 import 'Favorit.dart';
+import 'Adress.dart';
+import '../features/StandardButton.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -20,10 +23,18 @@ class _ProfileAuthSwitcher extends StatefulWidget {
 
 class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   bool showFavorit = false;
+  bool showAdress = false;
+  bool showInvoice = false;
 
   void _showFavorit() {
     setState(() {
       showFavorit = true;
+    });
+  }
+
+  void _showAdress() {
+    setState(() {
+      showAdress = true;
     });
   }
 
@@ -38,6 +49,12 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   void _showLogin() {
     setState(() {
       showRegister = false;
+    });
+  }
+
+  void _showInvoice() {
+    setState(() {
+      showInvoice = true;
     });
   }
 
@@ -80,6 +97,14 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
         if (showFavorit) {
           return Favorit();
         }
+        if (showAdress) {
+          return AdressScreen();
+        }
+
+        if (showInvoice) {
+          return Invoice();
+        }
+
         final Color bgColor = const Color(0xFFF5F6FA);
         return Container(
           color: bgColor,
@@ -116,30 +141,14 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   const SizedBox(height: 24),
                   Divider(thickness: 1.2, color: Colors.grey[300]),
                   const SizedBox(height: 24),
-                  // Address
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Address',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '123 Placeholder St, City, Country',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).primaryColorDark,
-                      ),
-                    ),
+                  _ProfileActionButton(
+                    icon: Icons.home_outlined,
+                    label: 'Adresse',
+                    accent: Theme.of(context).primaryColor,
+                    onTap: _showAdress,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   // Modern Buttons
                   _ProfileActionButton(
                     icon: Icons.shopping_bag_outlined,
@@ -151,6 +160,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                     icon: Icons.receipt_long_outlined,
                     label: 'Rechnungen',
                     accent: Theme.of(context).primaryColor,
+                    onTap: _showInvoice,
                   ),
                   const SizedBox(height: 16),
                   _ProfileActionButton(
@@ -160,13 +170,12 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                     onTap: _showFavorit,
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    icon: Icon(Icons.logout),
-                    label: Text('Logout'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 48),
-                      textStyle: TextStyle(fontSize: 18),
+                  StandardButton(
+                    icon: Icon(
+                      Icons.logout,
+                      color: Theme.of(context).primaryColor,
                     ),
+                    backgroundColor: Theme.of(context).primaryColorDark,
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
                     },
