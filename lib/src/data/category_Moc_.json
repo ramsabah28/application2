@@ -1,31 +1,43 @@
 [
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000007",
-    "name": "Multimedia",
+    "name": "Kunst",
     "description": "#Gadgets, #phones, #Tablet, #Headphones und mehr",
-    "imageUrl": "lib/assets/category_assets/tech.jpg"
+    "imageUrl": "lib/assets/category_assets/art.png"
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000008",
-    "name": "Fashion",
+    "name": "Mode",
     "description": "#Damen-Mode, #Herren-Mode,#Schuhe, #Sport und Mehr",
-    "imageUrl": "lib/assets/category_assets/mode.jpg"
+    "imageUrl": "lib/assets/category_assets/mask.png"
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000009",
-    "name": "Home",
+    "name": "Schmuck",
     "description": "#Möbel, #Einbaugeräte, #Kühlschränke, #Trockner und mehr",
-    "imageUrl": "lib/assets/category_assets/kitchen.jpg"
+    "imageUrl": "lib/assets/category_assets/fashon.png"
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000010",
-    "name": "Books",
+    "name": "Models",
     "description": "Fiction, non-fiction, and educational materials",
-    "imageUrl": "lib/assets/category_assets/books.jpg"
+    "imageUrl": "lib/assets/category_assets/3dmodel.jpg"
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000011",
-    "name": "Sport",
+    "name": "Spiele",
+    "description": "Fun toys for all ages",
+    "imageUrl": "lib/assets/category_assets/03.jpg"
+  },
+  {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000013",
+    "name": "Movie",
+    "description": "Fun toys for all ages",
+    "imageUrl": "lib/assets/category_assets/sport.jpg"
+  },
+  {
+    "uuid": "c3a3e3a3-0003-4003-8003-000000000012",
+    "name": "Game",
     "description": "Fun toys for all ages",
     "imageUrl": "lib/assets/category_assets/sport.jpg"
   }
