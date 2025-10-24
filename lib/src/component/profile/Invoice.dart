@@ -58,7 +58,10 @@ class Invoice extends StatelessWidget {
                     onPressed: () async {
                       try {
                         final file = await PdfService.generateBillPdf(billId: inv.UUID);
-                        await Printing.sharePdf(bytes: await file.readAsBytes(), filename: 'rechnung_${inv.UUID.substring(0,8)}.pdf');
+                        await Printing.sharePdf(
+                          bytes: await file.readAsBytes(), 
+                          filename: 'rechnung_${inv.UUID.substring(0,8)}.pdf'
+                        );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('PDF-Fehler: ${e.toString()}')),

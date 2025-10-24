@@ -5,12 +5,14 @@ import '../../models/CartModel.dart';
 class CartItemCard extends StatefulWidget {
   final CartModel item;
   final int count;
+  final int maxCount;
   final ValueChanged<int> onCountChanged;
 
   const CartItemCard({
     Key? key,
     required this.item,
     required this.count,
+    required this.maxCount,
     required this.onCountChanged,
   }) : super(key: key);
 
@@ -28,10 +30,12 @@ class _CartItemCardState extends State<CartItemCard> {
   }
 
   void _increment() {
-    setState(() {
-      count++;
-    });
-    widget.onCountChanged(count);
+    if (count < widget.maxCount) {
+      setState(() {
+        count++;
+      });
+      widget.onCountChanged(count);
+    }
   }
 
   void _decrement() {
@@ -98,7 +102,10 @@ class _CartItemCardState extends State<CartItemCard> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  IconButton(icon: Icon(Icons.add), onPressed: _increment),
+                  IconButton(
+                    icon: Icon(Icons.add), 
+                    onPressed: count < widget.maxCount ? _increment : null,
+                  ),
                 ],
               ),
             ],

@@ -8,6 +8,7 @@ import '../models/BillModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/InvoiceService.dart';
 import '../models/InvoiceModel.dart';
+import '../services/ProductService.dart';
 
 class Cart extends StatefulWidget {
   const Cart({Key? key}) : super(key: key);
@@ -18,10 +19,30 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   late Future<List<CartModel>> _cartFuture;
   List<CartModel> cartItems = [];
+  Map<String, int> productStock = {}; // Store product stock from Firestore
+  bool stockLoaded = false;
+  
   @override
   void initState() {
     super.initState();
-    _cartFuture = CartRepository().getCart();
+    _cartFuture = _loadCartWithStock();
+  }
+
+  Future<List<CartModel>> _loadCartWithStock() async {
+    final cartItems = await CartRepository().getCart();
+    
+    // Load stock for each product
+    for (final item in cartItems) {
+      try {
+        final product = await ProductService.loadProduct(item.uuid);
+        productStock[item.uuid] = product.count;
+      } catch (e) {
+        productStock[item.uuid] = 0;
+      }
+    }
+    
+    stockLoaded = true;
+    return cartItems;
   }
 
   void updateItemCount(int index, int newCount) async {
@@ -88,6 +109,7 @@ class _CartState extends State<Cart> {
                   return CartItemCard(
                     item: item,
                     count: item.count,
+                    maxCount: productStock[item.uuid] ?? 0,
                     onCountChanged: (newCount) =>
                         updateItemCount(index, newCount),
                   );
@@ -169,7 +191,7 @@ class _CartState extends State<Cart> {
                         await InvoiceService.addInvoiceWithItems(invoice, invoiceItems);
                         await CartRepository().clearCart();
                         setState(() {
-                          _cartFuture = CartRepository().getCart();
+                          _cartFuture = _loadCartWithStock();
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Rechnung erstellt und Warenkorb geleert.')),
