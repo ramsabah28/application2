@@ -32,7 +32,6 @@ class _ShimmerImageNetworkState extends State<ShimmerImageFromNetwork> {
     tileMode: TileMode.clamp,
   );
 
-
   @override
   Widget build(BuildContext context) {
     return Stack(

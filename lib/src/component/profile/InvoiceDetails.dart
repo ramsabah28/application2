@@ -53,7 +53,8 @@ class InvoiceDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rechnungsdetails')),
+      backgroundColor: const Color.fromRGBO(243, 243, 246, 1),
+      appBar: AppBar(title: const Text('Rechnungsdetails'), backgroundColor:const Color.fromRGBO(243, 243, 246, 1) ,),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _loadBill(),
         builder: (context, snapshot) {
