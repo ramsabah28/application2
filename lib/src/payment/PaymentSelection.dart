@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:application2/src/payment/PayPal.dart';
 import 'package:application2/src/payment/InAppBill.dart';
+import 'package:application2/src/payment/CreditCard.dart';
 
 class PaymentSelection extends StatelessWidget {
   final double amount;
@@ -14,6 +15,21 @@ class PaymentSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // shared button style to make all payment options visually consistent
+    final ButtonStyle paymentButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: Theme.of(context).primaryColorLight,
+      foregroundColor: Colors.black,
+      padding: const EdgeInsets.symmetric(
+        vertical: 12,
+        horizontal: 12,
+      ),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Colors.black54, width: 2),
+      ),
+    );
+
     return Scaffold(
       backgroundColor: const Color.fromRGBO(243, 243, 246, 1),
       appBar: AppBar(
@@ -51,8 +67,7 @@ class PaymentSelection extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) =>
-                            PayPal(ammount: amount, currency: currency),
+                        builder: (_) => PayPal(amount: amount, currency: currency),
                       ),
                     );
                   },
@@ -70,35 +85,53 @@ class PaymentSelection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            // Placeholder for other payment methods
-            ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Andere Zahlungsmethoden noch nicht implementiert.',
-                    ),
+            // Placeholder for other payment methods (now styled like PayPal)
+            const SizedBox(height: 12),
+            Center(
+              child: SizedBox(
+                width: 220,
+                child: ElevatedButton.icon(
+                  style: paymentButtonStyle,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const CreditCard()),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.credit_card,
+                    color: Colors.black,
                   ),
-                );
-              },
-              icon: const Icon(Icons.credit_card),
-              label: const Text('Kreditkarte'),
+                  label: const Text(
+                    'Kreditkarte',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 12),
-            // In-app purchase option (consumable example)
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+            // In-app purchase option (consumable example) — styled like PayPal button
+            const SizedBox(height: 12),
+            Center(
+              child: SizedBox(
+                width: 220,
+                child: ElevatedButton.icon(
+                  style: paymentButtonStyle,
+                  onPressed: () {
+                    // TODO: replace 'your_product_id' with the product id configured in Play/App Store
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const InAppBill(productId: 'your_product_id', title: 'In-App Kauf'),
+                    ));
+                  },
+                  icon: const Icon(
+                    Icons.phone_iphone,
+                    color: Colors.black,
+                  ),
+                  label: const Text(
+                    'In-App Kauf',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
               ),
-              onPressed: () {
-                // TODO: replace 'your_product_id' with the product id configured in Play/App Store
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => const InAppBill(productId: 'your_product_id', title: 'In-App Kauf'),
-                ));
-              },
-              icon: const Icon(Icons.phone_iphone),
-              label: const Text('In-App Kauf'),
             ),
           ],
         ),

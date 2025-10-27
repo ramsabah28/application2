@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
-/// Simple in-app purchase helper widget for a consumable product.
-///
-/// Usage:
-/// InAppBill(productId: 'your_product_id', title: 'Buy Credits')
+
+
+///TODO: add InAppBill(productId: 'your_product_id', title: 'Buy Credits') for AppStore and PlayStore
 class InAppBill extends StatefulWidget {
   final String productId;
   final String title;

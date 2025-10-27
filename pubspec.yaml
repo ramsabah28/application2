@@ -56,6 +56,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: 0.14.4
+  credit_card_validator: ^2.0.1
 
 flutter_icons:
   image_path: lib/assets/Logo.png
