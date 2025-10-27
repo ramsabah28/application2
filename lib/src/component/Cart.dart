@@ -6,6 +6,7 @@ import 'features/PayKnowButton.dart';
 import '../services/BillService.dart';
 import '../models/BillModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:application2/src/payment/PaymentSelection.dart';
 import '../services/InvoiceService.dart';
 import '../models/InvoiceModel.dart';
 import '../services/ProductService.dart';
@@ -146,61 +147,11 @@ class _CartState extends State<Cart> {
                   ),
                   const SizedBox(height: 16),
                   PayNowButton(
-                    onPressed: () async {
-                      final user = FirebaseAuth.instance.currentUser;
-                      if (user == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Bitte anmelden, um zu bezahlen.')),
-                        );
-                        return;
-                      }
-
-                      final items = cartItems
-                          .map((ci) => BillItem(pid: ci.uuid, count: ci.count, price: ci.price))
-                          .toList();
-                      final totalItemsCount = cartItems.fold(0, (sum, item) => sum + item.count);
-
-                      final bill = BillModel(
-                        uuid: '',
-                        UID: user.uid,
-                        items: items,
-                        count: totalItemsCount,
-                        price: grandTotal,
-                        BID: 0,
-                        date: '',
-                      );
-
-                      try {
-                        await BillService.addBill(bill);
-                        final invoice = InvoiceModel(
-                          UUID: '',
-                          UID: user.uid,
-                          PID: 'multiple',
-                          count: totalItemsCount,
-                          price: grandTotal,
-                          date: '',
-                          paid: false,
-                        );
-                        final invoiceItems = cartItems
-                            .map((ci) => {
-                                  'product': ci.uuid,
-                                  'price': ci.price,
-                                  'count': ci.count,
-                                })
-                            .toList();
-                        await InvoiceService.addInvoiceWithItems(invoice, invoiceItems);
-                        await CartRepository().clearCart();
-                        setState(() {
-                          _cartFuture = _loadCartWithStock();
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Rechnung erstellt und Warenkorb geleert.')),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Fehler beim Erstellen der Rechnung: $e')),
-                        );
-                      }
+                    onPressed: () {
+                      // Navigate to payment selection so the user can choose a payment method
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => PaymentSelection(amount: grandTotal, currency: 'EUR'),
+                      ));
                     },
                   ),
                 ],
