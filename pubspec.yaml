@@ -47,6 +47,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   liquid_glass_renderer: ^0.1.1-dev.10
   url_launcher: ^6.1.7
+  http: ^1.5.0
+  cloud_functions: ^6.0.3
+  webview_flutter: ^4.0.7
+  in_app_purchase: ^3.2.3
 
 dev_dependencies:
   flutter_test:

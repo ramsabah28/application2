@@ -1,5 +1,8 @@
+import 'dart:convert';
+
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class PayPal extends StatefulWidget {
   final double ammount;
@@ -12,32 +15,82 @@ class PayPal extends StatefulWidget {
 }
 
 class _PayPalState extends State<PayPal> {
-  // Use live PayPal sign-in. If you need sandbox, change to the sandbox URL.
-  final Uri _paypalUrl = Uri.parse('https://www.paypal.com/signin');
+  bool _loading = true;
+  String? _approvalUrl;
+  String? _orderId;
+  String _returnUrlMarker = 'https://example.com/paypal-return'; // replace with your return URL configured in cloud function
+
+  late final WebViewController _controller;
 
   @override
   void initState() {
     super.initState();
-    // Open PayPal after the first frame so context is available for SnackBar.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _openPayPal());
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(onNavigationRequest: _handleNavigation))
+      ;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _createOrder());
   }
 
-  Future<void> _openPayPal() async {
+  Future<void> _createOrder() async {
+    setState(() => _loading = true);
     try {
-      final launched = await launchUrl(
-        _paypalUrl,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Konnte PayPal nicht öffnen.')),
-        );
+      final functions = FirebaseFunctions.instance;
+      final callable = functions.httpsCallable('createOrder');
+      final resp = await callable.call(<String, dynamic>{
+        'amount': widget.ammount.toStringAsFixed(2),
+        'currency': widget.currency,
+      });
+      final data = Map<String, dynamic>.from(resp.data as Map);
+      _approvalUrl = data['approvalUrl'] as String?;
+      _orderId = data['orderId'] as String?;
+      if (_approvalUrl != null) {
+        await _controller.loadRequest(Uri.parse(_approvalUrl!));
       }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fehler beim Öffnen von PayPal: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fehler beim Erstellen der Bestellung: $e')));
+      Navigator.of(context).pop();
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  NavigationDecision _handleNavigation(NavigationRequest request) {
+    final url = request.url;
+    // PayPal redirects to your return_url with a token/orderId param. Detect that and capture.
+    if (url.startsWith(_returnUrlMarker) || Uri.tryParse(url)?.queryParameters.containsKey('token') == true) {
+      // stop navigation and capture
+      _captureOrder();
+      return NavigationDecision.prevent;
+    }
+    return NavigationDecision.navigate;
+  }
+
+  Future<void> _captureOrder() async {
+    if (_orderId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order-ID fehlt')));
+      return;
+    }
+    setState(() => _loading = true);
+    try {
+      final functions = FirebaseFunctions.instance;
+      final callable = functions.httpsCallable('captureOrder');
+      final resp = await callable.call(<String, dynamic>{'orderId': _orderId});
+      final data = Map<String, dynamic>.from(resp.data as Map);
+      // data should include capture status and transaction id
+      final status = data['status'] ?? 'UNKNOWN';
+      if (status == 'COMPLETED' || status == 'COMPLETED') {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Zahlung erfolgreich')));
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        // TODO: mark invoice paid on server or in firestore
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Zahlungsstatus: $status')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fehler beim Erfassen der Bestellung: $e')));
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -45,26 +98,15 @@ class _PayPalState extends State<PayPal> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('PayPal')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Sie werden zu PayPal weitergeleitet, um die Zahlung abzuschließen.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _openPayPal,
-                child: const Text('PayPal Login öffnen'),
-              ),
-              const SizedBox(height: 8),
-              Text('Betrag: ${"%.2f".replaceAll("%", "")}${widget.ammount} ${widget.currency}'),
-            ],
-          ),
-        ),
+      body: Stack(
+        children: [
+          if (_approvalUrl != null)
+            WebViewWidget(controller: _controller)
+          else if (_loading)
+            const Center(child: CircularProgressIndicator())
+          else
+            Center(child: Text('Fehler beim Laden der Bezahlseite')),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:application2/src/payment/PayPal.dart';
+import 'package:application2/src/payment/InAppBill.dart';
 
 class PaymentSelection extends StatelessWidget {
   final double amount;
@@ -82,6 +83,22 @@ class PaymentSelection extends StatelessWidget {
               },
               icon: const Icon(Icons.credit_card),
               label: const Text('Kreditkarte'),
+            ),
+            const SizedBox(height: 12),
+            // In-app purchase option (consumable example)
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+              ),
+              onPressed: () {
+                // TODO: replace 'your_product_id' with the product id configured in Play/App Store
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const InAppBill(productId: 'your_product_id', title: 'In-App Kauf'),
+                ));
+              },
+              icon: const Icon(Icons.phone_iphone),
+              label: const Text('In-App Kauf'),
             ),
           ],
         ),
