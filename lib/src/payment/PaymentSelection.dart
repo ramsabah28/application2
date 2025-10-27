@@ -94,7 +94,23 @@ class PaymentSelection extends StatelessWidget {
                   style: paymentButtonStyle,
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const CreditCard()),
+                      MaterialPageRoute(
+                        builder: (_) => CreditCard(
+                          onSubmit: (values) {
+                            // Mask card number for display
+                            final number = values['number'] ?? '';
+                            final last4 = number.length >= 4 ? number.substring(number.length - 4) : number;
+                            final masked = '**** **** **** $last4';
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Zahlung erfolgreich mit Karte $masked')),
+                            );
+
+                            // Close all pushed routes and return to first route
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                          },
+                        ),
+                      ),
                     );
                   },
                   icon: const Icon(

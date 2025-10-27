@@ -110,7 +110,8 @@ class _PayPalState extends State<PayPal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('PayPal')),
+      backgroundColor: Theme.of(context).primaryColorLight,
+      appBar: AppBar(title: const Text('PayPal Konto Authentication'), backgroundColor: Theme.of(context).primaryColorLight,),
       body: Stack(
         children: [
           if (_paymentUrl != null)
