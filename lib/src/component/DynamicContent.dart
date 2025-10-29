@@ -68,7 +68,7 @@ class DynamicContent extends StatelessWidget {
                     gradient: _shimmerGradient,
                     period: const Duration(milliseconds: 900),
                     child: Container(
-                      height: 200,
+                      height: 350, // Updated to match the new image container height
                       width: screenWidth * 0.96,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -206,7 +206,7 @@ class DynamicContent extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: SizedBox(
-                            height: 200,
+                            height: 350, // Further increased for better portrait display
                             width: screenWidth * 0.96,
                             child: Builder(
                               builder: (_) {
@@ -235,11 +235,30 @@ class DynamicContent extends StatelessWidget {
                                         },
                                         child: Hero(
                                           tag: 'image_viewer_${idx}_$u',
-                                          child: ShimmerImageFromNetwork(
-                                            imageUrl: u,
-                                            height: 200,
+                                          child: Container(
+                                            height: 350,
                                             width: screenWidth * 0.96,
-                                            shimmerBottomInset: 12,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(0.1),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: ShimmerImageFromNetwork(
+                                                imageUrl: u,
+                                                height: 350,
+                                                width: screenWidth * 0.96,
+                                                shimmerBottomInset: 12,
+                                                fit: BoxFit.cover, // Cover fit to fill the container
+                                                alignment: Alignment.center, // Center the image for better composition
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -300,7 +319,6 @@ class DynamicContent extends StatelessWidget {
                 SizedBox(height: 24),
                 Divider(),
                 SizedBox(height: 8),
-                // Additional descriptions
                 if (product.midDescription.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),

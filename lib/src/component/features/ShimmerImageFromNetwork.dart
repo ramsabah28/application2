@@ -7,6 +7,7 @@ class ShimmerImageFromNetwork extends StatefulWidget {
   final double width;
   final double shimmerBottomInset;
   final BoxFit fit;
+  final Alignment alignment;
 
   const ShimmerImageFromNetwork({
     required this.imageUrl,
@@ -14,6 +15,7 @@ class ShimmerImageFromNetwork extends StatefulWidget {
     required this.width,
     this.shimmerBottomInset = 16.0,
     this.fit = BoxFit.contain,
+    this.alignment = Alignment.center, // Default to center alignment
     super.key,
   });
 
@@ -54,7 +56,7 @@ class _ShimmerImageNetworkState extends State<ShimmerImageFromNetwork> {
           width: widget.width,
           height: widget.height,
           fit: widget.fit,
-          alignment: const Alignment(0, -1),
+          alignment: widget.alignment, // Use the configurable alignment parameter
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (frame != null && !_isLoaded) {
               WidgetsBinding.instance.addPostFrameCallback((_) {

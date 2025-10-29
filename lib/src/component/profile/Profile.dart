@@ -9,6 +9,7 @@ import 'Register.dart';
 import 'Favorit.dart';
 import 'Adress.dart';
 import '../features/StandardButton.dart';
+import '../../services/UserService.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -166,96 +167,113 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Avatar with tap to change functionality
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Stack(
-                      children: [
-                        _buildAvatarImage(),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              shape: BoxShape.circle,
+              child: StreamBuilder<UserData?>(
+                stream: UserService.getCurrentUserDataStream(),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+                  
+                  final userData = userSnapshot.data;
+                  final displayName = userData?.fullName.isNotEmpty == true 
+                      ? userData!.fullName 
+                      : 'User';
+                  final displayEmail = userData?.displayEmail.isNotEmpty == true 
+                      ? userData!.displayEmail 
+                      : snapshot.data?.email ?? 'No email';
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Avatar with tap to change functionality
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Stack(
+                          children: [
+                            _buildAvatarImage(),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
                             ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  // Name
-                  Text(
-                    'John Doe',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Email
-                  Text(
-                    'johndoe@email.com',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Divider(thickness: 1.2, color: Colors.grey[300]),
-                  const SizedBox(height: 24),
-                  const SizedBox(height: 8),
-                  _ProfileActionButton(
-                    icon: Icons.home_outlined,
-                    label: 'Adresse',
-                    accent: Theme.of(context).primaryColor,
-                    onTap: _showAdress,
-                  ),
-                  const SizedBox(height: 24),
-                  // Modern Buttons
-                  _ProfileActionButton(
-                    icon: Icons.shopping_bag_outlined,
-                    label: 'Bestellungen',
-                    accent: Theme.of(context).primaryColor,
-                  ),
-                  const SizedBox(height: 16),
-                  _ProfileActionButton(
-                    icon: Icons.receipt_long_outlined,
-                    label: 'Rechnungen',
-                    accent: Theme.of(context).primaryColor,
-                    onTap: _showInvoice,
-                  ),
-                  const SizedBox(height: 16),
-                  _ProfileActionButton(
-                    icon: Icons.favorite_border,
-                    label: 'Mein Favorit list',
-                    accent: Theme.of(context).primaryColor,
-                    onTap: _showFavorit,
-                  ),
-                  const SizedBox(height: 32),
-                  StandardButton(
-                    icon: Icon(
-                      Icons.logout,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    backgroundColor: Theme.of(context).primaryColorDark,
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                    },
-                  ),
-                ],
+                      ),
+                      const SizedBox(height: 32),
+                      // Display user's full name from Firestore
+                      Text(
+                        displayName,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Display user's email from Firestore
+                      Text(
+                        displayEmail,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Divider(thickness: 1.2, color: Colors.grey[300]),
+                      const SizedBox(height: 24),
+                      const SizedBox(height: 8),
+                      _ProfileActionButton(
+                        icon: Icons.home_outlined,
+                        label: 'Adresse',
+                        accent: Theme.of(context).primaryColor,
+                        onTap: _showAdress,
+                      ),
+                      const SizedBox(height: 24),
+                      // Modern Buttons
+                      _ProfileActionButton(
+                        icon: Icons.shopping_bag_outlined,
+                        label: 'Bestellungen',
+                        accent: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      _ProfileActionButton(
+                        icon: Icons.receipt_long_outlined,
+                        label: 'Rechnungen',
+                        accent: Theme.of(context).primaryColor,
+                        onTap: _showInvoice,
+                      ),
+                      const SizedBox(height: 16),
+                      _ProfileActionButton(
+                        icon: Icons.favorite_border,
+                        label: 'Mein Favorit list',
+                        accent: Theme.of(context).primaryColor,
+                        onTap: _showFavorit,
+                      ),
+                      const SizedBox(height: 32),
+                      StandardButton(
+                        icon: Icon(
+                          Icons.logout,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        backgroundColor: Theme.of(context).primaryColorDark,
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                        },
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
