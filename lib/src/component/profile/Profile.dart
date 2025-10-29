@@ -1,6 +1,9 @@
 import 'package:application2/src/component/profile/Invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 import 'Login.dart';
 import 'Register.dart';
 import 'Favorit.dart';
@@ -25,6 +28,58 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   bool showFavorit = false;
   bool showAdress = false;
   bool showInvoice = false;
+  String? _avatarImagePath;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvatarImage();
+  }
+
+  Future<void> _loadAvatarImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _avatarImagePath = prefs.getString('avatar_image_path');
+    });
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      
+      if (image != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('avatar_image_path', image.path);
+        setState(() {
+          _avatarImagePath = image.path;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: $e')),
+      );
+    }
+  }
+
+  Widget _buildAvatarImage() {
+    if (_avatarImagePath != null && File(_avatarImagePath!).existsSync()) {
+      return CircleAvatar(
+        radius: 72,
+        backgroundImage: FileImage(File(_avatarImagePath!)),
+      );
+    } else {
+      return CircleAvatar(
+        radius: 72,
+        backgroundImage: AssetImage('lib/assets/avatar.jpg'),
+      );
+    }
+  }
 
   void _showFavorit() {
     setState(() {
@@ -114,10 +169,30 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Bigger circular profile image
-                  CircleAvatar(
-                    radius: 72,
-                    backgroundImage: AssetImage('lib/assets/avatar.jpg'),
+                  // Avatar with tap to change functionality
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: Stack(
+                      children: [
+                        _buildAvatarImage(),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 32),
                   // Name
