@@ -3,6 +3,7 @@ import '../repository/CartRepository.dart';
 import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
+import '../services/FavoritService.dart';
 import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
 import 'package:shimmer/shimmer.dart';
@@ -255,8 +256,8 @@ class DynamicContent extends StatelessWidget {
                                                 height: 350,
                                                 width: screenWidth * 0.96,
                                                 shimmerBottomInset: 12,
-                                                fit: BoxFit.cover, // Cover fit to fill the container
-                                                alignment: Alignment.center, // Center the image for better composition
+                                                fit: BoxFit.cover,
+                                                alignment: Alignment.center,
                                               ),
                                             ),
                                           ),
@@ -313,7 +314,18 @@ class DynamicContent extends StatelessWidget {
                       },
                     ),
                     SizedBox(height: 4),
-                    FavButton(),
+                    FavButton(
+                      onPressed: () async {
+                        final added = await FavoritService.addToFavorites(uuid);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              added ? 'Zu Favoriten hinzugefügt!' : 'Bereits in Favoriten!'
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(height: 24),
