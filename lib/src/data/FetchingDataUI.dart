@@ -105,6 +105,100 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
     _subImage3UrlController.text = _buildImageUrl(_selectedSubImage3FolderNumber, _selectedSubImage3SubNumber, _selectedSubImage3Extension);
   }
 
+  // Show image preview dialog
+  void _showImagePreview(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: 300,
+            height: 400,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Image Preview',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  imageUrl,
+                  style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.red[50],
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 48,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Image not found\nor failed to load',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Close'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -492,9 +586,26 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(
-                      'Generated URL: ${_buildImageUrl(_selectedFolderNumber, _selectedSubImageNumber, _selectedExtension)}',
-                      style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Generated URL: ${_buildImageUrl(_selectedFolderNumber, _selectedSubImageNumber, _selectedExtension)}',
+                          style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton.icon(
+                          onPressed: () => _showImagePreview(_buildImageUrl(_selectedFolderNumber, _selectedSubImageNumber, _selectedExtension)),
+                          icon: const Icon(Icons.visibility, size: 16),
+                          label: const Text('Preview Image', style: TextStyle(fontSize: 12)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[600],
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            minimumSize: const Size(0, 32),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -591,6 +702,21 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
                               _updateSubImage1Url();
                             });
                           },
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      // Preview button
+                      IconButton(
+                        onPressed: _subImage1UrlController.text.isNotEmpty 
+                            ? () => _showImagePreview(_subImage1UrlController.text)
+                            : null,
+                        icon: const Icon(Icons.preview, size: 18),
+                        tooltip: 'Preview Image',
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.blue.shade50,
+                          foregroundColor: Colors.blue.shade700,
+                          minimumSize: const Size(32, 32),
+                          padding: const EdgeInsets.all(4),
                         ),
                       ),
                     ],
@@ -706,6 +832,21 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
                           },
                         ),
                       ),
+                      const SizedBox(width: 6),
+                      // Preview button
+                      IconButton(
+                        onPressed: _subImage2UrlController.text.isNotEmpty 
+                            ? () => _showImagePreview(_subImage2UrlController.text)
+                            : null,
+                        icon: const Icon(Icons.preview, size: 18),
+                        tooltip: 'Preview Image',
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.blue.shade50,
+                          foregroundColor: Colors.blue.shade700,
+                          minimumSize: const Size(32, 32),
+                          padding: const EdgeInsets.all(4),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -817,6 +958,21 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
                               _updateSubImage3Url();
                             });
                           },
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      // Preview button
+                      IconButton(
+                        onPressed: _subImage3UrlController.text.isNotEmpty 
+                            ? () => _showImagePreview(_subImage3UrlController.text)
+                            : null,
+                        icon: const Icon(Icons.preview, size: 18),
+                        tooltip: 'Preview Image',
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.blue.shade50,
+                          foregroundColor: Colors.blue.shade700,
+                          minimumSize: const Size(32, 32),
+                          padding: const EdgeInsets.all(4),
                         ),
                       ),
                     ],
