@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import '../../models/UserModel.dart';
 import 'Login.dart';
 import 'Register.dart';
 import '../features/StandardButton.dart';
@@ -184,11 +185,11 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   }
 
                   final userData = userSnapshot.data;
-                  final displayName = userData?.fullName.isNotEmpty == true
-                      ? userData!.fullName
+                  final displayName = userData != null && UserService.getFullName(userData).isNotEmpty
+                      ? UserService.getFullName(userData)
                       : 'User';
-                  final displayEmail = userData?.displayEmail.isNotEmpty == true
-                      ? userData!.displayEmail
+                  final displayEmail = userData != null && UserService.getDisplayEmail(userData).isNotEmpty
+                      ? UserService.getDisplayEmail(userData)
                       : snapshot.data?.email ?? 'No email';
 
                   return Column(
@@ -274,6 +275,17 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                       StandardButton(
                         icon: Icon(
                           Icons.logout,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        backgroundColor: Theme.of(context).primaryColorDark,
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                        },
+                      ),
+                      //
+                      StandardButton(
+                        icon: Icon(
+                          Icons.admin_panel_settings,
                           color: Theme.of(context).primaryColor,
                         ),
                         backgroundColor: Theme.of(context).primaryColorDark,

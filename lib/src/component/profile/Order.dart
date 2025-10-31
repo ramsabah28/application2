@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../models/UserModel.dart';
 import '../../services/OrderService.dart';
 import '../../services/UserService.dart';
 import '../../models/OrderModel.dart';
@@ -384,14 +385,14 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
             }
 
             final userData = userSnapshot.data;
-            final userName = userData?.fullName.isNotEmpty == true
-                ? userData!.fullName
+            final userName = userData != null && UserService.getFullName(userData).isNotEmpty
+                ? UserService.getFullName(userData)
                 : 'Unbekannt';
-            final userEmail = userData?.displayEmail.isNotEmpty == true
-                ? userData!.displayEmail
+            final userEmail = userData != null && UserService.getDisplayEmail(userData).isNotEmpty
+                ? UserService.getDisplayEmail(userData)
                 : 'Keine E-Mail';
-            final userAddress = userData?.address.isNotEmpty == true
-                ? userData!.address
+            final userAddress = userData != null && UserService.getAddress(userData).isNotEmpty
+                ? UserService.getAddress(userData)
                 : 'Keine Adresse hinterlegt';
 
             return Column(

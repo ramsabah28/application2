@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/UserModel.dart';
 
 class UserService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -18,7 +19,7 @@ class UserService {
 
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        return UserData.fromFirestore(data);
+        return UserService.fromFirestore(data);
       }
       return null;
     } catch (e) {
@@ -41,7 +42,7 @@ class UserService {
         .map((doc) {
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        return UserData.fromFirestore(data);
+        return UserService.fromFirestore(data);
       }
       return null;
     });
@@ -57,7 +58,7 @@ class UserService {
 
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        return UserData.fromFirestore(data);
+        return UserService.fromFirestore(data);
       }
       return null;
     } catch (e) {
@@ -75,7 +76,7 @@ class UserService {
       await _firestore
           .collection('users')
           .doc(currentUser.uid)
-          .update(userData.toFirestore());
+          .update(UserService.toFirestore(userData));
       
       return true;
     } catch (e) {
@@ -93,7 +94,7 @@ class UserService {
       await _firestore
           .collection('users')
           .doc(currentUser.uid)
-          .set(userData.toFirestore());
+          .set(UserService.toFirestore(userData));
       
       return true;
     } catch (e) {
@@ -101,33 +102,9 @@ class UserService {
       return false;
     }
   }
-}
-
-class UserData {
-  final String? name;
-  final String? nachname; // surname
-  final String? email;
-  final String? username;
-  final String? city;
-  final String? street;
-  final String? zip;
-  final int? phone;
-  final String? uid;
-
-  UserData({
-    this.name,
-    this.nachname,
-    this.email,
-    this.username,
-    this.city,
-    this.street,
-    this.zip,
-    this.phone,
-    this.uid,
-  });
 
   /// Create UserData from Firestore document
-  factory UserData.fromFirestore(Map<String, dynamic> data) {
+  static UserData fromFirestore(Map<String, dynamic> data) {
     return UserData(
       name: data['name'] as String?,
       nachname: data['nachname'] as String?,
@@ -138,41 +115,43 @@ class UserData {
       zip: data['zip'] as String?,
       phone: data['phone'] as int?,
       uid: data['uid'] as String?,
+      roll: data['roll'] as String?,
     );
   }
 
   /// Convert UserData to Firestore document
-  Map<String, dynamic> toFirestore() {
+  static Map<String, dynamic> toFirestore(UserData userData) {
     return {
-      if (name != null) 'name': name,
-      if (nachname != null) 'nachname': nachname,
-      if (email != null) 'email': email,
-      if (username != null) 'username': username,
-      if (city != null) 'city': city,
-      if (street != null) 'street': street,
-      if (zip != null) 'zip': zip,
-      if (phone != null) 'phone': phone,
-      if (uid != null) 'uid': uid,
+      if (userData.name != null) 'name': userData.name,
+      if (userData.nachname != null) 'nachname': userData.nachname,
+      if (userData.email != null) 'email': userData.email,
+      if (userData.username != null) 'username': userData.username,
+      if (userData.city != null) 'city': userData.city,
+      if (userData.street != null) 'street': userData.street,
+      if (userData.zip != null) 'zip': userData.zip,
+      if (userData.phone != null) 'phone': userData.phone,
+      if (userData.uid != null) 'uid': userData.uid,
+      if (userData.roll != null) 'roll': userData.roll,
     };
   }
 
   /// Get full name (name + surname)
-  String get fullName {
-    final firstName = name ?? '';
-    final lastName = nachname ?? '';
+  static String getFullName(UserData userData) {
+    final firstName = userData.name ?? '';
+    final lastName = userData.nachname ?? '';
     return '$firstName $lastName'.trim();
   }
 
   /// Get display email (fallback to username if email is null)
-  String get displayEmail {
-    return email ?? username ?? '';
+  static String getDisplayEmail(UserData userData) {
+    return userData.email ?? userData.username ?? '';
   }
 
   /// Get formatted address
-  String get address {
-    final streetAddress = street ?? '';
-    final cityName = city ?? '';
-    final zipCode = zip ?? '';
+  static String getAddress(UserData userData) {
+    final streetAddress = userData.street ?? '';
+    final cityName = userData.city ?? '';
+    final zipCode = userData.zip ?? '';
     
     if (streetAddress.isEmpty && cityName.isEmpty && zipCode.isEmpty) {
       return '';
