@@ -111,6 +111,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      color: Theme.of(context).primaryColorLight,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -122,16 +123,17 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
               children: [
                 Text(
                   'Bestellung ${order.uuid.substring(0, 8)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 Text(
                   order.date,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).primaryColorDark.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -169,14 +171,14 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                 Icon(
                   Icons.receipt_outlined,
                   size: 16,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Rechnung: ${order.BID.substring(0, 8)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -191,10 +193,18 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                     onPressed: () {
                       _showOrderDetails(context, order);
                     },
-                    icon: const Icon(Icons.visibility_outlined, size: 16),
-                    label: const Text('Details anzeigen'),
+                    icon: Icon(
+                      Icons.visibility_outlined, 
+                      size: 16,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    label: Text(
+                      'Details anzeigen',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
+                      side: BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
@@ -208,6 +218,8 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                     label: const Text('Verfolgen'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 ),
@@ -357,7 +369,8 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Bestellung ${order.uuid.substring(0, 8)}'),
+        backgroundColor: Theme.of(context).primaryColorLight,
+        title: Text('Lieferungsdetails ${order.uuid.substring(0, 8)}'),
         content: FutureBuilder<UserData?>(
           future: UserService.getUserDataByUID(order.UID),
           builder: (context, userSnapshot) {
@@ -434,7 +447,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Bestellung verfolgen'),
+        backgroundColor: Theme.of(context).primaryColorLight,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -452,7 +465,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: Theme.of(context).primaryColorLight,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
@@ -461,8 +474,8 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                     Row(
                       children: [
                         Icon(
-                          Icons.trending_up,
-                          color: Colors.blue,
+                          Icons.next_plan,
+                          color: Theme.of(context).primaryColor,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
@@ -470,7 +483,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                           'Nächster Schritt:',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: Colors.blue,
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                       ],

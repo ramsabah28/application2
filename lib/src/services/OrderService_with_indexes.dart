@@ -9,7 +9,6 @@ class OrderServiceWithIndexes {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _ordersCollection = 'orders';
 
-  /// Add a new order by user UID to Firebase with status "placed"
   static Future<void> addOrder({
     required String uid,
     required String billId,
@@ -36,12 +35,11 @@ class OrderServiceWithIndexes {
     }
   }
 
-  /// Stream of orders for real-time updates for a specific user (WITH INDEX)
   static Stream<List<OrderModel>> watchOrdersByUser(String uid) {
     return _firestore
         .collection(_ordersCollection)
         .where('UID', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)  // Requires index
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -64,7 +62,7 @@ class OrderServiceWithIndexes {
       final querySnapshot = await _firestore
           .collection(_ordersCollection)
           .where('delivered', isEqualTo: false)
-          .orderBy('createdAt', descending: true)  // Requires index
+          .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs.map((doc) {
@@ -89,7 +87,7 @@ class OrderServiceWithIndexes {
       final querySnapshot = await _firestore
           .collection(_ordersCollection)
           .where('UID', isEqualTo: uid)
-          .orderBy('createdAt', descending: true)  // Requires index
+          .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs.map((doc) {
@@ -108,8 +106,6 @@ class OrderServiceWithIndexes {
     }
   }
 
-  /// Update order status by uuid and UID
-  /// Valid statuses: placed, preparing, sent, in_delivery, delivered
   static Future<void> updateOrderStatus({
     required String uuid,
     required String uid,
