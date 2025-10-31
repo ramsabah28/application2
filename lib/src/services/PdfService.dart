@@ -256,11 +256,11 @@ class PdfService {
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text('${((item['price'] ?? 0.0) as double).toStringAsFixed(2)}€'),
+                        child: pw.Text('${((item['price'] ?? 0.0) as double).toStringAsFixed(2)} EUR'),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text('${((item['total'] ?? 0.0) as double).toStringAsFixed(2)}€'),
+                        child: pw.Text('${((item['total'] ?? 0.0) as double).toStringAsFixed(2)} EUR'),
                       ),
                     ],
                   )).toList(),
@@ -279,7 +279,7 @@ class PdfService {
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
                           pw.Text('Zwischensumme:'),
-                          pw.Text('${subtotal.toStringAsFixed(2)}€'),
+                          pw.Text('${subtotal.toStringAsFixed(2)} EUR'),
                         ],
                       ),
                       pw.SizedBox(height: 4),
@@ -287,7 +287,7 @@ class PdfService {
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
                           pw.Text('MwSt (19%):'),
-                          pw.Text('${tax.toStringAsFixed(2)}€'),
+                          pw.Text('${tax.toStringAsFixed(2)} EUR'),
                         ],
                       ),
                       pw.SizedBox(height: 4),
@@ -295,7 +295,7 @@ class PdfService {
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
                           pw.Text('Versandkosten:'),
-                          pw.Text('${shipping.toStringAsFixed(2)}€'),
+                          pw.Text('${shipping.toStringAsFixed(2)} EUR'),
                         ],
                       ),
                       pw.Divider(thickness: 1),
@@ -304,7 +304,7 @@ class PdfService {
                         children: [
                           pw.Text('Gesamtsumme:', 
                             style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-                          pw.Text('${grandTotal.toStringAsFixed(2)}€', 
+                          pw.Text('${grandTotal.toStringAsFixed(2)} EUR', 
                             style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
                         ],
                       ),
