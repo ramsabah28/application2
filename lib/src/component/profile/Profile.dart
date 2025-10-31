@@ -1,5 +1,3 @@
-import 'package:application2/src/component/profile/Invoice.dart';
-import 'package:application2/src/component/profile/Order.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,30 +5,52 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'Login.dart';
 import 'Register.dart';
-import 'Favorit.dart';
-import 'Adress.dart';
 import '../features/StandardButton.dart';
 import '../../services/UserService.dart';
 
 class Profile extends StatelessWidget {
-  const Profile({super.key});
+  final VoidCallback? onShowAddress;
+  final VoidCallback? onShowOrders;
+  final VoidCallback? onShowInvoices;
+  final VoidCallback? onShowFavorites;
+
+  const Profile({
+    super.key,
+    this.onShowAddress,
+    this.onShowOrders,
+    this.onShowInvoices,
+    this.onShowFavorites,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return _ProfileAuthSwitcher();
+    return _ProfileAuthSwitcher(
+      onShowAddress: onShowAddress,
+      onShowOrders: onShowOrders,
+      onShowInvoices: onShowInvoices,
+      onShowFavorites: onShowFavorites,
+    );
   }
 }
 
 class _ProfileAuthSwitcher extends StatefulWidget {
+  final VoidCallback? onShowAddress;
+  final VoidCallback? onShowOrders;
+  final VoidCallback? onShowInvoices;
+  final VoidCallback? onShowFavorites;
+
+  const _ProfileAuthSwitcher({
+    this.onShowAddress,
+    this.onShowOrders,
+    this.onShowInvoices,
+    this.onShowFavorites,
+  });
+
   @override
   State<_ProfileAuthSwitcher> createState() => _ProfileAuthSwitcherState();
 }
 
 class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
-  bool showFavorit = false;
-  bool showAdress = false;
-  bool showInvoice = false;
-  bool showOrder = false;
   String? _avatarImagePath;
   final ImagePicker _picker = ImagePicker();
 
@@ -85,15 +105,11 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   }
 
   void _showFavorit() {
-    setState(() {
-      showFavorit = true;
-    });
+    widget.onShowFavorites?.call();
   }
 
   void _showAdress() {
-    setState(() {
-      showAdress = true;
-    });
+    widget.onShowAddress?.call();
   }
 
   bool showRegister = false;
@@ -111,15 +127,11 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   }
 
   void _showInvoice() {
-    setState(() {
-      showInvoice = true;
-    });
+    widget.onShowInvoices?.call();
   }
 
   void _showOrder() {
-    setState(() {
-      showOrder = true;
-    });
+    widget.onShowOrders?.call();
   }
 
   @override
@@ -157,22 +169,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
             ],
           );
         }
-        // User is logged in
-        if (showFavorit) {
-          return Favorit();
-        }
-        if (showAdress) {
-          return AdressScreen();
-        }
-
-        if (showInvoice) {
-          return Invoice();
-        }
-
-        if (showOrder) {
-          return Order();
-        }
-
+        // User is logged in - Always show profile interface
         final Color bgColor = const Color(0xFFF5F6FA);
         return Container(
           color: bgColor,
