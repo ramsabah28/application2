@@ -10,6 +10,8 @@ import 'package:application2/src/payment/PaymentSelection.dart';
 import '../services/InvoiceService.dart';
 import '../models/InvoiceModel.dart';
 import '../services/ProductService.dart';
+import '../services/OrderService.dart';
+import 'package:uuid/uuid.dart';
 
 class Cart extends StatefulWidget {
   const Cart({Key? key}) : super(key: key);
@@ -195,8 +197,11 @@ class _CartState extends State<Cart> {
                                     .toList();
                                 final totalItemsCount = cartItems.fold(0, (sum, item) => sum + item.count);
 
+                                // Generate UUID for both bill and order
+                                final billUuid = const Uuid().v4();
+
                                 final bill = BillModel(
-                                  uuid: '',
+                                  uuid: billUuid,
                                   UID: user.uid,
                                   items: items,
                                   count: totalItemsCount,
@@ -206,18 +211,28 @@ class _CartState extends State<Cart> {
                                 );
 
                                 try {
+                                  // Create bill first
                                   await BillService.addBill(bill);
+                                  
+                                  // Create order after successful bill creation
+                                  await OrderService.addOrder(
+                                    uid: user.uid,
+                                    billId: billUuid,
+                                  );
+                                  
+                                  // Clear cart and update UI
                                   await CartRepository().clearCart();
                                   Navigator.pop(context); // Close bottom sheet
                                   setState(() {
                                     _cartFuture = _loadCartWithStock();
                                   });
+                                  
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Rechnung erstellt und Warenkorb geleert.')),
+                                    const SnackBar(content: Text('Bestellung aufgegeben und Warenkorb geleert.')),
                                   );
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Fehler beim Erstellen der Rechnung: $e')),
+                                    SnackBar(content: Text('Fehler beim Aufgeben der Bestellung: $e')),
                                   );
                                 }
                               },
