@@ -1,10 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/OrderService.dart';
+import '../../services/UserService.dart';
 import '../../models/OrderModel.dart';
 
-class Order extends StatelessWidget {
+class Order extends StatefulWidget {
   const Order({Key? key}) : super(key: key);
+
+  @override
+  State<Order> createState() => _OrderState();
+}
+
+class _OrderState extends State<Order> with TickerProviderStateMixin {
+  late AnimationController _glowController;
+  late Animation<double> _glowAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _glowController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+    
+    _glowAnimation = Tween<double>(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _glowController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +143,7 @@ class Order extends StatelessWidget {
               children: [
                 Icon(
                   _getStatusIcon(order.status),
-                  color: _getStatusColor(order.status),
+                  color: _getStatusColor(order.status, true),
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -120,7 +152,7 @@ class Order extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: _getStatusColor(order.status),
+                    color: _getStatusColor(order.status, true),
                   ),
                 ),
               ],
@@ -194,28 +226,73 @@ class Order extends StatelessWidget {
     return Row(
       children: steps.asMap().entries.map((entry) {
         final index = entry.key;
+        final stepStatus = steps[index];
         final isCompleted = index <= currentIndex;
+        final isCurrent = index == currentIndex;
         final isLast = index == steps.length - 1;
+        final statusColor = _getStatusColor(stepStatus, isCompleted);
         
         return Expanded(
           child: Row(
             children: [
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isCompleted ? Theme.of(context).primaryColor : Colors.grey[300],
-                ),
-                child: isCompleted
-                    ? const Icon(Icons.check, size: 12, color: Colors.white)
-                    : null,
+              // Animated glowing circle for current status
+              AnimatedBuilder(
+                animation: _glowAnimation,
+                builder: (context, child) {
+                  return Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isCompleted ? statusColor : Colors.grey[300],
+                      boxShadow: isCurrent && isCompleted ? [
+                        BoxShadow(
+                          color: statusColor.withValues(alpha: _glowAnimation.value * 0.8),
+                          blurRadius: 8 * _glowAnimation.value,
+                          spreadRadius: 2 * _glowAnimation.value,
+                        ),
+                        BoxShadow(
+                          color: statusColor.withValues(alpha: _glowAnimation.value * 0.4),
+                          blurRadius: 16 * _glowAnimation.value,
+                          spreadRadius: 4 * _glowAnimation.value,
+                        ),
+                      ] : null,
+                    ),
+                    child: isCompleted
+                        ? Icon(
+                            Icons.check, 
+                            size: 12, 
+                            color: Colors.white,
+                            shadows: isCurrent ? [
+                              Shadow(
+                                color: Colors.white.withValues(alpha: _glowAnimation.value),
+                                blurRadius: 4 * _glowAnimation.value,
+                              ),
+                            ] : null,
+                          )
+                        : null,
+                  );
+                },
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(
-                    height: 2,
-                    color: isCompleted ? Theme.of(context).primaryColor : Colors.grey[300],
+                  child: AnimatedBuilder(
+                    animation: _glowAnimation,
+                    builder: (context, child) {
+                      return Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: isCompleted ? statusColor : Colors.grey[300],
+                          boxShadow: isCurrent && isCompleted ? [
+                            BoxShadow(
+                              color: statusColor.withValues(alpha: _glowAnimation.value * 0.6),
+                              blurRadius: 4 * _glowAnimation.value,
+                              spreadRadius: 1 * _glowAnimation.value,
+                            ),
+                          ] : null,
+                        ),
+                      );
+                    },
                   ),
                 ),
             ],
@@ -223,6 +300,23 @@ class Order extends StatelessWidget {
         );
       }).toList(),
     );
+  }
+
+  Color _getStatusColor(String status, bool isCompleted) {
+    if (!isCompleted) return Colors.grey[300]!;
+    
+    switch (status) {
+      case 'placed':
+        return Colors.blue;
+      case 'preparing':
+        return Colors.orange;
+      case 'sent':
+        return Colors.purple;
+      case 'in_delivery':
+        return Colors.green;
+      default:
+        return Theme.of(context).primaryColor;
+    }
   }
 
   IconData _getStatusIcon(String status) {
@@ -239,23 +333,6 @@ class Order extends StatelessWidget {
         return Icons.check_circle_outlined;
       default:
         return Icons.help_outline;
-    }
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'placed':
-        return Colors.blue;
-      case 'preparing':
-        return Colors.orange;
-      case 'sent':
-        return Colors.purple;
-      case 'in_delivery':
-        return Colors.indigo;
-      case 'delivered':
-        return Colors.green;
-      default:
-        return Colors.grey;
     }
   }
 
@@ -281,17 +358,40 @@ class Order extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Bestellung ${order.uuid.substring(0, 8)}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDetailRow('Bestellnummer:', order.uuid),
-            _buildDetailRow('Rechnungs-ID:', order.BID),
-            _buildDetailRow('Benutzer-ID:', order.UID),
-            _buildDetailRow('Datum:', order.date),
-            _buildDetailRow('Status:', _getStatusText(order.status)),
-            _buildDetailRow('Zugestellt:', order.deleverd ? 'Ja' : 'Nein'),
-          ],
+        content: FutureBuilder<UserData?>(
+          future: UserService.getUserDataByUID(order.UID),
+          builder: (context, userSnapshot) {
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 100,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            
+            final userData = userSnapshot.data;
+            final userName = userData?.fullName.isNotEmpty == true 
+                ? userData!.fullName 
+                : 'Unbekannt';
+            final userEmail = userData?.displayEmail.isNotEmpty == true 
+                ? userData!.displayEmail 
+                : 'Keine E-Mail';
+            final userAddress = userData?.address.isNotEmpty == true 
+                ? userData!.address 
+                : 'Keine Adresse hinterlegt';
+                
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('Kunde:', userName),
+                _buildDetailRow('E-Mail:', userEmail),
+                _buildDetailRow('Adresse:', userAddress),
+                _buildDetailRow('Datum:', order.date),
+                _buildDetailRow('Status:', _getStatusText(order.status)),
+                _buildDetailRow('Zugestellt:', order.deleverd ? 'Ja' : 'Nein'),
+              ],
+            );
+          },
         ),
         actions: [
           TextButton(
@@ -328,6 +428,9 @@ class Order extends StatelessWidget {
   }
 
   void _trackOrder(BuildContext context, OrderModel order) {
+    final nextStatus = _getNextStatus(order.status);
+    final isDelivered = order.status == 'delivered';
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -337,12 +440,94 @@ class Order extends StatelessWidget {
           children: [
             Text('Bestellung ${order.uuid.substring(0, 8)}'),
             const SizedBox(height: 16),
-                                        _buildStatusProgress(context, order.status),
+            _buildStatusProgress(context, order.status),
             const SizedBox(height: 16),
             Text(
               'Aktueller Status: ${_getStatusText(order.status)}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 12),
+            // Show next status information
+            if (!isDelivered && nextStatus != null) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.trending_up,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Nächster Schritt:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          _getStatusIcon(nextStatus),
+                          color: _getStatusColor(nextStatus, true),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _getStatusText(nextStatus),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: _getStatusColor(nextStatus, true),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ] else if (isDelivered) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Bestellung wurde erfolgreich zugestellt!',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
         actions: [
@@ -353,5 +538,16 @@ class Order extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String? _getNextStatus(String currentStatus) {
+    final steps = ['placed', 'preparing', 'sent', 'in_delivery', 'delivered'];
+    final currentIndex = steps.indexOf(currentStatus);
+    
+    if (currentIndex == -1 || currentIndex >= steps.length - 1) {
+      return null; // No next status or already delivered
+    }
+    
+    return steps[currentIndex + 1];
   }
 }

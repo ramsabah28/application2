@@ -47,6 +47,25 @@ class UserService {
     });
   }
 
+  /// Get user data by UID
+  static Future<UserData?> getUserDataByUID(String uid) async {
+    try {
+      final DocumentSnapshot doc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        return UserData.fromFirestore(data);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching user data by UID: $e');
+      return null;
+    }
+  }
+
   /// Update user data in Firestore
   static Future<bool> updateUserData(UserData userData) async {
     try {
@@ -147,5 +166,28 @@ class UserData {
   /// Get display email (fallback to username if email is null)
   String get displayEmail {
     return email ?? username ?? '';
+  }
+
+  /// Get formatted address
+  String get address {
+    final streetAddress = street ?? '';
+    final cityName = city ?? '';
+    final zipCode = zip ?? '';
+    
+    if (streetAddress.isEmpty && cityName.isEmpty && zipCode.isEmpty) {
+      return '';
+    }
+    
+    final parts = <String>[];
+    if (streetAddress.isNotEmpty) parts.add(streetAddress);
+    if (zipCode.isNotEmpty && cityName.isNotEmpty) {
+      parts.add('$zipCode $cityName');
+    } else if (cityName.isNotEmpty) {
+      parts.add(cityName);
+    } else if (zipCode.isNotEmpty) {
+      parts.add(zipCode);
+    }
+    
+    return parts.join(', ');
   }
 }
