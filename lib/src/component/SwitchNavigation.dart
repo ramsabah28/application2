@@ -27,7 +27,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
     Home(), 
     Category(), 
     Cart(), 
-    Profile()  // Default Profile without callbacks - only used when not index 3
+    Profile()
   ];
   Widget? _overrideScreen;
   int? _lastProductIndex;
@@ -79,7 +79,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
 
   void backToProfile() {
     setState(() {
-      _selectedIndex = 3; // Profile tab index
+      _selectedIndex = 3;
       _overrideScreen = null;
     });
   }

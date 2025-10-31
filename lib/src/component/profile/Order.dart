@@ -22,14 +22,10 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    
-    _glowAnimation = Tween<double>(
-      begin: 0.3,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _glowController,
-      curve: Curves.easeInOut,
-    ));
+
+    _glowAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -43,7 +39,9 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return const Center(child: Text('Bitte anmelden, um Bestellungen zu sehen.'));
+      return const Center(
+        child: Text('Bitte anmelden, um Bestellungen zu sehen.'),
+      );
     }
 
     return StreamBuilder<List<OrderModel>>(
@@ -52,40 +50,32 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (snapshot.hasError) {
-          return const Center(child: Text('Fehler beim Laden der Bestellungen.'));
+          return const Center(
+            child: Text('Fehler beim Laden der Bestellungen.'),
+          );
         }
-        
+
         final allOrders = snapshot.data ?? [];
         // Filter for open orders (delivered == false)
         final openOrders = allOrders.where((order) => !order.deleverd).toList();
-        
+
         if (openOrders.isEmpty) {
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.shopping_bag_outlined,
-                  size: 64,
-                  color: Colors.grey,
-                ),
+                Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
                 Text(
                   'Keine offenen Bestellungen',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
                 SizedBox(height: 8),
                 Text(
                   'Ihre Bestellungen erscheinen hier',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
@@ -108,16 +98,13 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
   Widget _buildOrderCard(BuildContext context, OrderModel order) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Theme.of(context).primaryColorLight,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with order ID and date
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -133,14 +120,15 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                   order.date,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).primaryColorDark.withValues(alpha: 0.7),
+                    color: Theme.of(
+                      context,
+                    ).primaryColorDark.withValues(alpha: 0.7),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            
-            // Status section
+
             Row(
               children: [
                 Icon(
@@ -160,32 +148,33 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
               ],
             ),
             const SizedBox(height: 12),
-            
-            // Progress indicator
+
             _buildStatusProgress(context, order.status),
             const SizedBox(height: 12),
-            
-            // Bill ID section
+
             Row(
               children: [
                 Icon(
                   Icons.receipt_outlined,
                   size: 16,
-                  color: Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).primaryColorDark.withValues(alpha: 0.6),
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Rechnung: ${order.BID.substring(0, 8)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).primaryColorDark.withValues(alpha: 0.6),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            
-            // Action button
+
             Row(
               children: [
                 Expanded(
@@ -194,7 +183,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                       _showOrderDetails(context, order);
                     },
                     icon: Icon(
-                      Icons.visibility_outlined, 
+                      Icons.visibility_outlined,
                       size: 16,
                       color: Theme.of(context).primaryColor,
                     ),
@@ -234,7 +223,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
   Widget _buildStatusProgress(BuildContext context, String status) {
     final steps = ['placed', 'preparing', 'sent', 'in_delivery'];
     final currentIndex = steps.indexOf(status);
-    
+
     return Row(
       children: steps.asMap().entries.map((entry) {
         final index = entry.key;
@@ -243,11 +232,10 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
         final isCurrent = index == currentIndex;
         final isLast = index == steps.length - 1;
         final statusColor = _getStatusColor(stepStatus, isCompleted);
-        
+
         return Expanded(
           child: Row(
             children: [
-              // Animated glowing circle for current status
               AnimatedBuilder(
                 animation: _glowAnimation,
                 builder: (context, child) {
@@ -257,30 +245,40 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isCompleted ? statusColor : Colors.grey[300],
-                      boxShadow: isCurrent && isCompleted ? [
-                        BoxShadow(
-                          color: statusColor.withValues(alpha: _glowAnimation.value * 0.8),
-                          blurRadius: 8 * _glowAnimation.value,
-                          spreadRadius: 2 * _glowAnimation.value,
-                        ),
-                        BoxShadow(
-                          color: statusColor.withValues(alpha: _glowAnimation.value * 0.4),
-                          blurRadius: 16 * _glowAnimation.value,
-                          spreadRadius: 4 * _glowAnimation.value,
-                        ),
-                      ] : null,
+                      boxShadow: isCurrent && isCompleted
+                          ? [
+                              BoxShadow(
+                                color: statusColor.withValues(
+                                  alpha: _glowAnimation.value * 0.8,
+                                ),
+                                blurRadius: 8 * _glowAnimation.value,
+                                spreadRadius: 2 * _glowAnimation.value,
+                              ),
+                              BoxShadow(
+                                color: statusColor.withValues(
+                                  alpha: _glowAnimation.value * 0.4,
+                                ),
+                                blurRadius: 16 * _glowAnimation.value,
+                                spreadRadius: 4 * _glowAnimation.value,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: isCompleted
                         ? Icon(
-                            Icons.check, 
-                            size: 12, 
+                            Icons.check,
+                            size: 12,
                             color: Colors.white,
-                            shadows: isCurrent ? [
-                              Shadow(
-                                color: Colors.white.withValues(alpha: _glowAnimation.value),
-                                blurRadius: 4 * _glowAnimation.value,
-                              ),
-                            ] : null,
+                            shadows: isCurrent
+                                ? [
+                                    Shadow(
+                                      color: Colors.white.withValues(
+                                        alpha: _glowAnimation.value,
+                                      ),
+                                      blurRadius: 4 * _glowAnimation.value,
+                                    ),
+                                  ]
+                                : null,
                           )
                         : null,
                   );
@@ -295,13 +293,17 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                         height: 2,
                         decoration: BoxDecoration(
                           color: isCompleted ? statusColor : Colors.grey[300],
-                          boxShadow: isCurrent && isCompleted ? [
-                            BoxShadow(
-                              color: statusColor.withValues(alpha: _glowAnimation.value * 0.6),
-                              blurRadius: 4 * _glowAnimation.value,
-                              spreadRadius: 1 * _glowAnimation.value,
-                            ),
-                          ] : null,
+                          boxShadow: isCurrent && isCompleted
+                              ? [
+                                  BoxShadow(
+                                    color: statusColor.withValues(
+                                      alpha: _glowAnimation.value * 0.6,
+                                    ),
+                                    blurRadius: 4 * _glowAnimation.value,
+                                    spreadRadius: 1 * _glowAnimation.value,
+                                  ),
+                                ]
+                              : null,
                         ),
                       );
                     },
@@ -316,7 +318,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
 
   Color _getStatusColor(String status, bool isCompleted) {
     if (!isCompleted) return Colors.grey[300]!;
-    
+
     switch (status) {
       case 'placed':
         return Colors.blue;
@@ -380,18 +382,18 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                 child: Center(child: CircularProgressIndicator()),
               );
             }
-            
+
             final userData = userSnapshot.data;
-            final userName = userData?.fullName.isNotEmpty == true 
-                ? userData!.fullName 
+            final userName = userData?.fullName.isNotEmpty == true
+                ? userData!.fullName
                 : 'Unbekannt';
-            final userEmail = userData?.displayEmail.isNotEmpty == true 
-                ? userData!.displayEmail 
+            final userEmail = userData?.displayEmail.isNotEmpty == true
+                ? userData!.displayEmail
                 : 'Keine E-Mail';
-            final userAddress = userData?.address.isNotEmpty == true 
-                ? userData!.address 
+            final userAddress = userData?.address.isNotEmpty == true
+                ? userData!.address
                 : 'Keine Adresse hinterlegt';
-                
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,10 +432,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontFamily: 'monospace'),
-            ),
+            child: Text(value, style: const TextStyle(fontFamily: 'monospace')),
           ),
         ],
       ),
@@ -443,7 +442,7 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
   void _trackOrder(BuildContext context, OrderModel order) {
     final nextStatus = _getNextStatus(order.status);
     final isDelivered = order.status == 'delivered';
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -518,15 +517,13 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 20,
-                    ),
+                    Icon(Icons.check_circle, color: Colors.green, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -556,11 +553,11 @@ class _OrderState extends State<Order> with TickerProviderStateMixin {
   String? _getNextStatus(String currentStatus) {
     final steps = ['placed', 'preparing', 'sent', 'in_delivery', 'delivered'];
     final currentIndex = steps.indexOf(currentStatus);
-    
+
     if (currentIndex == -1 || currentIndex >= steps.length - 1) {
       return null; // No next status or already delivered
     }
-    
+
     return steps[currentIndex + 1];
   }
 }

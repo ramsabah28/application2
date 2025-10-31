@@ -75,7 +75,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
         maxHeight: 800,
         imageQuality: 85,
       );
-      
+
       if (image != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('avatar_image_path', image.path);
@@ -84,9 +84,9 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
     }
   }
 
@@ -182,13 +182,13 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   }
-                  
+
                   final userData = userSnapshot.data;
-                  final displayName = userData?.fullName.isNotEmpty == true 
-                      ? userData!.fullName 
+                  final displayName = userData?.fullName.isNotEmpty == true
+                      ? userData!.fullName
                       : 'User';
-                  final displayEmail = userData?.displayEmail.isNotEmpty == true 
-                      ? userData!.displayEmail 
+                  final displayEmail = userData?.displayEmail.isNotEmpty == true
+                      ? userData!.displayEmail
                       : snapshot.data?.email ?? 'No email';
 
                   return Column(
@@ -220,7 +220,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      // Display user's full name from Firestore
+
                       Text(
                         displayName,
                         style: TextStyle(
@@ -230,7 +230,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Display user's email from Firestore
+
                       Text(
                         displayEmail,
                         style: TextStyle(
