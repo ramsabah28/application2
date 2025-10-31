@@ -1,4 +1,5 @@
 import 'package:application2/src/component/profile/Invoice.dart';
+import 'package:application2/src/component/profile/Order.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,6 +30,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
   bool showFavorit = false;
   bool showAdress = false;
   bool showInvoice = false;
+  bool showOrder = false;
   String? _avatarImagePath;
   final ImagePicker _picker = ImagePicker();
 
@@ -114,6 +116,12 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
     });
   }
 
+  void _showOrder() {
+    setState(() {
+      showOrder = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -159,6 +167,10 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
 
         if (showInvoice) {
           return Invoice();
+        }
+
+        if (showOrder) {
+          return Order();
         }
 
         final Color bgColor = const Color(0xFFF5F6FA);
@@ -245,6 +257,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                         icon: Icons.shopping_bag_outlined,
                         label: 'Bestellungen',
                         accent: Theme.of(context).primaryColor,
+                        onTap: _showOrder,
                       ),
                       const SizedBox(height: 16),
                       _ProfileActionButton(

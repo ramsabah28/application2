@@ -39,10 +39,9 @@ class OrderService {
       final querySnapshot = await _firestore
           .collection(_ordersCollection)
           .where('delivered', isEqualTo: false)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      return querySnapshot.docs.map((doc) {
+      final orders = querySnapshot.docs.map((doc) {
         final data = doc.data();
         return OrderModel(
           uuid: data['uuid'] ?? doc.id,
@@ -53,6 +52,10 @@ class OrderService {
           deleverd: data['delivered'] ?? false,
         );
       }).toList();
+      
+      // Sort by date in descending order (newest first) in the app
+      orders.sort((a, b) => b.date.compareTo(a.date));
+      return orders;
     } catch (e) {
       throw Exception('Fehler beim Laden der Bestellungen: $e');
     }
@@ -88,10 +91,9 @@ class OrderService {
     return _firestore
         .collection(_ordersCollection)
         .where('UID', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
+      final orders = snapshot.docs.map((doc) {
         final data = doc.data();
         return OrderModel(
           uuid: data['uuid'] ?? doc.id,
@@ -102,6 +104,10 @@ class OrderService {
           deleverd: data['delivered'] ?? false,
         );
       }).toList();
+      
+      // Sort by date in descending order (newest first) in the app
+      orders.sort((a, b) => b.date.compareTo(a.date));
+      return orders;
     });
   }
 
