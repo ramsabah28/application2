@@ -266,7 +266,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                       const SizedBox(height: 16),
                       _ProfileActionButton(
                         icon: Icons.favorite_border,
-                        label: 'Mein Favorit list',
+                        label: 'Favorit',
                         accent: Theme.of(context).primaryColor,
                         onTap: _showFavorit,
                       ),
