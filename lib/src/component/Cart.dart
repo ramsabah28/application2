@@ -117,44 +117,159 @@ class _CartState extends State<Cart> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Divider(),
-                  Text(
-                    'Zwischensumme: ${priceWithoutTax.toStringAsFixed(2)}€',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'MwSt: ${tax.toStringAsFixed(2)}€',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Versandkosten: ${shipmentCost.toStringAsFixed(2)}€',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Gesamtsumme: ${grandTotal.toStringAsFixed(2)}€',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  PayNowButton(
-                    onPressed: () {
-                      // Navigate to payment selection so the user can choose a payment method
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => PaymentSelection(amount: grandTotal, currency: 'EUR'),
-                      ));
+            // Bottom summary that can be tapped to expand
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => DraggableScrollableSheet(
+                    initialChildSize: 0.6,
+                    minChildSize: 0.4,
+                    maxChildSize: 0.8,
+                    builder: (context, scrollController) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        child: ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.all(16.0),
+                          children: [
+                            // Drag handle
+                            Center(
+                              child: Container(
+                                width: 40,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[400],
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            Text(
+                              'Zwischensumme: ${priceWithoutTax.toStringAsFixed(2)}€',
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'MwSt: ${tax.toStringAsFixed(2)}€',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Versandkosten: ${shipmentCost.toStringAsFixed(2)}€',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Gesamtsumme: ${grandTotal.toStringAsFixed(2)}€',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // Place Order Button (Direct Order)
+                            PayNowButton(
+                              label: 'Bestellen',
+                              onPressed: () async {
+                                final user = FirebaseAuth.instance.currentUser;
+                                if (user == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Bitte anmelden, um zu bezahlen.')),
+                                  );
+                                  return;
+                                }
+
+                                final items = cartItems
+                                    .map((ci) => BillItem(pid: ci.uuid, count: ci.count, price: ci.price))
+                                    .toList();
+                                final totalItemsCount = cartItems.fold(0, (sum, item) => sum + item.count);
+
+                                final bill = BillModel(
+                                  uuid: '',
+                                  UID: user.uid,
+                                  items: items,
+                                  count: totalItemsCount,
+                                  price: grandTotal,
+                                  BID: 0,
+                                  date: '',
+                                );
+
+                                try {
+                                  await BillService.addBill(bill);
+                                  await CartRepository().clearCart();
+                                  Navigator.pop(context); // Close bottom sheet
+                                  setState(() {
+                                    _cartFuture = _loadCartWithStock();
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Rechnung erstellt und Warenkorb geleert.')),
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Fehler beim Erstellen der Rechnung: $e')),
+                                  );
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            // Pay Now Button (Payment Selection)
+                            PayNowButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Close bottom sheet first
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => PaymentSelection(amount: grandTotal, currency: 'EUR'),
+                                ));
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      );
                     },
                   ),
-                ],
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  border: Border(
+                    top: BorderSide(
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Gesamtsumme: ${grandTotal.toStringAsFixed(2)}€',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    Icon(
+                      Icons.keyboard_arrow_up,
+                      color: Theme.of(context).primaryColor,
+                      size: 28,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

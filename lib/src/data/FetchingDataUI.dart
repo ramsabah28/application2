@@ -833,7 +833,6 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      // Preview button
                       IconButton(
                         onPressed: _subImage2UrlController.text.isNotEmpty 
                             ? () => _showImagePreview(_subImage2UrlController.text)
