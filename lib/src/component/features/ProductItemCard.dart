@@ -7,8 +7,9 @@ import 'FavButton.dart';
 import 'Rating.dart';
 import '../../component/features/ShimmerImageFromNetwork.dart';
 import '../../services/FavoritService.dart';
+import '../../services/ReviewService.dart';
 
-class ProductItemCard extends StatelessWidget {
+class ProductItemCard extends StatefulWidget {
   final ProductModel item;
   final VoidCallback? onTap;
   final String uuid;
@@ -21,11 +22,48 @@ class ProductItemCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ProductItemCard> createState() => _ProductItemCardState();
+}
+
+class _ProductItemCardState extends State<ProductItemCard> {
+  double averageRating = 0.0;
+  int reviewCount = 0;
+  bool isLoadingRating = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRatingData();
+  }
+
+  Future<void> _loadRatingData() async {
+    try {
+      final rating = await ReviewService.getAverageRating(widget.uuid);
+      final count = await ReviewService.getReviewCount(widget.uuid);
+      
+      if (mounted) {
+        setState(() {
+          averageRating = rating;
+          reviewCount = count;
+          isLoadingRating = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading rating data: $e');
+      if (mounted) {
+        setState(() {
+          isLoadingRating = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         final state = context.findAncestorStateOfType<SwitchNavigationState>();
-        state?.showDynamicProductContent(uuid);
+        state?.showDynamicProductContent(widget.uuid);
       },
       borderRadius: BorderRadius.circular(8),
       child: Card(
@@ -52,7 +90,7 @@ class ProductItemCard extends StatelessWidget {
                             minScale: 1,
                             maxScale: 10,
                             child: ShimmerImageFromNetwork(
-                              imageUrl: item.imageUrl,
+                              imageUrl: widget.item.imageUrl,
                               height: 200,
                               width: 200,
                             ),
@@ -73,7 +111,7 @@ class ProductItemCard extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  item.name,
+                                  widget.item.name,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
@@ -83,28 +121,46 @@ class ProductItemCard extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            item.brand,
+                            widget.item.brand,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(item.description.length > 20
-                              ? item.description.substring(0, 50) + '…'
-                              : item.description),
+                          Text(widget.item.description.length > 20
+                              ? widget.item.description.substring(0, 50) + '…'
+                              : widget.item.description),
                           Text(
-                            "${item.price}€",
+                            "${widget.item.price}€",
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                           Text(
-                            item.count >= 1 ? "Verfügbar" : "Nicht verfügbar",
+                            widget.item.count >= 1 ? "Verfügbar" : "Nicht verfügbar",
                             style: TextStyle(
-                              color: item.count >= 1 ? Colors.green : Colors.red,
+                              color: widget.item.count >= 1 ? Colors.green : Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          //TODO: use the ReviewService.dart to get the Rating from Firestore(use the uuid of the product)
-                          Rating(ratingCount: 120, ratingValue: 3.5),
+                          // Real-time rating from ReviewService
+                          isLoadingRating
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 12,
+                                        height: 12,
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text('Loading rating...', style: TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                )
+                              : Rating(
+                                  ratingCount: reviewCount,
+                                  ratingValue: averageRating,
+                                ),
                         ],
                       ),
                     ),
@@ -120,7 +176,7 @@ class ProductItemCard extends StatelessWidget {
                 children: [
                   FavButton(
                     onPressed: () async {
-                      final added = await FavoritService.addToFavorites(uuid);
+                      final added = await FavoritService.addToFavorites(widget.uuid);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -135,7 +191,7 @@ class ProductItemCard extends StatelessWidget {
                     onPressed: () async {
                       try {
                         final cartRepo = CartRepository();
-                        final uuid = (item as dynamic).uuid ?? '';
+                        final uuid = (widget.item as dynamic).uuid ?? '';
                         print(uuid);
                         await cartRepo.addToCart(uuid, 1);
                         ScaffoldMessenger.of(context).showSnackBar(
