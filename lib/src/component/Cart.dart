@@ -72,6 +72,16 @@ class _CartState extends State<Cart> {
     }
   }
 
+  String _generateInvoiceId(String uuid) {
+    final now = DateTime.now();
+    final year = now.year.toString();
+    final month = now.month.toString().padLeft(2, '0');
+    final day = now.day.toString().padLeft(2, '0');
+    final last4Digits = uuid.substring(uuid.length - 4);
+    
+    return '$year$month$day$last4Digits';
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<CartModel>>(
@@ -208,6 +218,7 @@ class _CartState extends State<Cart> {
                                   price: grandTotal,
                                   BID: 0,
                                   date: '',
+                                  InvoiceID: _generateInvoiceId(billUuid),
                                 );
 
                                 try {

@@ -148,7 +148,7 @@ class PdfService {
                     children: [
                       pw.Text('Rechnungsnummer:', 
                         style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                      pw.Text('${data['uuid'] ?? billId}'),
+                      pw.Text('${data['bid'] ?? 'N/A'}'),
                       pw.SizedBox(height: 8),
                       pw.Text('Benutzer-ID:', 
                         style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
