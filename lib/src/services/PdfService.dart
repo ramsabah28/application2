@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
@@ -7,6 +8,25 @@ import 'package:application2/src/services/ProductService.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class PdfService {
+  static Future<Map<String, dynamic>> _loadBankInfo() async {
+    try {
+      final String response = await rootBundle.loadString('lib/src/data/bill.json');
+      final List<dynamic> data = json.decode(response);
+      if (data.isNotEmpty) {
+        return data[0] as Map<String, dynamic>;
+      }
+    } catch (e) {
+      print('Error loading bank info: $e');
+    }
+    return {
+      'Kontoinhaber': 'PocketStore-Ram Sabah',
+      'IBEN': 'DE00 0000 0000 0000 0000 00',
+      'Bank': 'Musterbank Stadt',
+      'BIC': 'TSXXTBSSXXXXXX',
+      'Verwendungszweck': 'replace with the bid!'
+    };
+  }
+
   static Future<File> generateBillPdf({required String billId}) async {
     final docRef = FirebaseFirestore.instance.collection('bills').doc(billId);
     final snap = await docRef.get();
@@ -22,6 +42,49 @@ class PdfService {
     final String dateStr = dateMap == null
         ? ''
         : '${dateMap['year']}-${dateMap['month']}-${dateMap['day']}';
+
+    // Get user information
+    String userName = 'Unbekannt';
+    String userAddress = 'Adresse nicht verfügbar';
+    
+    try {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        userName = userData['name'] ?? 'Unbekannt';
+        
+        // Build address from user data
+        final street = userData['street'] ?? '';
+        final houseNumber = userData['houseNumber'] ?? '';
+        final zipCode = userData['zipCode'] ?? '';
+        final city = userData['city'] ?? '';
+        
+        if (street.isNotEmpty || city.isNotEmpty) {
+          userAddress = '';
+          if (street.isNotEmpty) {
+            userAddress += street;
+            if (houseNumber.isNotEmpty) {
+              userAddress += ' $houseNumber';
+            }
+          }
+          if (zipCode.isNotEmpty || city.isNotEmpty) {
+            if (userAddress.isNotEmpty) userAddress += '\n';
+            if (zipCode.isNotEmpty) userAddress += '$zipCode ';
+            if (city.isNotEmpty) userAddress += city;
+          }
+        }
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+
+    // Load bank information
+    final bankInfo = await _loadBankInfo();
+    final bid = data['bid'] ?? 'N/A';
+    
+    // Replace Verwendungszweck with actual BID
+    final bankInfoWithBid = Map<String, dynamic>.from(bankInfo);
+    bankInfoWithBid['Verwendungszweck'] = bid.toString();
 
     // Get detailed items from subcollection
     final itemsCollection = await docRef.collection('items').get();
@@ -125,8 +188,6 @@ class PdfService {
                       pw.Text('Rechnung', 
                         style: pw.TextStyle(fontSize: 28, fontWeight: pw.FontWeight.bold)),
                       pw.SizedBox(height: 4),
-                      pw.Text('Invoice', 
-                        style: pw.TextStyle(fontSize: 14, color: PdfColors.grey600)),
                     ],
                   ),
                   if (logoImage != null)
@@ -135,6 +196,66 @@ class PdfService {
                       width: 60,
                       child: pw.Image(logoImage),
                     ),
+                ],
+              ),
+              pw.SizedBox(height: 30),
+              
+              // User information and bank information section
+              pw.Row(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  // Left side - User information
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text('Rechnungsempfänger:', 
+                          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: PdfColors.grey700)),
+                        pw.SizedBox(height: 8),
+                        pw.Text(userName, 
+                          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                        pw.SizedBox(height: 4),
+                        pw.Text(userAddress, 
+                          style: pw.TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                  pw.SizedBox(width: 40),
+                  // Right side - Bank information with background box
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Container(
+                      padding: const pw.EdgeInsets.all(12),
+                      decoration: pw.BoxDecoration(
+                        color: PdfColors.grey100,
+                        borderRadius: pw.BorderRadius.circular(8),
+                        border: pw.Border.all(color: PdfColors.grey300, width: 1),
+                      ),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text('Bankverbindung:', 
+                            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: PdfColors.grey700)),
+                          pw.SizedBox(height: 8),
+                          pw.Text('${bankInfoWithBid['Kontoinhaber']}', 
+                            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                          pw.SizedBox(height: 4),
+                          pw.Text('IBAN: ${bankInfoWithBid['IBEN']}', 
+                            style: pw.TextStyle(fontSize: 12)),
+                          pw.SizedBox(height: 2),
+                          pw.Text('BIC: ${bankInfoWithBid['BIC']}', 
+                            style: pw.TextStyle(fontSize: 12)),
+                          pw.SizedBox(height: 2),
+                          pw.Text('Bank: ${bankInfoWithBid['Bank']}', 
+                            style: pw.TextStyle(fontSize: 12)),
+                          pw.SizedBox(height: 4),
+                          pw.Text('Verwendungszweck: ${bankInfoWithBid['Verwendungszweck']}', 
+                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
               pw.SizedBox(height: 30),
