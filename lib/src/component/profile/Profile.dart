@@ -14,6 +14,7 @@ class Profile extends StatelessWidget {
   final VoidCallback? onShowOrders;
   final VoidCallback? onShowInvoices;
   final VoidCallback? onShowFavorites;
+  final VoidCallback? onShowUserReview;
 
   const Profile({
     super.key,
@@ -21,6 +22,7 @@ class Profile extends StatelessWidget {
     this.onShowOrders,
     this.onShowInvoices,
     this.onShowFavorites,
+    this.onShowUserReview,
   });
 
   @override
@@ -30,6 +32,7 @@ class Profile extends StatelessWidget {
       onShowOrders: onShowOrders,
       onShowInvoices: onShowInvoices,
       onShowFavorites: onShowFavorites,
+      onShowUserReview: onShowUserReview,
     );
   }
 }
@@ -39,12 +42,14 @@ class _ProfileAuthSwitcher extends StatefulWidget {
   final VoidCallback? onShowOrders;
   final VoidCallback? onShowInvoices;
   final VoidCallback? onShowFavorites;
+  final VoidCallback? onShowUserReview;
 
   const _ProfileAuthSwitcher({
     this.onShowAddress,
     this.onShowOrders,
     this.onShowInvoices,
     this.onShowFavorites,
+    this.onShowUserReview,
   });
 
   @override
@@ -107,6 +112,10 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
 
   void _showFavorit() {
     widget.onShowFavorites?.call();
+  }
+
+  void _showUserReview() {
+    widget.onShowUserReview?.call();
   }
 
   void _showAdress() {
@@ -270,6 +279,13 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                         label: 'Favorit',
                         accent: Theme.of(context).primaryColor,
                         onTap: _showFavorit,
+                      ),
+                      const SizedBox(height: 16),
+                      _ProfileActionButton(
+                        icon: Icons.rate_review_outlined,
+                        label: 'Meine Bewertungen',
+                        accent: Theme.of(context).primaryColor,
+                        onTap: _showUserReview,
                       ),
                       const SizedBox(height: 32),
                       StandardButton(
