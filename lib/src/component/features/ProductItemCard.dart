@@ -103,6 +103,7 @@ class ProductItemCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          //TODO: use the ReviewService.dart to get the Rating from Firestore(use the uuid of the product)
                           Rating(ratingCount: 120, ratingValue: 3.5),
                         ],
                       ),
