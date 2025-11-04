@@ -8,6 +8,7 @@ import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
 import 'package:shimmer/shimmer.dart';
 import 'features/FullscreenImageViewer.dart';
+import 'features/Review.dart';
 
 class DynamicContent extends StatelessWidget {
   final String uuid;
@@ -344,6 +345,14 @@ class DynamicContent extends StatelessWidget {
                     product.longDiscription,
                     style: const TextStyle(fontSize: 14, height: 1.4),
                   ),
+                SizedBox(height: 24),
+                Divider(),
+                SizedBox(height: 16),
+                // Reviews Section
+                ReviewWidget(
+                  productId: uuid,
+                  showAddReview: true,
+                ),
               ],
             ),
           ),
