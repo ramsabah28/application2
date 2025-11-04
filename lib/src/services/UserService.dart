@@ -169,4 +169,34 @@ class UserService {
     
     return parts.join(', ');
   }
+
+  /// Get user role by UID
+  static Future<String?> getUserRole(String uid) async {
+    try {
+      final DocumentSnapshot doc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['roll'] as String?;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching user role: $e');
+      return null;
+    }
+  }
+
+  /// Check if user is admin
+  static Future<bool> isUserAdmin(String uid) async {
+    try {
+      final String? role = await getUserRole(uid);
+      return role == 'admin';
+    } catch (e) {
+      print('Error checking admin status: $e');
+      return false;
+    }
+  }
 }

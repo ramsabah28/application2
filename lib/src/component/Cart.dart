@@ -133,7 +133,7 @@ class _CartState extends State<Cart> {
                     builder: (context, scrollController) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
+                          color: Theme.of(context).primaryColorLight,
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(20),
                           ),
@@ -182,7 +182,7 @@ class _CartState extends State<Cart> {
                             const SizedBox(height: 24),
                             // Place Order Button (Direct Order)
                             PayNowButton(
-                              label: 'Bestellen',
+                              label: 'Jetzt Kaufen',
                               onPressed: () async {
                                 final user = FirebaseAuth.instance.currentUser;
                                 if (user == null) {
@@ -211,18 +211,18 @@ class _CartState extends State<Cart> {
                                 );
 
                                 try {
-                                  // Create bill first
+
                                   await BillService.addBill(bill);
                                   
-                                  // Create order after successful bill creation
+
                                   await OrderService.addOrder(
                                     uid: user.uid,
                                     billId: billUuid,
                                   );
                                   
-                                  // Clear cart and update UI
+
                                   await CartRepository().clearCart();
-                                  Navigator.pop(context); // Close bottom sheet
+                                  Navigator.pop(context);
                                   setState(() {
                                     _cartFuture = _loadCartWithStock();
                                   });
@@ -239,14 +239,16 @@ class _CartState extends State<Cart> {
                             ),
                             const SizedBox(height: 12),
                             // Pay Now Button (Payment Selection)
+                            /**
                             PayNowButton(
                               onPressed: () {
-                                Navigator.pop(context); // Close bottom sheet first
+                                Navigator.pop(context);
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (_) => PaymentSelection(amount: grandTotal, currency: 'EUR'),
                                 ));
                               },
                             ),
+                                **/
                             const SizedBox(height: 20),
                           ],
                         ),

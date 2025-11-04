@@ -195,7 +195,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Avatar with tap to change functionality
+
                       GestureDetector(
                         onTap: _pickImage,
                         child: Stack(
@@ -282,15 +282,37 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                           await FirebaseAuth.instance.signOut();
                         },
                       ),
-                      //
-                      StandardButton(
-                        icon: Icon(
-                          Icons.admin_panel_settings,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        backgroundColor: Theme.of(context).primaryColorDark,
-                        onPressed: () async {
-                          await FirebaseAuth.instance.signOut();
+                      // Admin button - only show for admin users
+                      FutureBuilder<bool>(
+                        future: snapshot.data?.uid != null
+                            ? UserService.isUserAdmin(snapshot.data!.uid)
+                            : Future.value(false),
+                        builder: (context, adminSnapshot) {
+                          if (adminSnapshot.connectionState == ConnectionState.waiting) {
+                            return const SizedBox.shrink();
+                          }
+
+                          final isAdmin = adminSnapshot.data ?? false;
+                          if (!isAdmin) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: StandardButton(
+                              icon: Icon(
+                                Icons.admin_panel_settings,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              backgroundColor: Theme.of(context).primaryColorDark,
+                              onPressed: () async {
+                                // TODO: Add admin panel functionality
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Admin Panel - Coming Soon')),
+                                );
+                              },
+                            ),
+                          );
                         },
                       ),
                     ],
