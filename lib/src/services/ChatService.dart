@@ -483,4 +483,52 @@ class ChatService {
   static Future<bool> canViewAllChats() async {
     return await isCurrentUserAdmin();
   }
+
+  /// Delete entire conversation between admin and user (admin only)
+  static Future<bool> deleteConversation(String userId) async {
+    try {
+      // Only admins can delete conversations
+      if (!await isCurrentUserAdmin()) {
+        print('Error: Only admins can delete conversations');
+        return false;
+      }
+
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        print('Error: No authenticated user');
+        return false;
+      }
+
+      // Create a batch to delete all messages in the conversation
+      WriteBatch batch = _firestore.batch();
+
+      // Get all messages between admin and this user
+      QuerySnapshot messagesQuery = await _firestore
+          .collection('messages')
+          .where('participants', arrayContains: currentUser.uid)
+          .get();
+
+      int deletedCount = 0;
+      
+      for (QueryDocumentSnapshot doc in messagesQuery.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        List<dynamic> participants = data['participants'] ?? [];
+        
+        // Check if this message is part of the conversation with the specified user
+        if (participants.contains(userId)) {
+          batch.delete(doc.reference);
+          deletedCount++;
+        }
+      }
+
+      // Commit the batch deletion
+      await batch.commit();
+      
+      print('Successfully deleted $deletedCount messages from conversation with user $userId');
+      return true;
+    } catch (e) {
+      print('Error deleting conversation: $e');
+      return false;
+    }
+  }
 }

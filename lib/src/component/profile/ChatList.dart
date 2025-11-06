@@ -50,64 +50,172 @@ class _ChatListState extends State<ChatList> {
       userInfo = otherUserEmail;
     }
 
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColorLight,
-          child: Text(
-            otherUserName.isNotEmpty ? otherUserName[0].toUpperCase() : 'U',
-            style: TextStyle(
-              color: Colors.blue[700],
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
+    return Dismissible(
+      key: Key('chat_$otherUserId'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(8),
         ),
-        title: Text(
-          otherUserName,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (userInfo.isNotEmpty)
-              Text(
-                userInfo,
-                style: TextStyle(
-                  color: Colors.blue[600],
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            Text(
-              lastMessage.length > 50 
-                  ? '${lastMessage.substring(0, 50)}...'
-                  : lastMessage,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+              size: 28,
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
-              'Last: ${_formatTime(lastMessageTime)}',
+              'Delete',
               style: TextStyle(
-                color: Colors.grey[500],
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
             ),
           ],
         ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: Colors.grey[400],
+      ),
+      confirmDismiss: (direction) async {
+        return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Theme.of(context).primaryColorLight,
+              title: Text(
+                'Delete Conversation',
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+              content: Text(
+                'Are you sure you want to delete the entire conversation with $otherUserName?\n\nThis action cannot be undone and will permanently remove all messages.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          },
+        ) ?? false;
+      },
+      onDismissed: (direction) async {
+        // Show loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Text('Deleting conversation with $otherUserName...'),
+              ],
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        // Attempt to delete the conversation
+        bool success = await ChatService.deleteConversation(otherUserId);
+        
+        // Hide the loading snackbar
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Conversation with $otherUserName deleted successfully'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to delete conversation with $otherUserName'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      },
+      child: Card(
+        color: Colors.white,
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Theme.of(context).primaryColorLight,
+            child: Text(
+              otherUserName.isNotEmpty ? otherUserName[0].toUpperCase() : 'U',
+              style: TextStyle(
+                color: Colors.blue[700],
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          title: Text(
+            otherUserName,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (userInfo.isNotEmpty)
+                Text(
+                  userInfo,
+                  style: TextStyle(
+                    color: Colors.blue[600],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              Text(
+                lastMessage.length > 50 
+                    ? '${lastMessage.substring(0, 50)}...'
+                    : lastMessage,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Last: ${_formatTime(lastMessageTime)}',
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          trailing: Icon(
+            Icons.chevron_right,
+            color: Colors.grey[400],
+          ),
+          onTap: () => _openChat(otherUserId, otherUserName),
         ),
-        onTap: () => _openChat(otherUserId, otherUserName),
       ),
     );
   }
