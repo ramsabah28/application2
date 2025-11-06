@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/ChatService.dart';
+import 'ChatList.dart';
 
 class Chat extends StatefulWidget {
   final String? chatWithUserId; // For admin to chat with specific user
@@ -23,6 +24,7 @@ class _ChatState extends State<Chat> {
   @override
   void initState() {
     super.initState();
+    print('Chat widget initialized with chatWithUserId: ${widget.chatWithUserId}');
     _checkUserRole();
     // Mark messages as read when opening chat
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -31,10 +33,18 @@ class _ChatState extends State<Chat> {
   }
 
   Future<void> _checkUserRole() async {
-    bool isAdmin = await ChatService.isCurrentUserAdmin();
-    setState(() {
-      _isAdmin = isAdmin;
-    });
+    try {
+      bool isAdmin = await ChatService.isCurrentUserAdmin();
+      print('User role check: isAdmin = $isAdmin'); // Debug print
+      setState(() {
+        _isAdmin = isAdmin;
+      });
+    } catch (e) {
+      print('Error checking user role: $e');
+      setState(() {
+        _isAdmin = false; // Default to non-admin on error
+      });
+    }
   }
 
   @override
@@ -76,8 +86,30 @@ class _ChatState extends State<Chat> {
       });
       
     } catch (e) {
+      String errorMessage = 'Failed to send message';
+      String errorString = e.toString().toLowerCase();
+      
+      if (errorString.contains('user role')) {
+        errorMessage = 'Unable to verify user permissions. Please try again.';
+      } else if (errorString.contains('network')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (errorString.contains('permission')) {
+        errorMessage = 'You don\'t have permission to send messages.';
+      } else if (errorString.contains('authentication')) {
+        errorMessage = 'Please log in to send messages.';
+      }
+      
       setState(() {
-        _error = e.toString();
+        _error = errorMessage;
+      });
+      
+      // Clear error after 5 seconds
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) {
+          setState(() {
+            _error = null;
+          });
+        }
       });
     } finally {
       setState(() {
@@ -240,6 +272,35 @@ class _ChatState extends State<Chat> {
     );
   }
 
+  List<Widget>? _buildAppBarActions() {
+    print('Building AppBar actions, _isAdmin: $_isAdmin'); // Debug print
+    
+    // Only show ChatList button for admin users
+    if (!_isAdmin) {
+      print('User is not admin, hiding ChatList button');
+      return null; // No actions for regular users
+    }
+
+    print('User is admin, showing ChatList button');
+    return [
+      IconButton(
+        icon: Icon(
+          Icons.list,
+          color: Colors.blue[700],
+        ),
+        tooltip: 'View All User Chats',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChatList(),
+            ),
+          );
+        },
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -287,6 +348,7 @@ class _ChatState extends State<Chat> {
         elevation: 1,
         iconTheme: const IconThemeData(color: Colors.black),
         titleTextStyle: const TextStyle(color: Colors.black),
+        actions: _buildAppBarActions(),
       ),
       body: Column(
         children: [
@@ -307,6 +369,8 @@ class _ChatState extends State<Chat> {
                 chatWithUserId: widget.chatWithUserId,
               ),
               builder: (context, snapshot) {
+                print('StreamBuilder: connectionState = ${snapshot.connectionState}, hasError = ${snapshot.hasError}, data length = ${snapshot.data?.length ?? 'null'}');
+                
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),

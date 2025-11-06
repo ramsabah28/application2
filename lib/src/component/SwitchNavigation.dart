@@ -94,7 +94,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
 
   void showProfileChat() {
     setState(() {
-      _overrideScreen = Chatt();
+      _overrideScreen = Chat();
     });
   }
 
@@ -123,7 +123,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
                        _overrideScreen is Favorit ||
                        _overrideScreen is UserReview ||
                        _overrideScreen is Konto ||
-                       _overrideScreen is Chatt) {
+                       _overrideScreen is Chat) {
               _selectedIndex = 3;
               _overrideScreen = null;
             } else {
@@ -171,7 +171,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
                                _overrideScreen is Favorit ||
                                _overrideScreen is UserReview ||
                                _overrideScreen is Konto ||
-                               _overrideScreen is Chatt) {
+                               _overrideScreen is Chat) {
                       // Back to Profile for profile sub-screens
                       _selectedIndex = 3;
                       _overrideScreen = null;

@@ -49,8 +49,11 @@ class ChatService {
   static User? get currentUser => _auth.currentUser;
 
   /// Get current user's role from Firestore
-  static Future<String?> getCurrentUserRole() async {
-    if (currentUser == null) return null;
+  static Future<String> getCurrentUserRole() async {
+    if (currentUser == null) {
+      print('No current user found, defaulting to user role');
+      return 'user'; // Default to user role when no authentication
+    }
     
     try {
       DocumentSnapshot userDoc = await _firestore
@@ -60,24 +63,40 @@ class ChatService {
       
       if (userDoc.exists) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        return userData['roll']; // Using 'roll' as shown in the Firestore image
+        String? role = userData['roll']; // Using 'roll' as shown in the Firestore image
+        
+        // Default to 'user' if role is null or empty
+        if (role == null || role.isEmpty) {
+          print('User ${currentUser!.uid} has no role defined, defaulting to user');
+          role = 'user';
+        }
+        
+        print('User ${currentUser!.uid} has role: $role');
+        return role;
+      } else {
+        print('User document does not exist for ${currentUser!.uid}, defaulting to user role');
+        return 'user'; // Default to user role when document doesn't exist
       }
     } catch (e) {
-      print('Error getting user role: $e');
+      print('Error getting user role: $e, defaulting to user role');
+      return 'user'; // Default to user role on error
     }
-    return null;
   }
 
   /// Check if current user is admin
   static Future<bool> isCurrentUserAdmin() async {
-    String? role = await getCurrentUserRole();
-    return role == 'admin';
+    String role = await getCurrentUserRole(); // Now returns non-nullable String
+    bool isAdmin = role == 'admin';
+    print('isCurrentUserAdmin result: $isAdmin (role: $role)');
+    return isAdmin;
   }
 
   /// Generate chat room ID between user and admin
   static String getChatRoomId(String userId) {
     // For user-admin chats, use a consistent format
-    return 'chat_${userId}_admin';
+    String chatRoomId = 'chat_${userId}_admin';
+    print('getChatRoomId: userId = $userId, chatRoomId = $chatRoomId');
+    return chatRoomId;
   }
 
   /// Send a message in the chat
@@ -94,10 +113,8 @@ class ChatService {
     }
 
     try {
-      String? userRole = await getCurrentUserRole();
-      if (userRole == null) {
-        throw Exception('Unable to determine user role');
-      }
+      String userRole = await getCurrentUserRole();
+      print('sendMessage: userRole = $userRole');
 
       bool isFromAdmin = userRole == 'admin';
       String chatRoomId;
@@ -142,12 +159,39 @@ class ChatService {
           .collection('messages')
           .add(message.toFirestore());
 
-      // Update chat room metadata
+      // Update chat room metadata with user information
       List<String> participants = [currentUser!.uid];
+      Map<String, dynamic> chatMetadata = {
+        'lastMessage': content.trim(),
+        'lastMessageTime': Timestamp.fromDate(DateTime.now()),
+        'lastMessageSender': currentUser!.uid,
+        'lastMessageSenderName': senderName,
+      };
+
       if (isFromAdmin && recipientUserId != null) {
         participants.add(recipientUserId);
+        
+        // Get recipient user information
+        try {
+          DocumentSnapshot recipientDoc = await _firestore
+              .collection('users')
+              .doc(recipientUserId)
+              .get();
+          
+          if (recipientDoc.exists) {
+            Map<String, dynamic> recipientData = recipientDoc.data() as Map<String, dynamic>;
+            chatMetadata['recipientUserId'] = recipientUserId;
+            chatMetadata['recipientName'] = recipientData['name'] ?? '';
+            chatMetadata['recipientSurname'] = recipientData['nachname'] ?? '';
+            chatMetadata['recipientUsername'] = recipientData['username'] ?? '';
+            chatMetadata['recipientEmail'] = recipientData['email'] ?? '';
+          }
+        } catch (e) {
+          print('Error getting recipient info: $e');
+        }
+        
       } else {
-        // Find admin user ID for participants
+        // Find admin user ID for participants and get admin info
         QuerySnapshot adminQuery = await _firestore
             .collection('users')
             .where('roll', isEqualTo: 'admin')
@@ -155,17 +199,42 @@ class ChatService {
             .get();
         
         if (adminQuery.docs.isNotEmpty) {
-          participants.add(adminQuery.docs.first.id);
+          String adminId = adminQuery.docs.first.id;
+          participants.add(adminId);
+          
+          // Get admin user information
+          Map<String, dynamic> adminData = adminQuery.docs.first.data() as Map<String, dynamic>;
+          chatMetadata['adminUserId'] = adminId;
+          chatMetadata['adminName'] = adminData['name'] ?? '';
+          chatMetadata['adminSurname'] = adminData['nachname'] ?? '';
+          chatMetadata['adminUsername'] = adminData['username'] ?? '';
+          chatMetadata['adminEmail'] = adminData['email'] ?? '';
+        }
+        
+        // Get current user (sender) information for user-to-admin chats
+        try {
+          DocumentSnapshot senderDoc = await _firestore
+              .collection('users')
+              .doc(currentUser!.uid)
+              .get();
+          
+          if (senderDoc.exists) {
+            Map<String, dynamic> senderData = senderDoc.data() as Map<String, dynamic>;
+            chatMetadata['senderUserId'] = currentUser!.uid;
+            chatMetadata['senderName'] = senderData['name'] ?? '';
+            chatMetadata['senderSurname'] = senderData['nachname'] ?? '';
+            chatMetadata['senderUsername'] = senderData['username'] ?? '';
+            chatMetadata['senderEmail'] = senderData['email'] ?? '';
+          }
+        } catch (e) {
+          print('Error getting sender info: $e');
         }
       }
 
-      await _firestore.collection('chats').doc(chatRoomId).set({
-        'participants': participants,
-        'lastMessage': content.trim(),
-        'lastMessageTime': Timestamp.fromDate(DateTime.now()),
-        'lastMessageSender': currentUser!.uid,
-        'lastMessageSenderName': senderName,
-      }, SetOptions(merge: true));
+      // Add participants list to metadata
+      chatMetadata['participants'] = participants;
+
+      await _firestore.collection('chats').doc(chatRoomId).set(chatMetadata, SetOptions(merge: true));
 
     } catch (e) {
       throw Exception('Failed to send message: $e');
@@ -175,29 +244,44 @@ class ChatService {
   /// Get messages stream for current user's chat
   static Stream<List<Message>> getMessagesStream({String? chatWithUserId}) async* {
     if (currentUser == null) {
+      print('getMessagesStream: No current user');
       yield [];
       return;
     }
 
     try {
-      String? userRole = await getCurrentUserRole();
-      if (userRole == null) {
-        yield [];
-        return;
-      }
+      String userRole = await getCurrentUserRole();
+      print('getMessagesStream: userRole = $userRole, chatWithUserId = $chatWithUserId');
 
       String chatRoomId;
       if (userRole == 'admin' && chatWithUserId != null) {
         // Admin viewing chat with specific user
         chatRoomId = getChatRoomId(chatWithUserId);
+        print('getMessagesStream: Admin viewing chat with user $chatWithUserId, chatRoomId = $chatRoomId');
       } else if (userRole == 'user') {
         // Regular user viewing their chat with admin
         chatRoomId = getChatRoomId(currentUser!.uid);
+        print('getMessagesStream: User viewing chat with admin, chatRoomId = $chatRoomId');
       } else {
+        print('getMessagesStream: Invalid role/user combination');
         yield [];
         return;
       }
 
+      print('getMessagesStream: Listening to messages in chatRoomId = $chatRoomId');
+      
+      // First check if the chat room exists
+      DocumentSnapshot chatRoomDoc = await _firestore
+          .collection('chats')
+          .doc(chatRoomId)
+          .get();
+      
+      if (chatRoomDoc.exists) {
+        print('getMessagesStream: Chat room exists');
+      } else {
+        print('getMessagesStream: Chat room does NOT exist!');
+      }
+      
       yield* _firestore
           .collection('chats')
           .doc(chatRoomId)
@@ -205,6 +289,7 @@ class ChatService {
           .orderBy('timestamp', descending: false)
           .snapshots()
           .map((snapshot) {
+        print('getMessagesStream: Received ${snapshot.docs.length} messages for chatRoomId = $chatRoomId');
         return snapshot.docs.map((doc) => Message.fromFirestore(doc)).toList();
       });
     } catch (e) {
@@ -230,7 +315,6 @@ class ChatService {
       yield* _firestore
           .collection('chats')
           .where('participants', arrayContains: currentUser!.uid)
-          .orderBy('lastMessageTime', descending: true)
           .snapshots()
           .asyncMap((snapshot) async {
         List<Map<String, dynamic>> chats = [];
@@ -238,6 +322,7 @@ class ChatService {
         for (QueryDocumentSnapshot doc in snapshot.docs) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           List<dynamic> participants = data['participants'] ?? [];
+          print('getAllUserChatsStream: Processing chat ${doc.id}, participants: $participants');
           
           // Find the other participant (non-admin user)
           String? otherUserId;
@@ -247,36 +332,77 @@ class ChatService {
               break;
             }
           }
+          print('getAllUserChatsStream: Found otherUserId = $otherUserId');
 
           if (otherUserId != null) {
-            // Get user info
-            try {
-              DocumentSnapshot userDoc = await _firestore
-                  .collection('users')
-                  .doc(otherUserId)
-                  .get();
-              
-              String userName = 'Unknown User';
-              if (userDoc.exists) {
-                Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-                userName = userData['name'] ?? userData['username'] ?? 'Unknown User';
-              }
+            // Try to get user info from chat metadata first, then from users collection
+            String userName = 'Unknown User';
+            String userSurname = '';
+            String userEmail = '';
+            String username = '';
 
-              chats.add({
-                'chatRoomId': doc.id,
-                'otherUserId': otherUserId,
-                'otherUserName': userName,
-                'participants': participants,
-                'lastMessage': data['lastMessage'] ?? '',
-                'lastMessageTime': data['lastMessageTime'] ?? Timestamp.now(),
-                'lastMessageSender': data['lastMessageSender'] ?? '',
-                'lastMessageSenderName': data['lastMessageSenderName'] ?? '',
-              });
-            } catch (e) {
-              print('Error getting user info for $otherUserId: $e');
+            // Check if user info is already stored in chat metadata
+            if (data['senderUserId'] == otherUserId) {
+              userName = data['senderName'] ?? 'Unknown User';
+              userSurname = data['senderSurname'] ?? '';
+              username = data['senderUsername'] ?? '';
+              userEmail = data['senderEmail'] ?? '';
+            } else if (data['recipientUserId'] == otherUserId) {
+              userName = data['recipientName'] ?? 'Unknown User';
+              userSurname = data['recipientSurname'] ?? '';
+              username = data['recipientUsername'] ?? '';
+              userEmail = data['recipientEmail'] ?? '';
             }
+
+            // If no stored info, fetch from users collection
+            if (userName == 'Unknown User') {
+              try {
+                DocumentSnapshot userDoc = await _firestore
+                    .collection('users')
+                    .doc(otherUserId)
+                    .get();
+                
+                if (userDoc.exists) {
+                  Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+                  userName = userData['name'] ?? 'Unknown User';
+                  userSurname = userData['nachname'] ?? '';
+                  username = userData['username'] ?? '';
+                  userEmail = userData['email'] ?? '';
+                }
+              } catch (e) {
+                print('Error getting user info for $otherUserId: $e');
+              }
+            }
+
+            // Create display name with surname if available
+            String displayName = userName;
+            if (userSurname.isNotEmpty) {
+              displayName = '$userName $userSurname';
+            }
+
+            chats.add({
+              'chatRoomId': doc.id,
+              'otherUserId': otherUserId,
+              'otherUserName': displayName,
+              'otherUserFirstName': userName,
+              'otherUserSurname': userSurname,
+              'otherUserUsername': username,
+              'otherUserEmail': userEmail,
+              'participants': participants,
+              'lastMessage': data['lastMessage'] ?? '',
+              'lastMessageTime': data['lastMessageTime'] ?? Timestamp.now(),
+              'lastMessageSender': data['lastMessageSender'] ?? '',
+              'lastMessageSenderName': data['lastMessageSenderName'] ?? '',
+            });
           }
         }
+        
+        // Sort chats by lastMessageTime in Dart instead of Firestore
+        chats.sort((a, b) {
+          Timestamp timeA = a['lastMessageTime'] ?? Timestamp.now();
+          Timestamp timeB = b['lastMessageTime'] ?? Timestamp.now();
+          return timeB.compareTo(timeA); // Descending order (newest first)
+        });
         
         return chats;
       });
@@ -291,8 +417,7 @@ class ChatService {
     if (currentUser == null) return;
 
     try {
-      String? userRole = await getCurrentUserRole();
-      if (userRole == null) return;
+      String userRole = await getCurrentUserRole();
 
       String chatRoomId;
       if (userRole == 'admin' && chatWithUserId != null) {
@@ -319,12 +444,25 @@ class ChatService {
       
       if (userDoc.exists) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        String firstName = userData['name'] ?? 'Unknown';
+        String surname = userData['nachname'] ?? '';
+        String displayName = firstName;
+        if (surname.isNotEmpty) {
+          displayName = '$firstName $surname';
+        }
+        
         return {
           'id': userId,
-          'name': userData['name'] ?? 'Unknown',
+          'name': firstName,
+          'surname': surname,
+          'displayName': displayName,
           'username': userData['username'] ?? '',
           'email': userData['email'] ?? '',
           'role': userData['roll'] ?? 'user', // Using 'roll' from Firestore
+          'phone': userData['phone'] ?? '',
+          'city': userData['city'] ?? '',
+          'street': userData['street'] ?? '',
+          'zip': userData['zip'] ?? '',
         };
       }
     } catch (e) {
