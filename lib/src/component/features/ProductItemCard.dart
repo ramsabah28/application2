@@ -93,6 +93,7 @@ class _ProductItemCardState extends State<ProductItemCard> {
                               imageUrl: widget.item.imageUrl,
                               height: 200,
                               width: 200,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -115,6 +116,7 @@ class _ProductItemCardState extends State<ProductItemCard> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
+                                    color: Theme.of(context).primaryColor
                                   ),
                                 ),
                               ),

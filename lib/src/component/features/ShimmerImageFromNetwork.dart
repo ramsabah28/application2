@@ -56,7 +56,7 @@ class _ShimmerImageNetworkState extends State<ShimmerImageFromNetwork> {
           width: widget.width,
           height: widget.height,
           fit: widget.fit,
-          alignment: widget.alignment, // Use the configurable alignment parameter
+          alignment: widget.alignment,
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (frame != null && !_isLoaded) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
