@@ -8,6 +8,7 @@ import 'Login.dart';
 import 'Register.dart';
 import '../features/StandardButton.dart';
 import '../../services/UserService.dart';
+import '../../data/FetchingDataUI.dart';
 
 class Profile extends StatelessWidget {
   final VoidCallback? onShowAddress;
@@ -322,9 +323,10 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                               ),
                               backgroundColor: Theme.of(context).primaryColorDark,
                               onPressed: () async {
-                                // TODO: Add admin panel functionality
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Admin Panel - Coming Soon')),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const FetchingDataUI(),
+                                  ),
                                 );
                               },
                             ),

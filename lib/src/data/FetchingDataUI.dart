@@ -3,31 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:math';
-import '../../firebase_options.dart';
-
-// Main function to run the app directly
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const FetchingDataApp());
-}
-
-class FetchingDataApp extends StatelessWidget {
-  const FetchingDataApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Product Data Entry',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: const FetchingDataUI(),
-    );
-  }
-}
 
 class FetchingDataUI extends StatefulWidget {
   const FetchingDataUI({Key? key}) : super(key: key);
