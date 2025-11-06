@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
 import '../../services/ChatService.dart';
 
-class Chatt extends StatefulWidget {
+class Chat extends StatefulWidget {
   final String? chatWithUserId; // For admin to chat with specific user
   
-  const Chatt({
+  const Chat({
     Key? key,
     this.chatWithUserId,
   }) : super(key: key);
 
   @override
-  _ChattState createState() => _ChattState();
+  _ChatState createState() => _ChatState();
 }
 
-class _ChattState extends State<Chatt> {
+class _ChatState extends State<Chat> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   String? _error;
+  bool _isAdmin = false;
 
   @override
   void initState() {
     super.initState();
+    _checkUserRole();
     // Mark messages as read when opening chat
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ChattService.markMessagesAsRead(chatWithUserId: widget.chatWithUserId);
+      ChatService.markMessagesAsRead(chatWithUserId: widget.chatWithUserId);
+    });
+  }
+
+  Future<void> _checkUserRole() async {
+    bool isAdmin = await ChatService.isCurrentUserAdmin();
+    setState(() {
+      _isAdmin = isAdmin;
     });
   }
 
@@ -54,7 +63,7 @@ class _ChattState extends State<Chatt> {
     });
 
     try {
-      await ChattService.sendMessage(
+      await ChatService.sendMessage(
         content: _messageController.text,
         recipientUserId: widget.chatWithUserId,
       );
@@ -78,7 +87,7 @@ class _ChattState extends State<Chatt> {
   }
 
   Widget _buildMessageBubble(Message message) {
-    final bool isCurrentUser = message.senderId == ChattService.currentUser?.uid;
+    final bool isCurrentUser = message.senderId == ChatService.currentUser?.uid;
     final bool isFromAdmin = message.isFromAdmin;
     
     return Container(
@@ -193,7 +202,7 @@ class _ChattState extends State<Chatt> {
             child: TextField(
               controller: _messageController,
               decoration: InputDecoration(
-                hintText: ChattService.isCurrentUserAdmin 
+                hintText: _isAdmin 
                     ? 'Type your response...' 
                     : 'Type your message to admin...',
                 border: OutlineInputBorder(
@@ -239,14 +248,14 @@ class _ChattState extends State<Chatt> {
           children: [
             CircleAvatar(
               radius: 18,
-              backgroundColor: ChattService.isCurrentUserAdmin 
+              backgroundColor: _isAdmin 
                   ? Colors.blue[100] 
                   : Colors.red[100],
               child: Icon(
-                ChattService.isCurrentUserAdmin 
+                _isAdmin 
                     ? Icons.person 
                     : Icons.admin_panel_settings,
-                color: ChattService.isCurrentUserAdmin 
+                color: _isAdmin 
                     ? Colors.blue[700] 
                     : Colors.red[700],
               ),
@@ -257,7 +266,7 @@ class _ChattState extends State<Chatt> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    ChattService.isCurrentUserAdmin 
+                    _isAdmin 
                         ? 'Chat with User' 
                         : 'Chat with Admin',
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -294,7 +303,7 @@ class _ChattState extends State<Chatt> {
             ),
           Expanded(
             child: StreamBuilder<List<Message>>(
-              stream: ChattService.getMessagesStream(
+              stream: ChatService.getMessagesStream(
                 chatWithUserId: widget.chatWithUserId,
               ),
               builder: (context, snapshot) {
@@ -350,7 +359,7 @@ class _ChattState extends State<Chatt> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          ChattService.isCurrentUserAdmin 
+                          _isAdmin 
                               ? 'No messages yet' 
                               : 'Start a conversation with admin',
                           style: TextStyle(
@@ -360,7 +369,7 @@ class _ChattState extends State<Chatt> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          ChattService.isCurrentUserAdmin 
+                          _isAdmin 
                               ? 'Wait for the user to send a message' 
                               : 'Send a message to get support',
                           style: TextStyle(
