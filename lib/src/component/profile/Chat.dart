@@ -26,7 +26,7 @@ class _ChatState extends State<Chat> {
     super.initState();
     print('Chat widget initialized with chatWithUserId: ${widget.chatWithUserId}');
     _checkUserRole();
-    // Mark messages as read when opening chat
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ChatService.markMessagesAsRead(chatWithUserId: widget.chatWithUserId);
     });
@@ -325,6 +325,7 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, //TODO: use the chat_bg.png in the assets directory as background insted of the white color
       appBar: AppBar(
         title: Row(
           children: [
