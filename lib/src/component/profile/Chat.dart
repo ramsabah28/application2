@@ -143,23 +143,43 @@ class _ChatState extends State<Chat> {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.75,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: isCurrentUser 
                     ? Colors.blue[600] 
                     : (isFromAdmin ? Colors.red[50] : Colors.grey[200]),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: isCurrentUser ? const Radius.circular(20) : const Radius.circular(4),
+                  bottomRight: isCurrentUser ? const Radius.circular(4) : const Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: isCurrentUser 
+                    ? CrossAxisAlignment.end 
+                    : CrossAxisAlignment.start,
                 children: [
                   if (!isCurrentUser)
-                    Text(
-                      isFromAdmin ? 'Admin' : message.senderName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: isFromAdmin ? Colors.red[700] : Colors.grey[600],
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        isFromAdmin ? 'Admin' : message.senderName,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: isFromAdmin ? Colors.red[700] : Colors.grey[600],
+                        ),
                       ),
                     ),
                   Text(
@@ -168,6 +188,7 @@ class _ChatState extends State<Chat> {
                       color: isCurrentUser ? Colors.white : Colors.black87,
                       fontSize: 16,
                     ),
+                    textAlign: isCurrentUser ? TextAlign.right : TextAlign.left,
                   ),
                   const SizedBox(height: 4),
                   Text(
