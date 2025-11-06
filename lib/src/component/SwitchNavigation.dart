@@ -12,6 +12,7 @@ import 'profile/Invoice.dart';
 import 'profile/Order.dart';
 import 'profile/UserReview.dart';
 import 'profile/Konto.dart';
+import 'profile/Chat.dart';
 import 'DynamicProductList.dart';
 import 'DynamicContent.dart';
 
@@ -91,6 +92,12 @@ class SwitchNavigationState extends State<SwitchNavigation> {
     });
   }
 
+  void showProfileChat() {
+    setState(() {
+      _overrideScreen = Chatt();
+    });
+  }
+
   void backToProfile() {
     setState(() {
       _selectedIndex = 3;
@@ -115,8 +122,8 @@ class SwitchNavigationState extends State<SwitchNavigation> {
                        _overrideScreen is Invoice || 
                        _overrideScreen is Favorit ||
                        _overrideScreen is UserReview ||
-                       _overrideScreen is Konto) {
-              // Back to Profile for profile sub-screens
+                       _overrideScreen is Konto ||
+                       _overrideScreen is Chatt) {
               _selectedIndex = 3;
               _overrideScreen = null;
             } else {
@@ -141,6 +148,7 @@ class SwitchNavigationState extends State<SwitchNavigation> {
                 onShowFavorites: showProfileFavorites,
                 onShowUserReview: showProfileUserReview,
                 onShowKonto: showProfileKonto,
+                onShowChat: showProfileChat,
               )
             : _screens[_selectedIndex]),
         bottomNavigationBar: CustomNavigationBar(
@@ -162,7 +170,8 @@ class SwitchNavigationState extends State<SwitchNavigation> {
                                _overrideScreen is Invoice || 
                                _overrideScreen is Favorit ||
                                _overrideScreen is UserReview ||
-                               _overrideScreen is Konto) {
+                               _overrideScreen is Konto ||
+                               _overrideScreen is Chatt) {
                       // Back to Profile for profile sub-screens
                       _selectedIndex = 3;
                       _overrideScreen = null;

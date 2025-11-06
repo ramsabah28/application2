@@ -17,6 +17,7 @@ class Profile extends StatelessWidget {
   final VoidCallback? onShowFavorites;
   final VoidCallback? onShowUserReview;
   final VoidCallback? onShowKonto;
+  final VoidCallback? onShowChat;
 
   const Profile({
     super.key,
@@ -26,6 +27,7 @@ class Profile extends StatelessWidget {
     this.onShowFavorites,
     this.onShowUserReview,
     this.onShowKonto,
+    this.onShowChat,
   });
 
   @override
@@ -37,6 +39,7 @@ class Profile extends StatelessWidget {
       onShowFavorites: onShowFavorites,
       onShowUserReview: onShowUserReview,
       onShowKonto: onShowKonto,
+      onShowChat: onShowChat,
     );
   }
 }
@@ -48,6 +51,7 @@ class _ProfileAuthSwitcher extends StatefulWidget {
   final VoidCallback? onShowFavorites;
   final VoidCallback? onShowUserReview;
   final VoidCallback? onShowKonto;
+  final VoidCallback? onShowChat;
 
   const _ProfileAuthSwitcher({
     this.onShowAddress,
@@ -56,6 +60,7 @@ class _ProfileAuthSwitcher extends StatefulWidget {
     this.onShowFavorites,
     this.onShowUserReview,
     this.onShowKonto,
+    this.onShowChat,
   });
 
   @override
@@ -126,6 +131,10 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
 
   void _showKonto() {
     widget.onShowKonto?.call();
+  }
+
+  void _showChat() {
+    widget.onShowChat?.call();
   }
 
   void _showAdress() {
@@ -265,7 +274,6 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                       Divider(thickness: 1.2, color: Colors.grey[300]),
                       const SizedBox(height: 24),
                       const SizedBox(height: 8),
-
                       _ProfileActionButton(
                         icon: Icons.person_2_outlined,
                         label: 'Konto',
@@ -278,6 +286,13 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                         label: 'Adresse',
                         accent: Theme.of(context).primaryColor,
                         onTap: _showAdress,
+                      ),
+                      const SizedBox(height: 16),
+                      _ProfileActionButton(
+                        icon: Icons.chat_bubble_outline_outlined,
+                        label: 'Chat',
+                        accent: Theme.of(context).primaryColor,
+                        onTap: _showChat,
                       ),
                       const SizedBox(height: 24),
                       // Modern Buttons
