@@ -16,6 +16,7 @@ class Profile extends StatelessWidget {
   final VoidCallback? onShowInvoices;
   final VoidCallback? onShowFavorites;
   final VoidCallback? onShowUserReview;
+  final VoidCallback? onShowKonto;
 
   const Profile({
     super.key,
@@ -24,6 +25,7 @@ class Profile extends StatelessWidget {
     this.onShowInvoices,
     this.onShowFavorites,
     this.onShowUserReview,
+    this.onShowKonto,
   });
 
   @override
@@ -34,6 +36,7 @@ class Profile extends StatelessWidget {
       onShowInvoices: onShowInvoices,
       onShowFavorites: onShowFavorites,
       onShowUserReview: onShowUserReview,
+      onShowKonto: onShowKonto,
     );
   }
 }
@@ -44,6 +47,7 @@ class _ProfileAuthSwitcher extends StatefulWidget {
   final VoidCallback? onShowInvoices;
   final VoidCallback? onShowFavorites;
   final VoidCallback? onShowUserReview;
+  final VoidCallback? onShowKonto;
 
   const _ProfileAuthSwitcher({
     this.onShowAddress,
@@ -51,6 +55,7 @@ class _ProfileAuthSwitcher extends StatefulWidget {
     this.onShowInvoices,
     this.onShowFavorites,
     this.onShowUserReview,
+    this.onShowKonto,
   });
 
   @override
@@ -117,6 +122,10 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
 
   void _showUserReview() {
     widget.onShowUserReview?.call();
+  }
+
+  void _showKonto() {
+    widget.onShowKonto?.call();
   }
 
   void _showAdress() {
@@ -195,17 +204,20 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                   }
 
                   final userData = userSnapshot.data;
-                  final displayName = userData != null && UserService.getFullName(userData).isNotEmpty
+                  final displayName =
+                      userData != null &&
+                          UserService.getFullName(userData).isNotEmpty
                       ? UserService.getFullName(userData)
                       : 'User';
-                  final displayEmail = userData != null && UserService.getDisplayEmail(userData).isNotEmpty
+                  final displayEmail =
+                      userData != null &&
+                          UserService.getDisplayEmail(userData).isNotEmpty
                       ? UserService.getDisplayEmail(userData)
                       : snapshot.data?.email ?? 'No email';
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       GestureDetector(
                         onTap: _pickImage,
                         child: Stack(
@@ -253,6 +265,14 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                       Divider(thickness: 1.2, color: Colors.grey[300]),
                       const SizedBox(height: 24),
                       const SizedBox(height: 8),
+
+                      _ProfileActionButton(
+                        icon: Icons.person_2_outlined,
+                        label: 'Konto',
+                        accent: Theme.of(context).primaryColor,
+                        onTap: _showKonto,
+                      ),
+                      const SizedBox(height: 16),
                       _ProfileActionButton(
                         icon: Icons.home_outlined,
                         label: 'Adresse',
@@ -288,6 +308,7 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                         accent: Theme.of(context).primaryColor,
                         onTap: _showUserReview,
                       ),
+
                       const SizedBox(height: 32),
                       StandardButton(
                         icon: Icon(
@@ -305,7 +326,8 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                             ? UserService.isUserAdmin(snapshot.data!.uid)
                             : Future.value(false),
                         builder: (context, adminSnapshot) {
-                          if (adminSnapshot.connectionState == ConnectionState.waiting) {
+                          if (adminSnapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return const SizedBox.shrink();
                           }
 
@@ -321,11 +343,14 @@ class _ProfileAuthSwitcherState extends State<_ProfileAuthSwitcher> {
                                 Icons.admin_panel_settings,
                                 color: Theme.of(context).primaryColor,
                               ),
-                              backgroundColor: Theme.of(context).primaryColorDark,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).primaryColorDark,
                               onPressed: () async {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => const FetchingDataUI(),
+                                    builder: (context) =>
+                                        const FetchingDataUI(),
                                   ),
                                 );
                               },
