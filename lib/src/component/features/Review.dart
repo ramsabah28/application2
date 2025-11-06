@@ -35,8 +35,12 @@ class _ReviewWidgetState extends State<ReviewWidget> {
     });
 
     try {
-      final loadedReviews = await ReviewService.getReviewsForProduct(widget.productId);
-      print('Loaded ${loadedReviews.length} reviews for product ${widget.productId}');
+      final loadedReviews = await ReviewService.getReviewsForProduct(
+        widget.productId,
+      );
+      print(
+        'Loaded ${loadedReviews.length} reviews for product ${widget.productId}',
+      );
       setState(() {
         reviews = loadedReviews;
         isLoading = false;
@@ -47,9 +51,9 @@ class _ReviewWidgetState extends State<ReviewWidget> {
         isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading reviews: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading reviews: $e')));
       }
     }
   }
@@ -92,7 +96,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
             children: [
               Text(
                 'Reviews ($reviewCount)',
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const Spacer(),
               if (averageRating > 0) ...[
@@ -102,18 +106,18 @@ class _ReviewWidgetState extends State<ReviewWidget> {
             ],
           ),
         ),
-
-        // Add Review Button
-        if (widget.showAddReview)
-          Padding(
+        /***
+            // Add Review Button
+            if (widget.showAddReview)
+            Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton.icon(
-              onPressed: _showAddReviewDialog,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Review'),
+            onPressed: _showAddReviewDialog,
+            icon: const Icon(Icons.add),
+            label: const Text('Add Review'),
             ),
-          ),
-
+            ),
+         ***/
         // Reviews List
         if (isLoading)
           const Center(
@@ -160,9 +164,7 @@ class ReviewCard extends StatelessWidget {
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -175,7 +177,9 @@ class ReviewCard extends StatelessWidget {
                   children: List.generate(5, (index) {
                     return Icon(
                       Icons.star,
-                      color: index < review.rank ? Colors.amber : Colors.grey[300],
+                      color: index < review.rank
+                          ? Colors.amber
+                          : Colors.grey[300],
                       size: 18,
                     );
                   }),
@@ -183,17 +187,17 @@ class ReviewCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${review.rank}/5',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
                 // Date
                 Text(
                   _formatDate(review.date),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -202,17 +206,14 @@ class ReviewCard extends StatelessWidget {
             if (review.titel.isNotEmpty) ...[
               Text(
                 review.titel,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
             ],
             // Message
-            Text(
-              review.message,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            Text(review.message, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 8),
             // User indicator
             Text(
@@ -233,7 +234,7 @@ class ReviewCard extends StatelessWidget {
       final date = DateTime.parse(dateString);
       final now = DateTime.now();
       final difference = now.difference(date);
-      
+
       if (difference.inDays == 0) {
         return 'Today';
       } else if (difference.inDays == 1) {
@@ -293,9 +294,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
     );
 
     if (validationError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(validationError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(validationError)));
       return;
     }
 
@@ -324,9 +325,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {

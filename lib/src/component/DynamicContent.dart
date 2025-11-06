@@ -191,25 +191,26 @@ class DynamicContent extends StatelessWidget {
                 SizedBox(height: 4),
                 Text(
                   product.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 SizedBox(height: 16),
                 // Product Images Slider
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    padding: const EdgeInsets.symmetric(vertical: 3.0),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                       child: Container(
                         color: Colors.white,
                         child: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.all(0.0),
                           child: SizedBox(
-                            height: 350, // Further increased for better portrait display
-                            width: screenWidth * 0.96,
+                            height: 350,
+                            width: screenWidth * 1,
                             child: Builder(
                               builder: (_) {
                                 final List<String> urls = [

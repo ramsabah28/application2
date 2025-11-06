@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/ProductModel.dart';
+import '../../models/ReviewModel.dart';
 import '../../services/ProductService.dart';
+import '../../services/ReviewService.dart';
 
 class UserReview extends StatefulWidget {
   const UserReview({super.key});
@@ -274,17 +276,15 @@ class _UserReviewState extends State<UserReview> {
             // Review Button
             Column(
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => _showReviewDialog(product),
-                  icon: const Icon(Icons.star_outline, size: 18),
-                  label: const Text('Bewerten'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    textStyle: const TextStyle(fontSize: 12),
+                if (true) // equivalent to widget.showAddReview
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showAddReviewDialog(product),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Review'),
+                    ),
                   ),
-                ),
               ],
             ),
           ],
@@ -293,74 +293,16 @@ class _UserReviewState extends State<UserReview> {
     );
   }
 
-  void _showReviewDialog(ProductModel product) {
-    int rating = 5;
-    final commentController = TextEditingController();
-
+  void _showAddReviewDialog(ProductModel product) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text('Bewertung für ${product.name}'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Bewertung:'),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setDialogState(() {
-                            rating = index + 1;
-                          });
-                        },
-                        child: Icon(
-                          index < rating ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                          size: 32,
-                        ),
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Kommentar (optional):'),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: commentController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      hintText: 'Teilen Sie Ihre Erfahrungen mit...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Abbrechen'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _submitReview(product, rating, commentController.text);
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                  ),
-                  child: const Text('Bewertung abgeben'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (context) => AddReviewDialog(
+        productId: product.uuid,
+        onReviewAdded: () {
+          // Refresh the purchased products list if needed
+          _loadUserPurchasedProducts();
+        },
+      ),
     );
   }
 
@@ -371,6 +313,157 @@ class _UserReviewState extends State<UserReview> {
         content: Text('Bewertung für "${product.name}" wurde gespeichert!'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
+    );
+  }
+}
+
+class AddReviewDialog extends StatefulWidget {
+  final String productId;
+  final VoidCallback onReviewAdded;
+
+  const AddReviewDialog({
+    super.key,
+    required this.productId,
+    required this.onReviewAdded,
+  });
+
+  @override
+  State<AddReviewDialog> createState() => _AddReviewDialogState();
+}
+
+class _AddReviewDialogState extends State<AddReviewDialog> {
+  final _titleController = TextEditingController();
+  final _messageController = TextEditingController();
+  int _rating = 5;
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitReview() async {
+    // Validate data
+    final validationError = ReviewService.validateReviewData(
+      rank: _rating,
+      title: _titleController.text,
+      message: _messageController.text,
+    );
+
+    if (validationError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(validationError)),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      final reviewUuid = await ReviewService.addReview(
+        productId: widget.productId,
+        rank: _rating,
+        title: _titleController.text.trim(),
+        message: _messageController.text.trim(),
+      );
+
+      if (reviewUuid != null) {
+        widget.onReviewAdded();
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Review added successfully!')),
+          );
+        }
+      } else {
+        throw Exception('Failed to add review');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add Review'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Rating
+            Row(
+              children: [
+                const Text('Rating: '),
+                ...List.generate(5, (index) {
+                  return IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _rating = index + 1;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.star,
+                      color: index < _rating ? Colors.amber : Colors.grey[300],
+                    ),
+                  );
+                }),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Title
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Review Title',
+                border: OutlineInputBorder(),
+              ),
+              maxLength: 100,
+            ),
+            const SizedBox(height: 16),
+            // Message
+            TextField(
+              controller: _messageController,
+              decoration: const InputDecoration(
+                labelText: 'Review Message',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+              maxLength: 1000,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isSubmitting ? null : _submitReview,
+          child: _isSubmitting
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Submit'),
+        ),
+      ],
     );
   }
 }
