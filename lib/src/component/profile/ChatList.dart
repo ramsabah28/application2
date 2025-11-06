@@ -51,10 +51,11 @@ class _ChatListState extends State<ChatList> {
     }
 
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.blue[100],
+          backgroundColor: Theme.of(context).primaryColorLight,
           child: Text(
             otherUserName.isNotEmpty ? otherUserName[0].toUpperCase() : 'U',
             style: TextStyle(
@@ -130,6 +131,7 @@ class _ChatListState extends State<ChatList> {
   Widget build(BuildContext context) {
     if (!_isAdmin) {
       return Scaffold(
+        backgroundColor: Theme.of(context).primaryColorLight,
         appBar: AppBar(
           title: const Text('Chat List'),
           backgroundColor: Colors.white,
@@ -151,12 +153,13 @@ class _ChatListState extends State<ChatList> {
     }
 
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColorLight,
       appBar: AppBar(
         title: Row(
           children: [
             Icon(
               Icons.admin_panel_settings,
-              color: Colors.red[700],
+              color: Theme.of(context).primaryColorLight,
             ),
             const SizedBox(width: 8),
             const Text('Chat Management'),

@@ -375,7 +375,7 @@ class _ChatState extends State<Chat> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('lib/assets/chat_bg.png'),
+            image: AssetImage('lib/assets/white-bg.jpg'),
             fit: BoxFit.cover,
           ),
         ),
