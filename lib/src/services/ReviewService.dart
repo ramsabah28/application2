@@ -26,6 +26,12 @@ class ReviewService {
         throw Exception('User must be logged in to add a review');
       }
 
+      // Check if user has already reviewed this product
+      final bool hasReviewed = await hasUserReviewedProduct(productId);
+      if (hasReviewed) {
+        throw Exception('You have already reviewed this product. Each user can only submit one review per product.');
+      }
+
       // Generate UUID for the review
       final String reviewUuid = const Uuid().v4();
       
@@ -293,5 +299,57 @@ class ReviewService {
     }
     
     return null; // No validation errors
+  }
+
+  /// Check if the current user has already reviewed a specific product
+  /// [productId] - The ID of the product to check
+  /// Returns true if user has already reviewed the product, false otherwise
+  static Future<bool> hasUserReviewedProduct(String productId) async {
+    try {
+      final User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        return false;
+      }
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection(_collectionName)
+          .where('PID', isEqualTo: productId)
+          .where('UID', isEqualTo: currentUser.uid)
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking if user has reviewed product: $e');
+      return false;
+    }
+  }
+
+  /// Get the user's existing review for a specific product
+  /// [productId] - The ID of the product
+  /// Returns the user's review if it exists, null otherwise
+  static Future<Review?> getUserReviewForProduct(String productId) async {
+    try {
+      final User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        return null;
+      }
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection(_collectionName)
+          .where('PID', isEqualTo: productId)
+          .where('UID', isEqualTo: currentUser.uid)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return Review.fromMap(querySnapshot.docs.first.data() as Map<String, dynamic>);
+      }
+      
+      return null;
+    } catch (e) {
+      print('Error getting user review for product: $e');
+      return null;
+    }
   }
 }

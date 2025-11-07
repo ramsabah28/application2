@@ -16,6 +16,7 @@ class UserReview extends StatefulWidget {
 class _UserReviewState extends State<UserReview> {
   List<ProductModel> _purchasedProducts = [];
   bool _isLoading = true;
+  Map<String, bool> _userReviewStatus = {}; // productId -> hasUserReviewed
 
   @override
   void initState() {
@@ -61,8 +62,15 @@ class _UserReviewState extends State<UserReview> {
         }
       }
 
+      // Load review status for each product
+      Map<String, bool> reviewStatus = {};
+      for (ProductModel product in products) {
+        reviewStatus[product.uuid] = await ReviewService.hasUserReviewedProduct(product.uuid);
+      }
+
       setState(() {
         _purchasedProducts = products;
+        _userReviewStatus = reviewStatus;
         _isLoading = false;
       });
     } catch (e) {
@@ -277,24 +285,42 @@ class _UserReviewState extends State<UserReview> {
             // Review Button
             Column(
               children: [
-                if (true) // equivalent to widget.showAddReview
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _showAddReviewDialog(product),
-                      icon: const Icon(Icons.add, color: Colors.white),
-                      label: const Text('Add Review', style: TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: _buildReviewButton(product),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildReviewButton(ProductModel product) {
+    final bool hasReviewed = _userReviewStatus[product.uuid] ?? false;
+    
+    if (hasReviewed) {
+      // User has already reviewed this product - show "View Review" button
+      return ElevatedButton.icon(
+        onPressed: () => _showViewReviewDialog(product),
+        icon: const Icon(Icons.visibility, color: Colors.white),
+        label: const Text('View Review', style: TextStyle(color: Colors.white)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      // User hasn't reviewed this product - show "Add Review" button
+      return ElevatedButton.icon(
+        onPressed: () => _showAddReviewDialog(product),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('Add Review', style: TextStyle(color: Colors.white)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      );
+    }
   }
 
   void _showAddReviewDialog(ProductModel product) {
@@ -306,6 +332,16 @@ class _UserReviewState extends State<UserReview> {
           // Refresh the purchased products list if needed
           _loadUserPurchasedProducts();
         },
+      ),
+    );
+  }
+
+  void _showViewReviewDialog(ProductModel product) {
+    showDialog(
+      context: context,
+      builder: (context) => ViewReviewDialog(
+        productId: product.uuid,
+        productName: product.name,
       ),
     );
   }
@@ -459,6 +495,205 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                 )
               : const Text('Submit'),
         ),
+      ],
+    );
+  }
+}
+
+class ViewReviewDialog extends StatefulWidget {
+  final String productId;
+  final String productName;
+
+  const ViewReviewDialog({
+    super.key,
+    required this.productId,
+    required this.productName,
+  });
+
+  @override
+  State<ViewReviewDialog> createState() => _ViewReviewDialogState();
+}
+
+class _ViewReviewDialogState extends State<ViewReviewDialog> {
+  Review? _userReview;
+  bool _isLoading = true;
+  bool _isDeleting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserReview();
+  }
+
+  Future<void> _loadUserReview() async {
+    try {
+      final review = await ReviewService.getUserReviewForProduct(widget.productId);
+      setState(() {
+        _userReview = review;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading review: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteReview() async {
+    if (_userReview == null) return;
+
+    setState(() {
+      _isDeleting = true;
+    });
+
+    try {
+      final success = await ReviewService.deleteReview(_userReview!.uuid);
+      if (success && mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Review deleted successfully!')),
+        );
+      } else if (mounted) {
+        throw Exception('Failed to delete review');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting review: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildStarRating(int rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Icon(
+          Icons.star,
+          color: index < rating ? Colors.amber : Colors.grey[300],
+          size: 20,
+        );
+      }),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Your Review for ${widget.productName}'),
+      content: _isLoading
+          ? const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
+            )
+          : _userReview == null
+              ? const Text('No review found.')
+              : SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Rating
+                      Row(
+                        children: [
+                          const Text('Rating: '),
+                          _buildStarRating(_userReview!.rank),
+                          const SizedBox(width: 8),
+                          Text('(${_userReview!.rank}/5)'),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Title
+                      Text(
+                        'Title:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _userReview!.titel,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
+                      // Message
+                      Text(
+                        'Review:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _userReview!.message,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 16),
+                      // Date
+                      Text(
+                        'Posted on: ${DateTime.parse(_userReview!.date).toLocal().toString().split(' ')[0]}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+      actions: [
+        TextButton(
+          onPressed: _isDeleting ? null : () => Navigator.of(context).pop(),
+          child: const Text('Close'),
+        ),
+        if (_userReview != null)
+          TextButton(
+            onPressed: _isDeleting ? null : () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Delete Review'),
+                  content: const Text('Are you sure you want to delete your review? This action cannot be undone.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+              
+              if (confirm == true) {
+                await _deleteReview();
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: _isDeleting 
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Delete'),
+          ),
       ],
     );
   }
