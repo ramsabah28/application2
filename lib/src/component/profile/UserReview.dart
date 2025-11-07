@@ -202,6 +202,7 @@ class _UserReviewState extends State<UserReview> {
 
   Widget _buildProductCard(ProductModel product) {
     return Card(
+      color: Theme.of(context).primaryColorLight,
       margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -281,8 +282,11 @@ class _UserReviewState extends State<UserReview> {
                     padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: ElevatedButton.icon(
                       onPressed: () => _showAddReviewDialog(product),
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Review'),
+                      icon: const Icon(Icons.add, color: Colors.white),
+                      label: const Text('Add Review', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
               ],
@@ -306,15 +310,7 @@ class _UserReviewState extends State<UserReview> {
     );
   }
 
-  void _submitReview(ProductModel product, int rating, String comment) {
-    // TODO: Implement review submission to Firebase
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Bewertung für "${product.name}" wurde gespeichert!'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-    );
-  }
+
 }
 
 class AddReviewDialog extends StatefulWidget {
