@@ -342,6 +342,10 @@ class _UserReviewState extends State<UserReview> {
       builder: (context) => ViewReviewDialog(
         productId: product.uuid,
         productName: product.name,
+        onReviewDeleted: () {
+          // Refresh the purchased products list and review status
+          _loadUserPurchasedProducts();
+        },
       ),
     );
   }
@@ -503,11 +507,13 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
 class ViewReviewDialog extends StatefulWidget {
   final String productId;
   final String productName;
+  final VoidCallback onReviewDeleted;
 
   const ViewReviewDialog({
     super.key,
     required this.productId,
     required this.productName,
+    required this.onReviewDeleted,
   });
 
   @override
@@ -554,6 +560,8 @@ class _ViewReviewDialogState extends State<ViewReviewDialog> {
     try {
       final success = await ReviewService.deleteReview(_userReview!.uuid);
       if (success && mounted) {
+        // Call the callback to refresh the parent widget
+        widget.onReviewDeleted();
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Review deleted successfully!')),

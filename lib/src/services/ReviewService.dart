@@ -217,6 +217,7 @@ class ReviewService {
           .doc(reviewUuid)
           .delete();
 
+      print('Review with UUID $reviewUuid successfully deleted from Firestore');
       return true;
     } catch (e) {
       print('Error deleting review: $e');
