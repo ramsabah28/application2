@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'homeScreenFeatures/ProductsCarousel.dart';
 import 'homeScreenFeatures/SaleCard.dart';
+import 'homeScreenFeatures/SpecialOffer.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,14 +13,18 @@ class Home extends StatefulWidget {
 class _Home extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SaleCards(),
-        SizedBox(height: 12),
-        const ProductsCarousel(),
-        SizedBox(height: 10),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SaleCards(),
+          SizedBox(height: 12),
+          const ProductsCarousel(),
+          SizedBox(height: 10),
+          const SpecialOffer(),
+          SizedBox(height: 10),
+        ],
+      ),
     );
   }
 }

@@ -126,9 +126,11 @@ class _ProductItemCardState extends State<ProductItemCard> {
                             widget.item.brand,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(widget.item.description.length > 20
-                              ? widget.item.description.substring(0, 50) + '…'
-                              : widget.item.description),
+                          Text(
+                            widget.item.description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           Text(
                             "${widget.item.price}€",
                             style: TextStyle(
