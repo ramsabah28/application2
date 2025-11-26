@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:math';
+import '../models/CategoryModel.dart';
+import '../services/CategoryService.dart';
 
 class FetchingDataUI extends StatefulWidget {
   const FetchingDataUI({Key? key}) : super(key: key);
@@ -23,6 +25,10 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
   final _descriptionController = TextEditingController();
   final _midDescriptionController = TextEditingController();
   final _longDescriptionController = TextEditingController();
+  
+  // Categories
+  List<CategoryModel> _categories = [];
+  CategoryModel? _selectedCategory;
   
   // Sub-images controllers (up to 3)
   final _subImage1UrlController = TextEditingController();
@@ -183,6 +189,7 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
     _updateSubImage1Url();
     _updateSubImage2Url();
     _updateSubImage3Url();
+    _loadCategories();
   }
 
   Future<void> _initializeFirebase() async {
@@ -191,6 +198,17 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
     } catch (e) {
       print('Firebase already initialized');
     }
+  }
+
+  Future<void> _loadCategories() async {
+    final cats = await CategoryService.loadCategories();
+    if (!mounted) return;
+    setState(() {
+      _categories = cats;
+      if (_categories.isNotEmpty) {
+        _selectedCategory = _categories.first;
+      }
+    });
   }
 
   // Simple function to add product to Firestore
@@ -258,7 +276,7 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
         "longDiscription": _longDescriptionController.text.isEmpty
             ? "The ${_nameController.text.isEmpty ? 'Default Product' : _nameController.text} is engineered to meet the highest standards in the Models market. Crafted with attention to detail and equipped with advanced features, it ensures optimal performance, longevity, and user satisfaction."
             : _longDescriptionController.text,
-        "category": "Models",
+  "category": _selectedCategory?.name ?? "Models",
         "images": images, // Array of sub-images with colors
       };
 
@@ -373,6 +391,21 @@ class _FetchingDataUIState extends State<FetchingDataUI> {
                 labelText: 'Product Name',
                 border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<CategoryModel>(
+              value: _selectedCategory,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                border: OutlineInputBorder(),
+              ),
+              items: _categories
+                  .map((c) => DropdownMenuItem<CategoryModel>(
+                        value: c,
+                        child: Text(c.name),
+                      ))
+                  .toList(),
+              onChanged: (val) => setState(() => _selectedCategory = val),
             ),
             const SizedBox(height: 10),
             

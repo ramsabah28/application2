@@ -2,7 +2,7 @@
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000007",
     "name": "Kunst",
-    "description": "#Gadgets, #phones, #Tablet, #Headphones und mehr",
+    "description": "#Vasen, #phones, #Tablet, #Headphones und mehr",
     "imageUrl": "lib/assets/category_assets/art.png"
   },
   {
@@ -20,7 +20,7 @@
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000010",
     "name": "Models",
-    "description": "Fiction, non-fiction, and educational materials",
+    "description": "Movie, Games und Anime",
     "imageUrl": "lib/assets/category_assets/3dmodel.jpg"
   },
   {
@@ -31,14 +31,8 @@
   },
   {
     "uuid": "c3a3e3a3-0003-4003-8003-000000000013",
-    "name": "Movie",
-    "description": "Fun toys for all ages",
-    "imageUrl": "lib/assets/category_assets/sport.jpg"
-  },
-  {
-    "uuid": "c3a3e3a3-0003-4003-8003-000000000012",
-    "name": "Game",
-    "description": "Fun toys for all ages",
-    "imageUrl": "lib/assets/category_assets/sport.jpg"
+    "name": "Tools",
+    "description": "Verschiedene Ersatzteile und Werkzeuge",
+    "imageUrl": "lib/assets/category_assets/tools.png"
   }
 ]

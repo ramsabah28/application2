@@ -128,9 +128,14 @@ class _CartItemCardState extends State<CartItemCard> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.item.description.length > 20
-                      ? widget.item.description.substring(0, 50) + '...'
-                      : widget.item.description,
+                  () {
+                    final desc = widget.item.description;
+                    final maxLen = 50;
+                    if (desc.length > maxLen) {
+                      return desc.substring(0, maxLen) + '...';
+                    }
+                    return desc;
+                  }(),
                 ),
                 Text(
                   "${widget.item.price}€",
