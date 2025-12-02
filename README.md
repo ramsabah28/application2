@@ -17,13 +17,13 @@ A modern Flutter-based e-commerce application specializing in 3D printed product
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.33.59.png" width="200" alt="Product Search"/>
-      <br><b>Product Search</b>
-      <br><small>Advanced search functionality with real-time results</small>
+      <br><b>Product List View</b>
+      <br><small>Product catalog showing items in card format</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.34.09.png" width="200" alt="Search Results"/>
-      <br><b>Search Results</b>
-      <br><small>Live search overlay with product images and pricing</small>
+      <br><b>Category View</b>
+      <br><small>Product view in cards for selected category</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.34.20.png" width="200" alt="Product Details"/>
@@ -34,8 +34,8 @@ A modern Flutter-based e-commerce application specializing in 3D printed product
   <tr>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.01.png" width="200" alt="3D Model View"/>
-      <br><b>3D Model View</b>
-      <br><small>Interactive 3D models for better product visualization</small>
+      <br><b>Single Product View</b>
+      <br><small>Detailed product view with specifications and pricing</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.15.png" width="200" alt="Shopping Cart"/>
@@ -44,20 +44,20 @@ A modern Flutter-based e-commerce application specializing in 3D printed product
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.44.png" width="200" alt="Cart Management"/>
-      <br><b>Cart Management</b>
-      <br><small>Add, remove, and modify cart items with stock validation</small>
+      <br><b>Invoice Overview</b>
+      <br><small>Bill overview of ordered products with details</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.56.png" width="200" alt="Checkout Process"/>
-      <br><b>Checkout Process</b>
-      <br><small>Streamlined checkout with order summary and payment</small>
+      <br><b>Order Overview</b>
+      <br><small>Overview of orders showing payment status</small>
     </td>
   </tr>
   <tr>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.07.png" width="200" alt="User Profile"/>
-      <br><b>User Profile</b>
-      <br><small>Complete profile management and customization</small>
+      <br><b>User Address Data</b>
+      <br><small>User address information and delivery details</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.17.png" width="200" alt="Account Settings"/>
@@ -66,35 +66,35 @@ A modern Flutter-based e-commerce application specializing in 3D printed product
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.26.png" width="200" alt="Order History"/>
-      <br><b>Order History</b>
-      <br><small>Complete purchase history with detailed information</small>
+      <br><b>Favorites Overview</b>
+      <br><small>Overview of favorite products and wishlist</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.36.png" width="200" alt="Order Details"/>
-      <br><b>Order Details</b>
-      <br><small>Real-time order tracking and invoice generation</small>
+      <br><b>Product Reviews Overview</b>
+      <br><small>Overview of rated and reviewed products</small>
     </td>
   </tr>
   <tr>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.46.png" width="200" alt="Favorites"/>
-      <br><b>Favorites</b>
-      <br><small>Save favorite products and manage wishlists</small>
+      <br><b>Written Reviews Overview</b>
+      <br><small>Overview of reviews written by the user</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.58.png" width="200" alt="Wishlist Management"/>
-      <br><b>Wishlist Management</b>
-      <br><small>Organize products and quick add to cart functionality</small>
+      <br><b>Customer-Admin Chat</b>
+      <br><small>Chat interface between customer and admin</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.37.12.png" width="200" alt="Chat System"/>
-      <br><b>Chat System</b>
-      <br><small>Real-time customer support with chat history</small>
+      <br><b>Search Overview</b>
+      <br><small>Search interface with results display</small>
     </td>
     <td align="center" width="25%">
       <img src="App-Images/Screenshot%202025-12-02%20at%2011.38.32.png" width="200" alt="Live Chat"/>
-      <br><b>Live Chat</b>
-      <br><small>Multi-user support and file sharing capabilities</small>
+      <br><b>Search Results View</b>
+      <br><small>Search overview with different search terms</small>
     </td>
   </tr>
 </table>
@@ -105,27 +105,27 @@ A modern Flutter-based e-commerce application specializing in 3D printed product
 
 ### 📱 Core Functionality
 - **Modern Home Interface**: Clean and intuitive design with easy navigation
+- **Product Catalog**: Browse products in card format by categories
 - **Advanced Search**: Search products by name, brand, and category with live results
-- **Product Discovery**: Organized categories and filtering options
-- **3D Model Integration**: Interactive 3D product visualization
+- **Product Details**: Comprehensive single product view with specifications
 
-### 🛒 Shopping Experience
-- **Smart Cart System**: Real-time stock validation and quantity management
-- **Secure Checkout**: Streamlined payment process with tax and shipping calculation
-- **Order Tracking**: Complete order history and real-time status updates
-- **Invoice Generation**: Automatic invoice creation and storage
+### 🛒 Shopping & Order Management
+- **Smart Cart System**: Add products to cart with quantity management
+- **Invoice Management**: Detailed bill overview of ordered products
+- **Order Overview**: Track orders and view payment status
+- **Order History**: Complete purchase tracking and status updates
 
-### 👤 User Management
-- **Profile Customization**: Complete user profile and preferences management
-- **Favorites System**: Save products and organize wishlists
-- **Address Management**: Multiple shipping addresses support
-- **Account Security**: Secure authentication and session management
+### 👤 User Management & Profile
+- **Address Management**: Manage user delivery addresses and contact information
+- **Account Settings**: Personal information and preferences management
+- **Favorites System**: Save favorite products and manage wishlists
+- **Review System**: Write and manage product reviews and ratings
 
-### 💬 Communication & Support
-- **Live Chat**: Real-time customer support integration
-- **Chat History**: Persistent conversation records
-- **File Sharing**: Share images and documents in conversations
-- **Multi-user Support**: Connect with multiple support agents
+### 💬 Communication & Reviews
+- **Customer Support Chat**: Real-time chat between customers and admin
+- **Review Management**: Overview of written reviews and product ratings
+- **Search Interface**: Advanced search functionality with multiple search terms
+- **User Feedback**: Comprehensive review and rating system
 
 ## 🛠 Technical Stack
 
