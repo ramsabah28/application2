@@ -2,84 +2,130 @@
 
 A modern Flutter-based e-commerce application specializing in 3D printed products with Firebase backend integration.
 
-## 🚀 Features
+## 📱 Application Screenshots
+
+### Image Library
+
+<div align="center">
+
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.33.47.png" width="200" alt="Home Screen"/>
+      <br><b>Home Screen</b>
+      <br><small>Modern home interface with featured products and intuitive navigation</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.33.59.png" width="200" alt="Product Search"/>
+      <br><b>Product Search</b>
+      <br><small>Advanced search functionality with real-time results</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.34.09.png" width="200" alt="Search Results"/>
+      <br><b>Search Results</b>
+      <br><small>Live search overlay with product images and pricing</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.34.20.png" width="200" alt="Product Details"/>
+      <br><b>Product Details</b>
+      <br><small>Comprehensive product information and specifications</small>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.01.png" width="200" alt="3D Model View"/>
+      <br><b>3D Model View</b>
+      <br><small>Interactive 3D models for better product visualization</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.15.png" width="200" alt="Shopping Cart"/>
+      <br><b>Shopping Cart</b>
+      <br><small>Smart cart system with quantity controls and pricing</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.44.png" width="200" alt="Cart Management"/>
+      <br><b>Cart Management</b>
+      <br><small>Add, remove, and modify cart items with stock validation</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.35.56.png" width="200" alt="Checkout Process"/>
+      <br><b>Checkout Process</b>
+      <br><small>Streamlined checkout with order summary and payment</small>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.07.png" width="200" alt="User Profile"/>
+      <br><b>User Profile</b>
+      <br><small>Complete profile management and customization</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.17.png" width="200" alt="Account Settings"/>
+      <br><b>Account Settings</b>
+      <br><small>Personal information and preferences management</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.26.png" width="200" alt="Order History"/>
+      <br><b>Order History</b>
+      <br><small>Complete purchase history with detailed information</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.36.png" width="200" alt="Order Details"/>
+      <br><b>Order Details</b>
+      <br><small>Real-time order tracking and invoice generation</small>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.46.png" width="200" alt="Favorites"/>
+      <br><b>Favorites</b>
+      <br><small>Save favorite products and manage wishlists</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.36.58.png" width="200" alt="Wishlist Management"/>
+      <br><b>Wishlist Management</b>
+      <br><small>Organize products and quick add to cart functionality</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.37.12.png" width="200" alt="Chat System"/>
+      <br><b>Chat System</b>
+      <br><small>Real-time customer support with chat history</small>
+    </td>
+    <td align="center" width="25%">
+      <img src="App-Images/Screenshot%202025-12-02%20at%2011.38.32.png" width="200" alt="Live Chat"/>
+      <br><b>Live Chat</b>
+      <br><small>Multi-user support and file sharing capabilities</small>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+## 🚀 Key Features
 
 ### 📱 Core Functionality
-
-#### Home & Product Discovery
-![Home Screen](App-Images/Screenshot%202025-12-02%20at%2011.33.47.png)
 - **Modern Home Interface**: Clean and intuitive design with easy navigation
-- **Product Showcase**: Featured products displayed prominently
-- **Search Integration**: Global search functionality with real-time results
-
-#### Product Catalog & Search
-![Product Search](App-Images/Screenshot%202025-12-02%20at%2011.33.59.png)
-![Search Results](App-Images/Screenshot%202025-12-02%20at%2011.34.09.png)
-- **Advanced Search**: Search products by name, brand, and category
-- **Live Search Overlay**: Instant search results with product images and pricing
-- **Category Browsing**: Organized product categories for easy discovery
-- **Product Filtering**: Filter products by various criteria
-
-#### Product Details & 3D Visualization
-![Product Details](App-Images/Screenshot%202025-12-02%20at%2011.34.20.png)
-![3D Model View](App-Images/Screenshot%202025-12-02%20at%2011.35.01.png)
-- **Detailed Product Information**: Comprehensive product descriptions and specifications
-- **3D Model Integration**: Interactive 3D models for better product visualization
-- **Multiple Image Gallery**: Multiple product angles and color variations
-- **Pricing & Availability**: Real-time stock information and pricing
-- **Customer Reviews**: Integrated review system with ratings
+- **Advanced Search**: Search products by name, brand, and category with live results
+- **Product Discovery**: Organized categories and filtering options
+- **3D Model Integration**: Interactive 3D product visualization
 
 ### 🛒 Shopping Experience
-
-#### Shopping Cart Management
-![Shopping Cart](App-Images/Screenshot%202025-12-02%20at%2011.35.15.png)
-![Cart Items](App-Images/Screenshot%202025-12-02%20at%2011.35.44.png)
-- **Smart Cart System**: Add, remove, and modify quantities
-- **Stock Validation**: Real-time stock checking to prevent overselling
-- **Price Calculation**: Automatic total calculation with tax and shipping
-- **Quantity Controls**: Easy increment/decrement with visual feedback
-
-#### Checkout & Payment
-![Checkout Process](App-Images/Screenshot%202025-12-02%20at%2011.35.56.png)
-- **Streamlined Checkout**: Simple and secure checkout process
-- **Order Summary**: Detailed breakdown of costs including taxes and shipping
-- **Payment Integration**: Secure payment processing
-- **Order Confirmation**: Instant order confirmation and tracking
+- **Smart Cart System**: Real-time stock validation and quantity management
+- **Secure Checkout**: Streamlined payment process with tax and shipping calculation
+- **Order Tracking**: Complete order history and real-time status updates
+- **Invoice Generation**: Automatic invoice creation and storage
 
 ### 👤 User Management
-
-#### Profile & Account Management
-![User Profile](App-Images/Screenshot%202025-12-02%20at%2011.36.07.png)
-![Account Settings](App-Images/Screenshot%202025-12-02%20at%2011.36.17.png)
-- **User Profile Management**: Complete profile customization
-- **Account Settings**: Personal information and preferences management
+- **Profile Customization**: Complete user profile and preferences management
+- **Favorites System**: Save products and organize wishlists
 - **Address Management**: Multiple shipping addresses support
-
-#### Order History & Tracking
-![Order History](App-Images/Screenshot%202025-12-02%20at%2011.36.26.png)
-![Order Details](App-Images/Screenshot%202025-12-02%20at%2011.36.36.png)
-- **Order History**: Complete purchase history with detailed information
-- **Order Tracking**: Real-time order status updates
-- **Invoice Generation**: Automatic invoice creation and storage
-- **Reorder Functionality**: Easy reordering of previous purchases
-
-#### Favorites & Wishlist
-![Favorites](App-Images/Screenshot%202025-12-02%20at%2011.36.46.png)
-![Wishlist Management](App-Images/Screenshot%202025-12-02%20at%2011.36.58.png)
-- **Favorites System**: Save favorite products for later
-- **Wishlist Management**: Organize and manage product wishlists
-- **Quick Actions**: Add to cart directly from favorites
-- **Social Features**: Share favorite products
+- **Account Security**: Secure authentication and session management
 
 ### 💬 Communication & Support
-
-#### Customer Chat Support
-![Chat System](App-Images/Screenshot%202025-12-02%20at%2011.37.12.png)
-![Live Chat](App-Images/Screenshot%202025-12-02%20at%2011.38.32.png)
-- **Real-time Chat**: Live customer support integration
-- **Chat History**: Persistent conversation history
-- **Multi-user Support**: Support for multiple customer service agents
-- **File Sharing**: Share images and documents in chat
+- **Live Chat**: Real-time customer support integration
+- **Chat History**: Persistent conversation records
+- **File Sharing**: Share images and documents in conversations
+- **Multi-user Support**: Connect with multiple support agents
 
 ## 🛠 Technical Stack
 
