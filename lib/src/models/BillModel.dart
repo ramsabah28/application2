@@ -14,6 +14,7 @@ class BillModel {
   final double price;
   final int BID;
   final String date;
+  final String InvoiceID;
 
   const BillModel({
     required this.uuid,
@@ -23,5 +24,6 @@ class BillModel {
     required this.items,
     required this.UID,
     required this.date,
+    required this.InvoiceID,
   });
 }

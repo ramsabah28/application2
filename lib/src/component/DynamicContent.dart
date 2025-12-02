@@ -3,10 +3,12 @@ import '../repository/CartRepository.dart';
 import 'features/AddInCartButton.dart';
 import 'features/FavButton.dart';
 import '../services/ProductService.dart';
+import '../services/FavoritService.dart';
 import 'features/ShimmerImageFromNetwork.dart';
 import 'dart:ui';
 import 'package:shimmer/shimmer.dart';
 import 'features/FullscreenImageViewer.dart';
+import 'features/Review.dart';
 
 class DynamicContent extends StatelessWidget {
   final String uuid;
@@ -68,7 +70,7 @@ class DynamicContent extends StatelessWidget {
                     gradient: _shimmerGradient,
                     period: const Duration(milliseconds: 900),
                     child: Container(
-                      height: 200,
+                      height: 350, // Updated to match the new image container height
                       width: screenWidth * 0.96,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -189,25 +191,26 @@ class DynamicContent extends StatelessWidget {
                 SizedBox(height: 4),
                 Text(
                   product.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 SizedBox(height: 16),
                 // Product Images Slider
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    padding: const EdgeInsets.symmetric(vertical: 3.0),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                       child: Container(
                         color: Colors.white,
                         child: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.all(0.0),
                           child: SizedBox(
-                            height: 200,
-                            width: screenWidth * 0.96,
+                            height: 350,
+                            width: screenWidth * 1,
                             child: Builder(
                               builder: (_) {
                                 final List<String> urls = [
@@ -235,11 +238,30 @@ class DynamicContent extends StatelessWidget {
                                         },
                                         child: Hero(
                                           tag: 'image_viewer_${idx}_$u',
-                                          child: ShimmerImageFromNetwork(
-                                            imageUrl: u,
-                                            height: 200,
+                                          child: Container(
+                                            height: 350,
                                             width: screenWidth * 0.96,
-                                            shimmerBottomInset: 12,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(0.1),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: ShimmerImageFromNetwork(
+                                                imageUrl: u,
+                                                height: 350,
+                                                width: screenWidth * 0.96,
+                                                shimmerBottomInset: 12,
+                                                fit: BoxFit.cover,
+                                                alignment: Alignment.center,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -294,13 +316,23 @@ class DynamicContent extends StatelessWidget {
                       },
                     ),
                     SizedBox(height: 4),
-                    FavButton(),
+                    FavButton(
+                      onPressed: () async {
+                        final added = await FavoritService.addToFavorites(uuid);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              added ? 'Zu Favoriten hinzugefügt!' : 'Bereits in Favoriten!'
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(height: 24),
                 Divider(),
                 SizedBox(height: 8),
-                // Additional descriptions
                 if (product.midDescription.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
@@ -314,6 +346,14 @@ class DynamicContent extends StatelessWidget {
                     product.longDiscription,
                     style: const TextStyle(fontSize: 14, height: 1.4),
                   ),
+                SizedBox(height: 24),
+                Divider(),
+                SizedBox(height: 16),
+                // Reviews Section
+                ReviewWidget(
+                  productId: uuid,
+                  showAddReview: true,
+                ),
               ],
             ),
           ),

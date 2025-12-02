@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/AdressModel.dart';
 import '../../services/AdressService.dart';
-import '../features/StandardButton.dart';
 
 class AdressScreen extends StatefulWidget {
   const AdressScreen({Key? key}) : super(key: key);
@@ -110,55 +109,170 @@ class _AdressScreenState extends State<AdressScreen> {
   @override
   Widget build(BuildContext context) {
     return _adressModel == null
-        ? const Center(child: CircularProgressIndicator())
-        : Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Adressdaten',
-                      style: Theme.of(context).textTheme.titleLarge,
+        ? Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).primaryColor,
+            ),
+          )
+        : Container(
+            color: Theme.of(context).primaryColorLight,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section
+                  Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColorLight,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _editMode = !_editMode;
-                        });
-                      },
-                      icon: Icon(_editMode ? Icons.close : Icons.edit),
-                      tooltip: _editMode
-                          ? 'Bearbeiten deaktivieren'
-                          : 'Bearbeiten aktivieren',
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Adressdaten',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _editMode ? 'Bearbeiten aktiv' : 'Nur ansehen',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).primaryColorDark.withValues(alpha: 0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: _editMode 
+                                ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
+                                : Theme.of(context).primaryColorLight.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _editMode = !_editMode;
+                              });
+                            },
+                            icon: Icon(
+                              _editMode ? Icons.close : Icons.edit_outlined,
+                              color: _editMode 
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context).primaryColorDark,
+                            ),
+                            tooltip: _editMode
+                                ? 'Bearbeiten deaktivieren'
+                                : 'Bearbeiten aktivieren',
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildTextField('Name', _nameController),
-                _buildTextField('Nachname', _nachnameController),
-                _buildTextField('Straße', _streetController),
-                _buildTextField(
-                  'PLZ',
-                  _zipController,
-                  keyboardType: TextInputType.number,
-                ),
-                _buildTextField('Stadt', _cityController),
-                _buildTextField(
-                  'Telefonnummer',
-                  _phoneController,
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 24),
-                StandardButton(
-                  icon: Icon(Icons.save_sharp, color: _editMode ? Theme.of(context).primaryColor : Theme.of(context).primaryColorLight),
-                  onPressed: _editMode ? _saveAdressData : null,
-                  backgroundColor: Theme.of(context).primaryColorLight,
-
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Form Section
+                  Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColorLight,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(child: _buildTextField('Name', _nameController)),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildTextField('Nachname', _nachnameController)),
+                          ],
+                        ),
+                        _buildTextField('Straße', _streetController),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: _buildTextField(
+                                'PLZ',
+                                _zipController,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              flex: 2,
+                              child: _buildTextField('Stadt', _cityController),
+                            ),
+                          ],
+                        ),
+                        _buildTextField(
+                          'Telefonnummer',
+                          _phoneController,
+                          keyboardType: TextInputType.phone,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  
+                  // Save Button Section
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _editMode ? _saveAdressData : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _editMode 
+                            ? Theme.of(context).primaryColor
+                            : Theme.of(context).primaryColorLight.withValues(alpha: 0.5),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: _editMode ? 4 : 0,
+                      ),
+                      icon: Icon(
+                        Icons.save_outlined,
+                        color: _editMode ? Colors.white : Colors.grey,
+                      ),
+                      label: Text(
+                        _editMode ? 'Änderungen speichern' : 'Bearbeiten aktivieren zum Speichern',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: _editMode ? Colors.white : Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
   }
@@ -169,12 +283,74 @@ class _AdressScreenState extends State<AdressScreen> {
     TextInputType? keyboardType,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(labelText: label),
-        keyboardType: keyboardType,
-        enabled: _editMode,
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            enabled: _editMode,
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontSize: 16,
+              color: _editMode 
+                  ? Theme.of(context).primaryColorDark
+                  : Theme.of(context).primaryColorDark.withValues(alpha: 0.6),
+            ),
+            decoration: InputDecoration(
+              hintText: _editMode ? 'Eingeben...' : '',
+              filled: true,
+              fillColor: _editMode 
+                  ? Theme.of(context).primaryColorLight.withValues(alpha: 0.1)
+                  : Theme.of(context).primaryColorLight.withValues(alpha: 0.05),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).primaryColorLight.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).primaryColorLight.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).primaryColor,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).primaryColorLight.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

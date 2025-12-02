@@ -46,7 +46,8 @@ class BillService {
         throw Exception('Kein Benutzer angemeldet.');
       }
 
-      final uuid = const Uuid().v4();
+      // Use the UUID from the model if provided, otherwise generate a new one
+      final uuid = model.uuid.isNotEmpty ? model.uuid : const Uuid().v4();
 
       final now = DateTime.now();
       final year = now.year.toString();

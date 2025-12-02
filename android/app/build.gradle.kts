@@ -27,6 +27,7 @@ android {
         applicationId = "com.example.application2"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // firebase_auth requires minSdk 23; set explicitly to satisfy plugin requirements.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

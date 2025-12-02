@@ -81,9 +81,14 @@ class FavoritItemCard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  product.description.length > 20
-                      ? product.description.substring(0, 50)
-                      : product.description,
+                  () {
+                    final desc = product.description;
+                    final maxLen = 50;
+                    if (desc.length > maxLen) {
+                      return desc.substring(0, maxLen) + '...';
+                    }
+                    return desc;
+                  }(),
                 ),
                 Text(
                   "${product.price}\u20ac",

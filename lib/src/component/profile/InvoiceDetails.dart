@@ -53,7 +53,8 @@ class InvoiceDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rechnungsdetails')),
+      backgroundColor: const Color.fromRGBO(243, 243, 246, 1),
+      appBar: AppBar(title: const Text('Rechnungsdetails'), backgroundColor:const Color.fromRGBO(243, 243, 246, 1) ,),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _loadBill(),
         builder: (context, snapshot) {
@@ -73,46 +74,216 @@ class InvoiceDetails extends StatelessWidget {
           }
           return Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              // Header with date and payment status
+              Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: Row(
                   children: [
-                    Expanded(child: Text('Datum: $dateStr')),
-                    Text(paid ? 'Bezahlt' : 'Offen', style: TextStyle(color: paid ? Colors.green : Colors.red)),
+                    Icon(Icons.calendar_today, size: 20, color: Colors.grey[600]),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Datum: $dateStr',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: paid ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: paid ? Colors.green : Colors.red,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        paid ? 'Bezahlt' : 'Offen',
+                        style: TextStyle(
+                          color: paid ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const Divider(height: 1),
+              
+              // Items list with total at the bottom
               Expanded(
-                child: ListView.separated(
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                child: ListView.builder(
+                  itemCount: items.length + 1, // +1 for the total section
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemBuilder: (context, index) {
+                    // Show total section at the last index
+                    if (index == items.length) {
+                      return Column(
+                        children: [
+                          const Divider(height: 1, thickness: 1),
+                          Container(
+                            color: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Gesamtsumme',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  '${totalPrice.toStringAsFixed(2)}€',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    
+                    // Show regular item
                     final item = items[index];
                     final product = item['product'] as ProductModel;
                     final price = item['price'] as double;
                     final count = item['count'] as int;
-                    return ListTile(
-                      leading: product.imageUrl.isNotEmpty
-                          ? Image.network(product.imageUrl, width: 56, height: 56, fit: BoxFit.cover)
-                          : const Icon(Icons.image_not_supported),
-                      title: Text(product.name),
-                      subtitle: Text('${product.brand} • x$count'),
-                      trailing: Text('${(price * count).toStringAsFixed(2)}€',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                    final totalItemPrice = price * count;
+                    
+                    return Column(
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          child: Row(
+                            children: [
+                              // Product image with left padding
+                              Container(
+                                width: 60,
+                                height: 60,
+                                margin: const EdgeInsets.only(left: 8),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.grey[100],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: product.imageUrl.isNotEmpty
+                                      ? Image.network(
+                                          product.imageUrl,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) => Icon(
+                                            Icons.image_not_supported,
+                                            color: Colors.grey[400],
+                                            size: 24,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.image_not_supported,
+                                          color: Colors.grey[400],
+                                          size: 24,
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              
+                              // Product details
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      product.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    if (product.brand.isNotEmpty)
+                                      Text(
+                                        product.brand,
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).primaryColor.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            'x$count',
+                                            style: TextStyle(
+                                              color: Theme.of(context).primaryColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '${price.toStringAsFixed(2)}€ je Stück',
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              
+                              // Price with right padding
+                              Container(
+                                margin: const EdgeInsets.only(right: 16),
+                                child: Text(
+                                  '${totalItemPrice.toStringAsFixed(2)}€',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (index < items.length - 1) // Add divider between items, but not after the last item
+                          const Divider(height: 1, thickness: 1),
+                      ],
                     );
                   },
-                ),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Gesamtsumme', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('${totalPrice.toStringAsFixed(2)}€', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ],
                 ),
               ),
             ],

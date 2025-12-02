@@ -5,10 +5,10 @@ import 'package:uuid/uuid.dart';
 import 'dart:math';
 
 Future<void> main() async {
+  final String baseUrl = "https://silicasoft.de/imagePath/";
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // Firestore reference
   CollectionReference productsRef =
   FirebaseFirestore.instance.collection('product');
 
@@ -16,39 +16,36 @@ Future<void> main() async {
   var random = Random();
 
   final categories = [
-    "Multimedia",
-    "Fashion",
-    "Home",
-    "Sport",
-    "Toys",
-    "Beauty",
-    "Garden",
-    "Books",
-    "Automotive",
-    "Office"
+    "Kunst",
+    "Mode",
+    "Schmuck",
+    "Haus",
+    "Models",
+    "Spiele",
+    "Game",
+    "Movie",
   ];
 
-  final brands = [
-    "Apple",
-    "Samsung",
-    "Sony",
-    "LG",
-    "Nike",
-    "Adidas",
-    "Dell",
-    "HP",
-    "Lenovo",
+  final Filament = [
+    "PLA",
+    "ABS",
+    "PETG",
+    "TUP",
+    "ASA",
+    "Nylon",
+    "Wood Composite",
+    "Carbon Fiber",
+    "PVA",
     "Philips"
   ];
 
-  for (var i = 0; i < 1000; i++) {
+  for (var i = 1; i <= 2; i++) {
     try {
       final uuid = uuidGenerator.v4();
 
-      // Randomized values
-      final brand = brands[random.nextInt(brands.length)];
+      final brand = Filament[random.nextInt(Filament.length)];
       final category = categories[random.nextInt(categories.length)];
-      final price = (50 + random.nextInt(950)) + random.nextDouble(); // 50–1000
+      final price = (50 + random.nextInt(950)) + random.nextDouble();
       final count = 1 + random.nextInt(20);
 
       // Create product map
@@ -62,21 +59,20 @@ Future<void> main() async {
         "The $brand Product $i offers reliable performance, designed for daily use with a focus on quality and comfort.",
         "longDescription":
         "The $brand Product $i is engineered to meet the highest standards in the $category market. Crafted with attention to detail and equipped with advanced features, it ensures optimal performance, longevity, and user satisfaction.",
-        "category": category,
+        "category": "Models",
         "brand": brand,
         "price": double.parse(price.toStringAsFixed(2)),
         "imageUrl":
-        "https://picsum.photos/seed/$i/600/600", // unique random image
+        baseUrl  + "00$i/00$i-1.jpg",
         "images": List.generate(
           3,
               (j) => {
-            "url": "https://picsum.photos/seed/${i}_$j/600/600",
+            "url": baseUrl + "00$i/00$i-${j+1}.jpg",
             "color": ["Red", "Blue", "Green", "Black", "White"][j % 5],
           },
         ),
       };
 
-      // Upload to Firestore with custom UUID as document ID
       await productsRef.doc(uuid).set(product);
 
       print('✅ Added product #$i: ${product['name']}');

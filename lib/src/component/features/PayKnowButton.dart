@@ -5,7 +5,7 @@ class PayNowButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String label;
 
-  const PayNowButton({Key? key, this.onPressed, this.label = 'Jetzt Kaufen'})
+  const PayNowButton({Key? key, this.onPressed, this.label = 'Jetzt bezahlen'})
     : super(key: key);
 
   @override

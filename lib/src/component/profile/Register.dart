@@ -31,14 +31,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       String email = _emailController.text.trim();
       String username = email.contains('@') ? email.split('@')[0] : email;
 
-      // Create user document in Firestore
+      // TODO: Move this to LoginAnd RegisterService.dart
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'uid': uid,
         'username': username,
         'email': email,
         // Add more fields as needed
       });
-      // TODO: Navigate to home or show success
+
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message;

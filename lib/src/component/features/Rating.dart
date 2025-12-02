@@ -24,7 +24,6 @@ class _Rating extends State<Rating> {
         Row(
           children: List.generate(5, (index) {
             if (index < widget.ratingValue.floor()) {
-              // Full star
               return Icon(
                 Icons.star,
                 color: CustomColors.primaryRating,

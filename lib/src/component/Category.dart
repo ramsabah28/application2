@@ -17,20 +17,20 @@ class _Category extends State<Category> {
 
   String _mapCategoryKey(String displayName) {
     switch (displayName.trim()) {
-      case 'Multimedia':
-        return 'Multimedia';
-      case 'Fashion':
-        return 'Fashion';
-      case 'Home':
-        return 'Home';
-      case 'Sport':
-        return 'Sport';
-      case 'Books':
-        return 'Books';
-      case 'Toys':
-        return 'Toys';
-      case 'Beauty':
-        return 'Beauty';
+      case 'Kunst':
+        return 'Kunst';
+      case 'Mode':
+        return 'Mode';
+      case 'Schmuck':
+        return 'Schmuck';
+      case 'Models':
+        return 'Models';
+      case 'Spiele':
+        return 'Spiele';
+      case 'Game':
+        return 'Game';
+      case 'Movie':
+        return 'Movie';
       case 'Garden':
         return 'Garden';
       case 'Automotive':
