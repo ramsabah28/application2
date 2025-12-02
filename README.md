@@ -1,4 +1,4 @@
-# 3D Model E-Commerce Application
+# PocketStore
 
 A modern Flutter-based e-commerce application specializing in 3D printed products with Firebase backend integration.
 
@@ -292,7 +292,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 For support and questions:
-- 📧 Email: support@application2.com
+- 📧 Email: support@pocketstore.com
 - 💬 Live Chat: Available in the app
 - 📚 Documentation: [Wiki](https://github.com/ramsabah28/application2/wiki)
 
